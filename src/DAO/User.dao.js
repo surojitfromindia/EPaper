@@ -1,16 +1,15 @@
 // i want to access the database from here in unit call
 
-import User from "../Models/User.model.js";
+import {UserModel} from "../Models/index.js";
 
 class UserDao {
-  async create(user) {
-   const created_user = await User.create(user);
-   return created_user;
-  }
+    async create(user) {
+        return await UserModel.create(user);
+    }
 
-  async getAll(){
-    const users = await User.findAll({});
-    return users;
-  }
+    async getAll() {
+        return await UserModel.findAll({});
+    }
 }
+
 export default Object.freeze(new UserDao());

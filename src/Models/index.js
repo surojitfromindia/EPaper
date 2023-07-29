@@ -1,5 +1,4 @@
-import UserModel from "./User.model.js";
+import UserModel from './User.model.js';
+import {OrganizationBasic as OrganizationBasicModel} from './Organization.model.js';
 
-export {
-    UserModel
-}
+export {UserModel, OrganizationBasicModel};
