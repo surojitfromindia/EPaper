@@ -7,7 +7,7 @@ class OrganizationService {
 
   async registerOrganization({organization_details, user_id}) {
     const new_organization = OrganizationDTO.toOrganizationCreate(organization_details, user_id);
-    const created_organization = await OrganizationDao.create(new_organization);
+    const created_organization = await OrganizationDao.create({organization_details: new_organization});
     return OrganizationDTO.toOrganizationDTO(created_organization);
   }
 

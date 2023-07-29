@@ -1,7 +1,9 @@
 import UserDao from "./User.dao.js";
 import OrganizationDao from "./Organization.dao.js";
+import UserCredentialDao from "./UserCredential.dao.js";
 
 export {
     UserDao,
-    OrganizationDao
+    OrganizationDao,
+    UserCredentialDao
 }

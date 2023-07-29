@@ -26,7 +26,7 @@ OrganizationBasic.init({
 UserModel.hasOne(OrganizationBasic, {
     foreignKey: {
         name: "userId", allowNull: false, columnName: "user_id"
-    }, as: "user",
+    },
 
 });
 

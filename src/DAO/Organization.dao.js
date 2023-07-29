@@ -3,8 +3,8 @@
 import {OrganizationBasicModel, UserModel} from '../Models/index.js';
 
 class OrganizationDao {
-  async create(organization) {
-    const organization_basic = await OrganizationBasicModel.create(organization);
+  async create({organization_details}) {
+    const organization_basic = await OrganizationBasicModel.create(organization_details);
     return await OrganizationBasicModel.findByPk(organization_basic.get("id"), {
       include: [UserModel]
     });
@@ -13,7 +13,7 @@ class OrganizationDao {
   async getAll() {
     return await OrganizationBasicModel.findAll({
       include: {
-        model: UserModel,
+        model: [UserModel],
       }
     });
   }

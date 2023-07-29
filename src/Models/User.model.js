@@ -23,11 +23,23 @@ User.init(
             allowNull: false,
             columnName: 'last_name',
         },
-        password: {
+        middleName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            columnName: 'middle_name',
+            defaultValue: '',
+        },
+        email :{
             type: DataTypes.STRING,
             allowNull: false,
-            columnName: 'password',
+            columnName: 'email',
         },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "A",
+            columnName: 'status',
+        }
     },
     {
         sequelize,
