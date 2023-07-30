@@ -1,5 +1,5 @@
 import {DataTypes, Model} from '@sequelize/core';
-import sequelize from '../Config/DataBase.Config.js';
+import sequelize from '../../Config/DataBase.Config.js';
 
 class User extends Model {
 }
@@ -29,7 +29,7 @@ User.init(
             columnName: 'middle_name',
             defaultValue: '',
         },
-        email :{
+        email: {
             type: DataTypes.STRING,
             allowNull: false,
             columnName: 'email',

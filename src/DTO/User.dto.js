@@ -5,7 +5,7 @@ class UserDTO {
             first_name: user.firstName,
             last_name: user.lastName,
             user_id: user.id,
-            email : user.email,
+            email: user.email,
             middle_name: user.middleName
         }
     }

@@ -1,10 +1,10 @@
 // i want to access the database from here in unit call
 
-import {UserModel, UserCredentialModel} from "../Models/index.js";
+import {UserModel} from "../Models/index.js";
 
 class UserDao {
-    async create({user},{transaction}) {
-        return await UserModel.create(user,{transaction: transaction});
+    async create({user}, {transaction}) {
+        return await UserModel.create(user, {transaction: transaction});
     }
 
     async getAll() {

@@ -1,6 +1,6 @@
 import {DataTypes, Model} from '@sequelize/core';
-import sequelize from '../Config/DataBase.Config.js';
-import { UserModel } from './index.js';
+import sequelize from '../../Config/DataBase.Config.js';
+import {UserModel} from '../index.js';
 
 class UserCredential extends Model {
 }
@@ -19,17 +19,17 @@ UserCredential.init(
             allowNull: false,
             columnName: 'password',
         },
-        LastLoginDevice :{
+        LastLoginDevice: {
             type: DataTypes.STRING,
             allowNull: true,
             columnName: 'last_login_device',
         },
-        LastLoginTime:{
+        LastLoginTime: {
             type: DataTypes.DATE,
             allowNull: true,
             columnName: 'last_login_time',
         },
-        OtpCode :{
+        OtpCode: {
             type: DataTypes.STRING,
             allowNull: true,
             columnName: 'otp_code',

@@ -3,11 +3,11 @@
 import {UserCredentialModel} from "../Models/index.js";
 
 class UserCredentialDao {
-    async create({user_credential},{transaction}) {
-        return await UserCredentialModel.create(user_credential,{transaction: transaction});
+    async create({user_credential}, {transaction}) {
+        return await UserCredentialModel.create(user_credential, {transaction: transaction});
     }
 
-    
+
 }
 
 export default Object.freeze(new UserCredentialDao());
