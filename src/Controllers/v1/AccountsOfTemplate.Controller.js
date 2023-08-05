@@ -1,4 +1,4 @@
-import {AccountsTemplateService} from "../../Services/index.js";
+import {AccountsTemplateImportService, AccountsTemplateService} from "../../Services/index.js";
 
 
 const createAccountOfTemplate = async (req, res) => {
@@ -7,12 +7,13 @@ const createAccountOfTemplate = async (req, res) => {
     res.status(201).json({account});
 }
 
-// const getAllOrganizations = async (req, res) => {
-//     const organizations = await OrganizationService.getAllOrganizations();
-//     res.status(200).json({organizations});
-// }
+const importAccountsForTemplate = async (req, res) => {
+    const localTemplateLocation = __baseDir + "/temp/default_template.xlsx";
+    const accounts = await AccountsTemplateImportService.import(localTemplateLocation);
+    res.status(200).json({accounts});
+}
 
 export {
     createAccountOfTemplate,
-    // getAllOrganizations
+    importAccountsForTemplate
 } 

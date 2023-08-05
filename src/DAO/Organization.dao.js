@@ -12,9 +12,7 @@ class OrganizationDao {
 
     async getAll() {
         return await OrganizationBasicModel.findAll({
-            include: {
-                model: [UserModel],
-            }
+            include: [UserModel]
         });
     }
 }

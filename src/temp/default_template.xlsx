@@ -1,0 +1,8 @@
+name	code	group	parent_name
+			
+Current Asset	11	Asset	
+Land	111	Asset	Current Asset
+			
+Prepaid Expenses	41	Expense	
+Every Prepaid Expense	411	Expense	Prepaid Expenses
+Small Prepaid Expens	412	Expense	Prepaid Expenses

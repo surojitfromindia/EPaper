@@ -1,5 +1,6 @@
 import {DataTypes, Model} from '@sequelize/core';
 import sequelize from '../../Config/DataBase.Config.js';
+import {AccountTemplateDetails} from '../index.js';
 
 class AccountsOfTemplate extends Model {
 }
@@ -31,9 +32,19 @@ AccountsOfTemplate.init(
         },
         depth: {
             type: DataTypes.TINYINT,
-            allowNull: false,
+            allowNull: true,
             columnName: 'depth'
 
+        },
+        tempParentName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            columnName: 'temp_parent_name',
+        },
+        tempGroupName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            columnName: 'temp_group_name',
         }
     },
     {
@@ -63,5 +74,12 @@ AccountsOfTemplate.belongsTo(AccountsOfTemplate, {
         name: "accountTypeId"
     }, as: "AccountType"
 });
+AccountsOfTemplate.belongsTo(AccountTemplateDetails, {
+    foreignKey: {
+        allowNull: false,
+        columnName: "account_template_id",
+        name: "accountTemplateId"
+    }, as: "AccountTemplate"
+})
 
 export {AccountsOfTemplate};

@@ -22,13 +22,20 @@ OrganizationBasic.init({
 }, {
     sequelize,
 });
+//
+// UserModel.hasOne(OrganizationBasic, {
+//     foreignKey: {
+//         name: "userId", allowNull: false, columnName: "user_id"
+//     },
+//     as: "User"
+// });
 
-UserModel.hasOne(OrganizationBasic, {
+OrganizationBasic.belongsTo(UserModel, {
     foreignKey: {
-        name: "userId", allowNull: false, columnName: "user_id"
-    },
-    as: "User"
-
-});
+        allowNull: false,
+        columnName: "user_id",
+        name: "userId"
+    }, as: "User"
+})
 
 export {OrganizationBasic};
