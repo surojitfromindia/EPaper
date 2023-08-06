@@ -40,5 +40,13 @@ AccountTemplateDetails.init(
     }
 );
 
+AccountTemplateDetails.belongsTo(AccountTemplateDetails, {
+    foreignKey: {
+        allowNull: true,
+        columnName: "origin_template_id",
+        name: "originTemplateId"
+    }, as: "OriginAccountTemplate"
+})
+
 
 export {AccountTemplateDetails};

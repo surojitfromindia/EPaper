@@ -3,5 +3,13 @@ import UserCredentialModel from './User/UserCredential.model.js';
 import {OrganizationBasic as OrganizationBasicModel} from './Organization.model.js';
 import {AccountTemplateDetails} from './Account/AccountTemplateDetails.model.js';
 import {AccountsOfTemplate} from './Account/AccountsOfTemplate.model.js';
+import {AccountsConfig} from "./Account/AccountsConfig.model.js";
 
-export {UserModel, OrganizationBasicModel, UserCredentialModel, AccountsOfTemplate, AccountTemplateDetails};
+export {
+    UserModel,
+    OrganizationBasicModel,
+    UserCredentialModel,
+    AccountsOfTemplate,
+    AccountTemplateDetails,
+    AccountsConfig
+};
