@@ -29,38 +29,33 @@ with recursive sub_accounts as (
     -- non recursive part
     select a1.name,
            a1.code,
-           a1.temp_parent_name,
+           a1.parent_code,
            a1.id as id,
            a1.account_parent_id,
            0     as depth,
            a1.account_group_id,
-           a1.account_type_id
+           a1.account_type_id,
+           a1.account_type
     from "AccountsOfTemplates" as a1
-    where a1.temp_parent_name IS NULL
-      and account_template_id = 13
-    union all
+    where a1.parent_code IS NULL
+      and account_template_id = 1
+    union
     select a2.name,
            a2.code,
-           a2.temp_parent_name,
+           a2.parent_code,
            a2.id,
            sb.id,
            (sb.depth + 1)                                                   as depth,
            (case when sb.depth = 0 then sb.id else sb.account_group_id end) as account_group_id,
-           (case when sb.depth > 0 then sb.id else sb.account_type_id end)  as account_type_id
+           (case when sb.depth > 0 then sb.id else sb.account_type_id end)  as account_type_id,
+           a2.account_type
     from "AccountsOfTemplates" as a2,
          sub_accounts sb
-    where sb.name = a2.temp_parent_name
-      and account_template_id = 13)
-update "AccountsOfTemplates" ac
-set account_parent_id = sb.account_parent_id,
-    account_group_id  = sb.account_group_id,
-    account_type_id   = sb.account_type_id,
-    depth             = sb.depth,
-    temp_parent_name  = NULL,
-    temp_group_name   = NULL
-from sub_accounts sb
-where ac.id = sb.id;
+    where sb.code = a2.parent_code
+      and account_template_id = 1)
+select *
+from sub_accounts;
 
 select *
 from "AccountsOfTemplates"
-where account_template_id = 14;
+where account_template_id = 1;

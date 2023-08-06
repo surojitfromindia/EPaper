@@ -24,6 +24,11 @@ AccountsOfTemplate.init(
             allowNull: false,
             columnName: 'code',
         },
+        parentCode: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            columnName: 'parent_code',
+        },
         status: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -36,15 +41,10 @@ AccountsOfTemplate.init(
             columnName: 'depth'
 
         },
-        tempParentName: {
+        type: {
             type: DataTypes.STRING,
-            allowNull: true,
-            columnName: 'temp_parent_name',
-        },
-        tempGroupName: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            columnName: 'temp_group_name',
+            allowNull: false,
+            columnName: 'account_type',
         }
     },
     {

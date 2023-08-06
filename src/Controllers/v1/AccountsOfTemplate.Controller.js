@@ -8,7 +8,7 @@ const createAccountOfTemplate = async (req, res) => {
 }
 
 const importAccountsForTemplate = async (req, res) => {
-    const localTemplateLocation = __baseDir + "/temp/default_template.xlsx";
+    const localTemplateLocation = __baseDir + "/temp/ListChartOfAccounts.xlsx";
     const accounts = await AccountsTemplateImportService.import(localTemplateLocation);
     res.status(200).json({accounts});
 }

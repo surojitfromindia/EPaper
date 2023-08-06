@@ -10,7 +10,9 @@ class AccountsOfTemplateImportService {
         const workbook = XLSX.read(readFileSync(file_location));
 
         const first_sheet = workbook.Sheets['Sheet1'];
-        const raw_entries = XLSX.utils.sheet_to_json(first_sheet);
+        const raw_entries = XLSX.utils.sheet_to_json(first_sheet, {
+            blankrows: false
+        });
 
         const {new_template, all_accounts_details} = await sequelize.transaction(async (t) => {
             // todo: add import validation later, such as every entry should have an account group.
@@ -23,31 +25,34 @@ class AccountsOfTemplateImportService {
 
             const all_accounts_details = [
                 {
-                    name: "Asset", code: "1", accountTemplateId: new_template_id
+                    name: "Asset", code: "1", accountTemplateId: new_template_id, type: "group"
                 }, {
-                    name: "Equity", code: "2", accountTemplateId: new_template_id
+                    name: "Equity", code: "3", accountTemplateId: new_template_id, type: "group"
                 }, {
-                    name: "Liability", code: "3", accountTemplateId: new_template_id
+                    name: "Liability", code: "2", accountTemplateId: new_template_id, type: "group"
+                },
+                {
+                    name: "Income", code: "4", accountTemplateId: new_template_id, type: "group"
+                },
+                {
+                    name: "Expense", code: "5", accountTemplateId: new_template_id, type: "group"
                 }, {
-                    name: "Expense", code: "4", accountTemplateId: new_template_id
-                }, {
-                    name: "Gain Or Loss", code: "5", accountTemplateId: new_template_id
+                    name: "Gain Or Loss", code: "6", accountTemplateId: new_template_id, type: "group"
                 }
             ];
-            raw_entries.forEach((acc) => {
+            raw_entries.filter(acc => acc.name).forEach((acc) => {
                 all_accounts_details.push({
                     name: acc.name,
-                    code: acc.code.toString(),
-                    tempGroupName: acc.group,
-                    tempParentName: acc.parent_name ?? acc.group,
-                    accountTemplateId: new_template_id
+                    code: acc?.code?.toString() ?? "",
+                    parentCode: acc.parent_code?.toString() ?? "",
+
+                    accountTemplateId: new_template_id,
+                    type: acc.parent_name ? "account" : "account_type",
                 })
             })
 
             const dumped_accounts = await AccountsOfTemplateDao.dumpAccounts({array_of_account_details: all_accounts_details}, {transaction: t})
-
             const raw_result = await AccountsOfTemplateDao.createAccountsFromDump({account_template_id: new_template_id}, {transaction: t})
-
 
             return {new_template, all_accounts_details: {dumped_accounts, raw_result}}
         });
