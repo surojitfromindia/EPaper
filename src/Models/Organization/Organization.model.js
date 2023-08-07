@@ -1,6 +1,6 @@
 import {DataTypes, Model} from '@sequelize/core';
-import sequelize from '../Config/DataBase.Config.js';
-import {UserModel} from './index.js';
+import sequelize from '../../Config/DataBase.Config.js';
+import {User} from '../index.js';
 
 class OrganizationBasic extends Model {
 }
@@ -22,19 +22,12 @@ OrganizationBasic.init({
 }, {
     sequelize,
 });
-//
-// UserModel.hasOne(OrganizationBasic, {
-//     foreignKey: {
-//         name: "userId", allowNull: false, columnName: "user_id"
-//     },
-//     as: "User"
-// });
 
-OrganizationBasic.belongsTo(UserModel, {
+OrganizationBasic.belongsTo(User, {
     foreignKey: {
         allowNull: false,
-        columnName: "user_id",
-        name: "userId"
+        columnName: "created_by",
+        name: "createdBy"
     }, as: "User"
 })
 

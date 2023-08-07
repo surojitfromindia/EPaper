@@ -1,6 +1,6 @@
 import {DataTypes, Model} from '@sequelize/core';
 import sequelize from '../../Config/DataBase.Config.js';
-import {UserModel} from '../index.js';
+import {User} from '../index.js';
 
 class UserCredential extends Model {
 }
@@ -40,7 +40,7 @@ UserCredential.init(
     }
 );
 
-UserModel.hasOne(UserCredential, {
+User.hasOne(UserCredential, {
     foreignKey: {
         name: "userId", allowNull: false, columnName: "user_id"
     },

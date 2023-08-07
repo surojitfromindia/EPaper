@@ -8,7 +8,7 @@ class OrganizationDTO {
             organization_id: organization.id,
             currency_code: organization.currencyCode,
             country_code: organization.countryCode,
-            user_id: organization.userId,
+            created_by: organization.createdBy,
         }
         if (organization.User) {
             return_dto.user = UserDTO.toUserDTO(organization.User)
@@ -22,7 +22,7 @@ class OrganizationDTO {
             primaryAddress: organization_dto.primary_address,
             currencyCode: organization_dto.currency_code,
             countryCode: organization_dto.country_code,
-            userId: user_id
+            createdBy: user_id
         }
     }
 }

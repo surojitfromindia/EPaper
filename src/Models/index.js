@@ -1,15 +1,17 @@
-import UserModel from './User/User.model.js';
+import {User} from './User/User.model.js';
 import UserCredentialModel from './User/UserCredential.model.js';
-import {OrganizationBasic as OrganizationBasicModel} from './Organization.model.js';
+import {OrganizationBasic} from './Organization/Organization.model.js';
 import {AccountTemplateDetails} from './Account/AccountTemplateDetails.model.js';
 import {AccountsOfTemplate} from './Account/AccountsOfTemplate.model.js';
 import {AccountsConfig} from "./Account/AccountsConfig.model.js";
+import {OrganizationsUsers} from "./OrganizationsUsers.model.js";
 
 export {
-    UserModel,
-    OrganizationBasicModel,
+    User,
+    OrganizationBasic,
     UserCredentialModel,
     AccountsOfTemplate,
     AccountTemplateDetails,
-    AccountsConfig
+    AccountsConfig,
+    OrganizationsUsers
 };

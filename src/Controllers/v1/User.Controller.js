@@ -11,8 +11,14 @@ const getAllUsers = async (req, res) => {
     const users = await UserService.getAllUsers();
     res.status(200).json({users: users});
 }
+const getAnUser = async (req, res) => {
+    const userId = req.params.userId;
+    const user = await UserService.getAnUserWithOrganization({user_id: userId});
+    res.status(200).json({user})
+}
 
 export {
     registerUser,
-    getAllUsers
+    getAllUsers,
+    getAnUser
 } 

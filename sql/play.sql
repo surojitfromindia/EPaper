@@ -1,29 +1,3 @@
-select *
-from accounts;
-
--- a union all
-select a1.title, a1.code
-from accounts as a1
-where a1.code = 1
-union all
-select a2.title, a2.code
-from accounts as a2
-where a2.code > 11;
-
-with recursive sub_accounts as (
-    -- non recursive part
-    select a1.title, a1.code, a1.parent_code, a1.id as id, a1.parent_id
-    from accounts as a1
-    where a1.parent_code IS NULL
-    union all
-    select a2.title, a2.code, a2.parent_code, a2.id, sb.id
-    from accounts as a2,
-         sub_accounts sb
-    where sb.code = a2.parent_code)
-select *
-from sub_accounts;
--- update accounts ac set parent_id = sub_accounts.parent_id from sub_accounts  where ac.id = sub_accounts.id ;
-
 
 with recursive sub_accounts as (
     -- non recursive part
@@ -59,3 +33,35 @@ from sub_accounts;
 select *
 from "AccountsOfTemplates"
 where account_template_id = 1;
+
+SELECT "User".*,
+       "AllOrganizations"."id"                                  AS "AllOrganizations.id",
+       "AllOrganizations"."name"                                AS "AllOrganizations.name",
+       "AllOrganizations"."primary_address"                     AS "AllOrganizations.primaryAddress",
+       "AllOrganizations"."country_code"                        AS "AllOrganizations.countryCode",
+       "AllOrganizations"."currency_code"                       AS "AllOrganizations.currencyCode",
+       "AllOrganizations"."status"                              AS "AllOrganizations.status",
+       "AllOrganizations"."createdAt"                           AS "AllOrganizations.createdAt",
+       "AllOrganizations"."updatedAt"                           AS "AllOrganizations.updatedAt",
+       "AllOrganizations"."user_id"                             AS "AllOrganizations.userId",
+       "AllOrganizations->OrganizationsUsers"."id"              AS "AllOrganizations.OrganizationsUsers.id",
+       "AllOrganizations->OrganizationsUsers"."job_status"      AS "AllOrganizations.OrganizationsUsers.jobStatus",
+       "AllOrganizations->OrganizationsUsers"."status"          AS "AllOrganizations.OrganizationsUsers.status",
+       "AllOrganizations->OrganizationsUsers"."createdAt"       AS "AllOrganizations.OrganizationsUsers.createdAt",
+       "AllOrganizations->OrganizationsUsers"."updatedAt"       AS "AllOrganizations.OrganizationsUsers.updatedAt",
+       "AllOrganizations->OrganizationsUsers"."user_id"         AS "AllOrganizations.OrganizationsUsers.userId",
+       "AllOrganizations->OrganizationsUsers"."organization_id" AS "AllOrganizations.OrganizationsUsers.organizationId"
+FROM (SELECT "User"."id",
+             "User"."first_name"  AS "firstName",
+             "User"."last_name"   AS "lastName",
+             "User"."middle_name" AS "middleName",
+             "User"."email",
+             "User"."status",
+             "User"."createdAt",
+             "User"."updatedAt"
+      FROM "Users" AS "User"
+      WHERE "User"."id" = 1
+      LIMIT 1) AS "User"
+         LEFT OUTER JOIN ("OrganizationsUsers" AS "AllOrganizations->OrganizationsUsers" INNER JOIN "OrganizationBasics" AS "AllOrganizations"
+                          ON "AllOrganizations"."id" = "AllOrganizations->OrganizationsUsers"."organization_id")
+                         ON "User"."id" = "AllOrganizations->OrganizationsUsers"."user_id"

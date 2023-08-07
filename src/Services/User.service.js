@@ -29,6 +29,17 @@ class UserService {
         const users = await UserDao.getAll();
         return users.map((user) => UserDTO.toUserDTO(user));
     }
+
+    async getAnUserWithOrganization({user_id}) {
+        try {
+            const user = await UserDao.getAnUserWithOrganization({user_id});
+            return UserDTO.toUserDTO(user);
+            // return  user;
+        } catch (error) {
+            console.log("Something went wrong", error.message)
+            return null;
+        }
+    }
 }
 
 export default Object.freeze(new UserService());
