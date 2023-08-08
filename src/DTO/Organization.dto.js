@@ -10,8 +10,8 @@ class OrganizationDTO {
             country_code: organization.countryCode,
             created_by: organization.createdBy,
         }
-        if (organization.User) {
-            return_dto.user = UserDTO.toUserDTO(organization.User)
+        if (organization.createdByUser) {
+            return_dto.created_by_user = UserDTO.toUserDTO(organization.createdByUser)
         }
         return return_dto
     }

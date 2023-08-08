@@ -1,4 +1,5 @@
 import organizationDto from "./Organization.dto.js";
+import organizationsUsersDto from "./OrganizationsUsers.dto.js";
 
 class UserDTO {
 
@@ -12,6 +13,9 @@ class UserDTO {
         }
         if (user.organizationsBasic?.length > 0) {
             basicUser.organizations = user.organizationsBasic.map(organizationDto.toOrganizationDTO)
+        }
+        if (user.activeOrganizations?.length > 0) {
+            basicUser.organization_working_details = user.activeOrganizations.map(organizationsUsersDto.toOrganizationsUsersDTO)
         }
         return basicUser
     }

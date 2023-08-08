@@ -8,12 +8,13 @@ class OrganizationService {
     async registerOrganization({organization_details, user_id}) {
         const new_organization = OrganizationDTO.toOrganizationCreate(organization_details, user_id);
         const created_organization = await OrganizationDao.create({organization_details: new_organization});
-        // save organization-user association
+        // save organization-user association, this user will be considered as admin
         await OrganizationsUsersDao.create({
             organization_user_details: {
                 jobStatus: "working",
                 status: "active",
                 userId: user_id,
+                roleId: 'admin',
                 organizationId: created_organization.get("id")
             }
         })

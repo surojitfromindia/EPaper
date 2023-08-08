@@ -1,6 +1,6 @@
 // I want to access the database from here in unit call
 
-import {OrganizationBasic, User} from "../Models/index.js";
+import {OrganizationBasic, OrganizationsUsers, User} from "../Models/index.js";
 
 class UserDao {
     async create({user}, {transaction}) {
@@ -14,24 +14,17 @@ class UserDao {
     async getAnUserWithOrganization({user_id}) {
         return User.findByPk(user_id, {
             include: [
-                //     {
-                //     model: OrganizationsUsers, as: "activeOrganizations",
-                //     where: {
-                //         status: "active"
-                //     },
-                //     include: [
-                //         {
-                //             model: OrganizationBasic,
-                //             as: "organizationBasic"
-                //         }
-                //     ]
-                // }
-                //
                 {
-                    model: OrganizationBasic,
-                    as: "organizationsBasic", through: {
-                        attributes: []
-                    }
+                    model: OrganizationsUsers, as: "activeOrganizations",
+                    where: {
+                        status: "active"
+                    },
+                    include: [
+                        {
+                            model: OrganizationBasic,
+                            as: "organizationBasic",
+                        }
+                    ]
                 }
             ]
         })

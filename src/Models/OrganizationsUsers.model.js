@@ -28,6 +28,31 @@ OrganizationsUsers.init(
             columnName: 'status',
         },
 
+        roleId: {
+            type: DataTypes.ENUM('admin', 'staff'),
+            allowNull: false,
+            columnName: 'role_id'
+        },
+
+        invitedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            columnName: 'invited_by',
+            references: {
+                key: "id",
+                model: User
+            }
+        },
+        invitedOn: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            columnName: 'invited_on'
+        },
+        acceptedOn: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            columnName: 'accepted_on'
+        }
     },
     {
         sequelize,
@@ -56,6 +81,10 @@ User.belongsToMany(OrganizationBasic, {
 User.hasMany(OrganizationsUsers, {
     as: "activeOrganizations",
     foreignKey: {name: "userId", columnName: "user_id", allowNull: false},
+})
+OrganizationBasic.hasMany(OrganizationsUsers, {
+    as: "activeUsers",
+    foreignKey: {name: "organizationId", columnName: 'organization_id', allowNull: false}
 })
 
 

@@ -28,7 +28,7 @@ OrganizationBasic.belongsTo(User, {
         allowNull: false,
         columnName: "created_by",
         name: "createdBy"
-    }, as: "User"
+    }, as: "createdByUser"
 })
 
 export {OrganizationBasic};
