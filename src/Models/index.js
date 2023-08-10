@@ -5,6 +5,7 @@ import {AccountTemplateDetails} from './Account/AccountTemplateDetails.model.js'
 import {AccountsOfTemplate} from './Account/AccountsOfTemplate.model.js';
 import {AccountsConfig} from "./Account/AccountsConfig.model.js";
 import {OrganizationsUsers} from "./OrganizationsUsers.model.js";
+import {TaxRates} from "./Tax/TaxRates.model.js";
 
 export {
     User,
@@ -13,5 +14,6 @@ export {
     AccountsOfTemplate,
     AccountTemplateDetails,
     AccountsConfig,
-    OrganizationsUsers
+    OrganizationsUsers,
+    TaxRates
 };
