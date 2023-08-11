@@ -29,6 +29,15 @@ class TaxRateDTO {
             countryCode: tax_rate_body.country_code,
         }
     }
+
+    static toTaxRateUpdate(tax_rate_body) {
+        return {
+            name: tax_rate_body.name,
+            description: tax_rate_body.description,
+            rate: Number(tax_rate_body.rate ?? 0),
+            countryCode: tax_rate_body.country_code,
+        }
+    }
 }
 
 export default TaxRateDTO

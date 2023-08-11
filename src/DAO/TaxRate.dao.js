@@ -11,9 +11,8 @@ class TaxRateDao {
     async get({tax_rate_id, organization_id}) {
         return await TaxRates.findOne({
             where: {
-                id: tax_rate_id,
-                organization_id,
-            }
+                id: tax_rate_id, organization_id,
+            },
         })
     }
 
@@ -23,6 +22,15 @@ class TaxRateDao {
                 organization_id
             }
         })
+    }
+
+    async updateTaxRate({tax_rate_details, tax_rate_id, organization_id}) {
+        await TaxRates.update(tax_rate_details, {
+            where: {
+                id: tax_rate_id, organization_id,
+            }
+        })
+        return await this.get({tax_rate_id, organization_id});
     }
 }
 

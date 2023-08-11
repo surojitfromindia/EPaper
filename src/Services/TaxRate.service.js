@@ -33,6 +33,16 @@ class TaxRateService {
         const taxRate = await TaxRateDao.get({tax_rate_id, organization_id})
         return TaxRateDto.toTaxRateDTO(taxRate)
     }
+
+    async updateATaxRate({tax_rate_details, tax_rate_id, organization_id}) {
+        const taxRateDetailsFromPayload = TaxRateDTO.toTaxRateUpdate(tax_rate_details);
+        const taxRate = await TaxRateDao.updateTaxRate({
+            tax_rate_details: taxRateDetailsFromPayload,
+            tax_rate_id,
+            organization_id
+        })
+        return TaxRateDto.toTaxRateDTO(taxRate)
+    }
 }
 
 export default Object.freeze(new TaxRateService());

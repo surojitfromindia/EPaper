@@ -24,9 +24,21 @@ const getATaxRate = async (req, res) => {
     const tax_rate = await TaxRateService.getATaxRate({tax_rate_id: taxRateId, organization_id: organizationId});
     res.status(200).json({tax_rate})
 }
+const updateATaxRate = async (req, res) => {
+    const body = req.body;
+    const taxRateId = req.params.taxRateId;
+    const organizationId = 1;
+    const updatedTaxRate = await TaxRateService.updateATaxRate({
+        tax_rate_details: body,
+        tax_rate_id: taxRateId,
+        organization_id: organizationId
+    });
+    res.status(201).json({tax_rate: updatedTaxRate});
+}
 
 export {
     create,
     getAllTaxRates,
-    getATaxRate
+    getATaxRate,
+    updateATaxRate
 }
