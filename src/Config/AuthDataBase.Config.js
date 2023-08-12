@@ -2,7 +2,7 @@ import {Sequelize} from '@sequelize/core';
 import chalk from 'chalk';
 
 
-const sequelize = new Sequelize('ePaper_db', 'surojit', '', {
+const sequelize = new Sequelize('auth_db', 'surojit', '', {
     host: 'localhost',
     dialect: 'postgres',
     logging: (mesg) => console.log(chalk.cyan(mesg, "\n\n")),

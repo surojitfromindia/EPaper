@@ -5,11 +5,9 @@ class UserDTO {
 
     static toUserDTO(user) {
         const basicUser = {
-            first_name: user.firstName,
-            last_name: user.lastName,
+            name: user.name,
             user_id: user.id,
             email: user.email,
-            middle_name: user.middleName
         }
         if (user.organizationsBasic?.length > 0) {
             basicUser.organizations = user.organizationsBasic.map(organizationDto.toOrganizationDTO)
@@ -23,9 +21,7 @@ class UserDTO {
     // transform a request to a user like entity
     static toUserCreate(user_dto) {
         return {
-            firstName: user_dto.first_name,
-            lastName: user_dto.last_name,
-            password: user_dto.password,
+            name: user_dto.name,
             email: user_dto.email,
             middleName: user_dto.middle_name
         }

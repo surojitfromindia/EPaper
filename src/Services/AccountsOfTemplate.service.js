@@ -34,7 +34,7 @@ class AccountsOfTemplateService {
 
     // async getAllUsers() {
     //   const users = await UserDao.getAll();
-    //   return users.map((user) => UserDTO.toUserDTO(user));
+    //   return users.map((user) => GeneralUserDto.toUserDTO(user));
     // }
 }
 

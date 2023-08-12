@@ -1,10 +1,10 @@
 import {DataTypes, Model} from '@sequelize/core';
-import sequelize from '../../Config/DataBase.Config.js';
+import sequelize from '../../Config/AuthDataBase.Config.js';
 
-class User extends Model {
+class GeneralUser extends Model {
 }
 
-User.init(
+GeneralUser.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -13,10 +13,21 @@ User.init(
             columnName: 'id',
             allowNull: false,
         },
-        name: {
+        firstName: {
             type: DataTypes.STRING,
             allowNull: false,
-            columnName: 'name',
+            columnName: 'first_name',
+        },
+        lastName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            columnName: 'last_name',
+        },
+        middleName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            columnName: 'middle_name',
+            defaultValue: '',
         },
         email: {
             type: DataTypes.STRING,
@@ -24,17 +35,10 @@ User.init(
             columnName: 'email',
         },
         status: {
-            type: DataTypes.ENUM('active', 'deactive'),
+            type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: "active",
+            defaultValue: "A",
             columnName: 'status',
-        },
-        // this is a key coming from auth table
-        clientId: {
-            type: DataTypes.INTEGER,
-            columnName: 'profile_id',
-            allowNull: false,
-            unique: true,
         }
     },
     {
@@ -42,4 +46,4 @@ User.init(
     }
 );
 
-export {User};
+export {GeneralUser};

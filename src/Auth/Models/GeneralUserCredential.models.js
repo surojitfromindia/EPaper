@@ -1,11 +1,11 @@
 import {DataTypes, Model} from '@sequelize/core';
-import sequelize from '../../Config/DataBase.Config.js';
-import {User} from '../index.js';
+import sequelize from '../../Config/AuthDataBase.Config.js';
+import {GeneralUser} from './GeneralUser.models.js';
 
-class UserCredential extends Model {
+class GeneralUserCredential extends Model {
 }
 
-UserCredential.init(
+GeneralUserCredential.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -40,10 +40,10 @@ UserCredential.init(
     }
 );
 
-User.hasOne(UserCredential, {
+GeneralUser.hasOne(GeneralUserCredential, {
     foreignKey: {
         name: "userId", allowNull: false, columnName: "user_id"
     },
 })
 
-export default UserCredential;
+export {GeneralUserCredential};
