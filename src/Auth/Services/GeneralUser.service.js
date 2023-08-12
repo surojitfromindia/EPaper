@@ -8,7 +8,7 @@ class GeneralUserService {
     #email
 
     /**
-     * Register or create a new user in this platform.
+     * Register or create a new user in this platform. our api and auth platform is separated.
      * @param user_details
      * @returns {Promise<{user_id: *, last_name: *, middle_name: *, first_name: *, email: *}>}
      */
