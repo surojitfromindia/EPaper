@@ -2,6 +2,7 @@
 import sequelize from '../../Config/AuthDataBase.Config.js';
 import {GeneralUserCredentialDao, GeneralUserDao} from '../DAO/index.js';
 import {GeneralUserDTO} from '../DTO/index.js';
+import {Password} from "../Utils/Password.js";
 
 class GeneralUserService {
     #user;
@@ -18,9 +19,13 @@ class GeneralUserService {
             const created_user = await sequelize.transaction(async (t1) => {
                 // save a new user to db
                 const user_basics = await GeneralUserDao.create({user: new_user}, {transaction: t1});
+
+                // saving sensitive data such as password after hashing
+                const password = (await new Password(user_details.password).createHashPassword()).getHashedPassword()
+
                 const user_credential = {
                     userId: user_basics.id,
-                    password: user_details.password,
+                    password,
                 };
                 // save the password on a different table
                 await GeneralUserCredentialDao.create({user_credential}, {transaction: t1});
