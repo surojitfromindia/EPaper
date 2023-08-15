@@ -13,24 +13,21 @@ class GeneralUserService {
     static async registerUser({user_details}) {
         const new_user = GeneralUserDTO.toUserCreate(user_details);
         try {
-            const created_user = await sequelize.transaction(async (t1) => {
+            const createdUser = await sequelize.transaction(async (t1) => {
                 // save a new user to db
-                const user_basics = await GeneralUserDao.create({user: new_user}, {transaction: t1});
-
+                const userBasics = await GeneralUserDao.create({user: new_user}, {transaction: t1});
                 // saving sensitive data such as password after hashing
                 const password = (await new Password(user_details.password).createHashPassword()).getHashedPassword()
-
-                const user_credential = {
-                    userId: user_basics.id, password,
+                const userCredential = {
+                    userId: userBasics.id, password,
                 };
                 // save the password on a different table
-                await GeneralUserCredentialDao.create({user_credential}, {transaction: t1});
-                return user_basics;
+                await GeneralUserCredentialDao.create({user_credential: userCredential}, {transaction: t1});
+                return userBasics;
             });
-            return GeneralUserDTO.toUserDTO(created_user);
+            return GeneralUserDTO.toUser(createdUser);
         } catch (error) {
-            console.log("Something went wrong", error.message)
-            throw Error(error)
+            throw error
         }
     }
 
@@ -57,10 +54,7 @@ class GeneralUserService {
         if (isMatch) {
             // return a token
             return {
-                token: UserAuthToken.signToken({
-                    user_id: this.#user.id,
-                    email: this.#user.email,
-                }).getToken()
+                token: UserAuthToken.signToken(GeneralUserDTO.toTokenPayload(this.#user)).getToken()
             }
         } else {
             throw new UserCredentialMismatchError()

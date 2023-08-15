@@ -39,6 +39,11 @@ GeneralUser.init(
             allowNull: false,
             defaultValue: "A",
             columnName: 'status',
+        },
+        userId: {
+            type: DataTypes.UUID,
+            allowNull: false,
+            defaultValue: DataTypes.UUIDV4
         }
     },
     {

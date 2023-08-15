@@ -16,7 +16,7 @@ class UserAuthToken {
     //we return an auth token when we sign a token
     static signToken(token_payload) {
         const userDetails = {
-            userId: token_payload.user_id,
+            userId: token_payload.userId,
             email: token_payload.email,
         }
         const tokenOptions = {
