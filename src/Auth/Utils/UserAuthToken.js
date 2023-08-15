@@ -1,6 +1,7 @@
 import jsonWebToken from 'jsonwebtoken'
 import {JWT_PRIVATE_KEY} from "../Constants/env.js";
 import {InvalidAccessTokenError} from "../Errors/APIErrors/index.js";
+import {CLIENT_TYPE} from "../Constants/ClientType.js";
 
 /**
  * Manage token generation and verification
@@ -8,6 +9,7 @@ import {InvalidAccessTokenError} from "../Errors/APIErrors/index.js";
 class UserAuthToken {
     #token;
     #decodeToken
+    #isTokenVerified;
 
     constructor(token) {
         this.#token = token
@@ -18,6 +20,7 @@ class UserAuthToken {
         const userDetails = {
             userId: token_payload.userId,
             email: token_payload.email,
+            clientType: CLIENT_TYPE.USER
         }
         const tokenOptions = {
             audience: 'reducer.EPaper.com',
@@ -36,14 +39,15 @@ class UserAuthToken {
     verifyToken() {
         try {
             this.#decodeToken = jsonWebToken.verify(this.#token, JWT_PRIVATE_KEY)
+            this.#isTokenVerified = true
         } catch (error) {
             throw new InvalidAccessTokenError()
         }
     }
 
     // get the decoded token
-    getDecodedToken() {
-        return this.#decodeToken
+    getNonVerifiedDecodedToken() {
+        return jsonWebToken.decode(this.#token)
     }
 
 

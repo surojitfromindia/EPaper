@@ -9,10 +9,10 @@ import {errorHandlerMiddleware} from "./Auth/Errors/errorHandlerMiddleware.js";
 const expressApp = Express();
 expressApp.use(json());
 expressApp.use(cookieParser());
-expressApp.use('/v1/accounts', v1Router);
+expressApp.use('/v1', v1Router);
 expressApp.use(errorHandlerMiddleware)
 
-await sequelize.sync({force: true});
+await sequelize.sync({alter: true});
 
 
 export default expressApp;

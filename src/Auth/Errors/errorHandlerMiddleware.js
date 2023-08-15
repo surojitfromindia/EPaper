@@ -1,7 +1,7 @@
 import {NoImplementationError} from "./SeverErrors/index.js";
 import {DataNotFoundError, UserCredentialMismatchError} from "./APIErrors/index.js";
 
-const errorHandlerMiddleware = (error, req, res) => {
+const errorHandlerMiddleware = (error, req, res, _next) => {
     let httpErrorCode = 500;
     let httpErrorMessage = "something went wrong"
     if (error instanceof NoImplementationError) {
@@ -16,7 +16,8 @@ const errorHandlerMiddleware = (error, req, res) => {
     }
     res.status(httpErrorCode).json({
         success: false,
-        message: httpErrorMessage
+        message: httpErrorMessage,
+        type: error.constructor.name
     })
 
 }
