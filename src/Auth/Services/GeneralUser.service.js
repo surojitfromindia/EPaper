@@ -4,16 +4,12 @@ import {GeneralUserCredentialDao, GeneralUserDao} from '../DAO/index.js';
 import {GeneralUserDTO} from '../DTO/index.js';
 import {HashPassword, Password} from "../Utils/Password.js";
 import {DataNotFoundError, UserCredentialMismatchError} from "../Errors/APIErrors/index.js";
+import {UserAuthToken} from "../Utils/UserAuthToken.js";
 
 class GeneralUserService {
     #user;
     #email
 
-    /**
-     * Register or create a new user in this platform. our api and auth platform is separated.
-     * @param user_details
-     * @returns {Promise<{user_id: *, last_name: *, middle_name: *, first_name: *, email: *}>}
-     */
     static async registerUser({user_details}) {
         const new_user = GeneralUserDTO.toUserCreate(user_details);
         try {
@@ -25,8 +21,7 @@ class GeneralUserService {
                 const password = (await new Password(user_details.password).createHashPassword()).getHashedPassword()
 
                 const user_credential = {
-                    userId: user_basics.id,
-                    password,
+                    userId: user_basics.id, password,
                 };
                 // save the password on a different table
                 await GeneralUserCredentialDao.create({user_credential}, {transaction: t1});
@@ -62,9 +57,10 @@ class GeneralUserService {
         if (isMatch) {
             // return a token
             return {
-                token: {
-                    email: this.#user.email
-                }
+                token: UserAuthToken.signToken({
+                    user_id: this.#user.id,
+                    email: this.#user.email,
+                }).getToken()
             }
         } else {
             throw new UserCredentialMismatchError()

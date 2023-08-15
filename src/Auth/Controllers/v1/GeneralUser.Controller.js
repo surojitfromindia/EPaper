@@ -11,8 +11,16 @@ const loginByPassword = async (req, res, next) => {
         const body = req.body;
         const {email, password} = body;
         const userService = await GeneralUserService.init(email)
-        const user = await userService.loginWithPassword(password)
-        res.status(201).json({user: user});
+        const loginResult = await userService.loginWithPassword(password)
+        res.cookie('_ePaperCrd', loginResult.token, {
+            httpOnly: true,
+        })
+        res.status(201).json(
+            {
+                success: true,
+                message: "login successful"
+            }
+        );
     } catch (error) {
         return next(error)
     }
