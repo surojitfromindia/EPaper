@@ -1,5 +1,5 @@
 import jsonWebToken from 'jsonwebtoken'
-import {JWT_PRIVATE_KEY} from "../Constants/env.js";
+import {USER_TYPE_JWT_PRIVATE_KEY} from "../Constants/env.js";
 import {InvalidAccessTokenError} from "../Errors/APIErrors/index.js";
 import {CLIENT_TYPE} from "../Constants/ClientType.js";
 
@@ -26,7 +26,7 @@ class UserAuthToken {
             audience: 'reducer.EPaper.com',
             issuer: "reducer.auth.com"
         }
-        const token = jsonWebToken.sign(userDetails, JWT_PRIVATE_KEY, tokenOptions)
+        const token = jsonWebToken.sign(userDetails, USER_TYPE_JWT_PRIVATE_KEY, tokenOptions)
         return new UserAuthToken(token)
     }
 
@@ -38,7 +38,7 @@ class UserAuthToken {
     // verify the given user auth token
     verifyToken() {
         try {
-            this.#decodeToken = jsonWebToken.verify(this.#token, JWT_PRIVATE_KEY)
+            this.#decodeToken = jsonWebToken.verify(this.#token, USER_TYPE_JWT_PRIVATE_KEY)
             this.#isTokenVerified = true
         } catch (error) {
             throw new InvalidAccessTokenError()
