@@ -7,6 +7,14 @@ class GeneralUserCredentialDao {
         return GeneralUserCredential.create(user_credential, {transaction: transaction});
     }
 
+    async findOne({user_id}) {
+        return GeneralUserCredential.findOne({
+            where: {
+                userId: user_id,
+            }
+        })
+    }
+
 
 }
 

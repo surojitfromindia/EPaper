@@ -2,7 +2,8 @@
 import sequelize from '../../Config/AuthDataBase.Config.js';
 import {GeneralUserCredentialDao, GeneralUserDao} from '../DAO/index.js';
 import {GeneralUserDTO} from '../DTO/index.js';
-import {Password} from "../Utils/Password.js";
+import {HashPassword, Password} from "../Utils/Password.js";
+import {DataNotFoundError, UserCredentialMismatchError} from "../Errors/APIErrors/index.js";
 
 class GeneralUserService {
     #user;
@@ -46,14 +47,28 @@ class GeneralUserService {
     }
 
     async #findByEmail() {
-        this.#user = await GeneralUserDao.findByEmail({email: this.#email})
+        const user = await GeneralUserDao.findByEmail({email: this.#email})
+        if (user) {
+            this.#user = user
+            return;
+        }
+        throw new DataNotFoundError()
     }
 
-    async findUser() {
-        return this.#user;
-    }
-
-    async loginWithPassword(password) {
+    async loginWithPassword(plain_password) {
+        const userCredential = await GeneralUserCredentialDao.findOne({user_id: this.#user.id})
+        const hashedPassword = new HashPassword(userCredential.password);
+        const isMatch = await hashedPassword.verifyPassword(plain_password)
+        if (isMatch) {
+            // return a token
+            return {
+                token: {
+                    email: this.#user.email
+                }
+            }
+        } else {
+            throw new UserCredentialMismatchError()
+        }
 
     }
 

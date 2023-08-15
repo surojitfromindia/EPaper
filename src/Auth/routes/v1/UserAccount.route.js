@@ -3,6 +3,7 @@ import {loginByPassword, registerUser,} from '../../Controllers/v1/GeneralUser.C
 
 const userAccountRouter = Router();
 
-userAccountRouter.post("/", registerUser).post("/login", loginByPassword)
+userAccountRouter.post("/login", loginByPassword)
+userAccountRouter.post("/", registerUser)
 
 export default userAccountRouter;
