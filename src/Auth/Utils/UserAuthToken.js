@@ -1,6 +1,6 @@
 import jsonWebToken from 'jsonwebtoken'
 import {USER_TYPE_JWT_PRIVATE_KEY} from "../Constants/env.js";
-import {InvalidAccessTokenError} from "../Errors/APIErrors/index.js";
+import {InvalidAccessTokenError, MalformedDataError} from "../Errors/APIErrors/index.js";
 import {CLIENT_TYPE} from "../Constants/ClientType.js";
 
 /**
@@ -37,6 +37,8 @@ class UserAuthToken {
 
     // verify the given user auth token
     verifyToken() {
+        // first, we try to decode the token
+        this.getNonVerifiedDecodedToken();
         try {
             this.#decodeToken = jsonWebToken.verify(this.#token, USER_TYPE_JWT_PRIVATE_KEY)
             this.#isTokenVerified = true
@@ -47,7 +49,11 @@ class UserAuthToken {
 
     // get the decoded token
     getNonVerifiedDecodedToken() {
-        return jsonWebToken.decode(this.#token)
+        try {
+            return jsonWebToken.decode(this.#token)
+        } catch (error) {
+            throw new MalformedDataError('Token is malformed')
+        }
     }
 
 

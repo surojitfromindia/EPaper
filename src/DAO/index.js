@@ -5,6 +5,7 @@ import AccountsTemplateDetailsDao from "./AccountsTemplateDetails.dao.js";
 import AccountsConfigDao from "./AccountsConfig.dao.js";
 import OrganizationsUsersDao from "./OrganizationsUsers.dao.js";
 import TaxRateDao from "./TaxRate.dao.js";
+import AuthorizationDao from "./Authorization.dao.js";
 
 export {
     UserDao,
@@ -13,5 +14,6 @@ export {
     AccountsTemplateDetailsDao,
     AccountsConfigDao,
     OrganizationsUsersDao,
-    TaxRateDao
+    TaxRateDao,
+    AuthorizationDao
 }
