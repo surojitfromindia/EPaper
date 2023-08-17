@@ -26,8 +26,20 @@ class AuthorizationDao {
                 res.on('data', (chunk) => body.push(chunk))
                 res.on('end', () => {
                     const resString = Buffer.concat(body).toString()
-                    resolve(resString)
+                    const resJSON = JSON.parse(resString);
+                    if (res.statusCode < 200 || res.statusCode > 299) {
+                        return reject(new Error(resJSON.message))
+                    }
+                    // todo: need a dto here.
+                    resolve({
+                        clientId: resJSON.clientId,
+                        active: resJSON.active,
+                        clientType: resJSON.clientType
+                    })
                 })
+            })
+            req.on('error', (error) => {
+                reject(error.message)
             })
             req.write(tokenPayload)
             req.end();

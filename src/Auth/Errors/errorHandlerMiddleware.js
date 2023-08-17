@@ -1,5 +1,5 @@
 import {NoImplementationError} from "./SeverErrors/index.js";
-import {DataNotFoundError, UserCredentialMismatchError} from "./APIErrors/index.js";
+import {DataNotFoundError, MalformedDataError, UserCredentialMismatchError} from "./APIErrors/index.js";
 
 const errorHandlerMiddleware = (error, req, res, _next) => {
     let httpErrorCode = 500;
@@ -12,6 +12,9 @@ const errorHandlerMiddleware = (error, req, res, _next) => {
         httpErrorMessage = error.message
     } else if (error instanceof UserCredentialMismatchError) {
         httpErrorCode = 403
+        httpErrorMessage = error.message
+    } else if (error instanceof MalformedDataError) {
+        httpErrorCode = 400
         httpErrorMessage = error.message
     }
     res.status(httpErrorCode).json({

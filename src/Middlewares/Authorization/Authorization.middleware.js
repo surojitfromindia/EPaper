@@ -13,9 +13,12 @@ const permission = async (req, res, next) => {
         throw new Error("Token not found")
     }
     const authDao = new AuthorizationDao(Token);
-    const b = await authDao.introspectToken();
-    console.log("b ", b)
-    next(new Error("Testing auth error"))
+    try {
+        const data = await authDao.introspectToken();
+        res.json(data)
+    } catch (error) {
+        next(new Error(error.message))
+    }
 }
 export {
     permission

@@ -49,11 +49,11 @@ class UserAuthToken {
 
     // get the decoded token
     getNonVerifiedDecodedToken() {
-        try {
-            return jsonWebToken.decode(this.#token)
-        } catch (error) {
+        const decodePayload = jsonWebToken.decode(this.#token)
+        if (decodePayload === null) {
             throw new MalformedDataError('Token is malformed')
         }
+        return decodePayload
     }
 
 

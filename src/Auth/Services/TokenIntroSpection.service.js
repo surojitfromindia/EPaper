@@ -29,11 +29,11 @@ class TokenIntrospectionService {
                 this.#clientAppTokenIntrospection()
             }
             return {
-                active: true, clientId: this.#decodedToken.userId
+                active: true, clientId: this.#decodedToken.userId, clientType: this.#clientType
             }
         } catch (error) {
             return {
-                active: false, clientId: this.#decodedToken.userId
+                active: false, clientId: this.#decodedToken.userId, clientType: this.#clientType
             }
         }
 
