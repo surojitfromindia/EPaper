@@ -14,8 +14,21 @@ const authorizeClient = async (req, res, next) => {
     }
     const authDao = new AuthorizationDao(Token);
     try {
-        const data = await authDao.introspectToken();
-        res.json(data)
+        const introspectionResult = await authDao.introspectToken();
+        //TODO:
+        // store client related info here, if available.
+        // we will always have clientId, clientType in data
+        // other data such as id (from Users table), default organization, if not present in request.
+        const basicClientInfo = {
+            clientId: introspectionResult.clientId,
+            clientEmail: introspectionResult.clientEmail,
+            clientType: introspectionResult.clientType,
+            clientName: introspectionResult.clientName,
+        }
+        req.clientInfo = {
+            ...basicClientInfo
+        };
+        return next()
     } catch (error) {
         next(new Error(error.message))
     }

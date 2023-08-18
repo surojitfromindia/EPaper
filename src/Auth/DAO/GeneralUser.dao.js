@@ -15,6 +15,14 @@ class GeneralUserDao {
         })
     }
 
+    async findUserById({user_id}) {
+        return GeneralUser.findOne({
+            where: {
+                userId: user_id
+            }
+        })
+    }
+
 }
 
 export default Object.freeze(new GeneralUserDao());

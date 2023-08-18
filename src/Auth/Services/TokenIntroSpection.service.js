@@ -1,6 +1,7 @@
 import {CLIENT_TYPE} from "../Constants/ClientType.js";
 import {NoImplementationError} from "../Errors/SeverErrors/index.js";
 import {UserAuthToken} from "../Utils/UserAuthToken.js";
+import {GeneralUserService} from "./index.js";
 
 class TokenIntrospectionService {
     #clientType
@@ -22,14 +23,20 @@ class TokenIntrospectionService {
     // verify the token return status as 'active'
     async introspect() {
         try {
+            let clientDetails;
+            let clientName;
+            let clientEmail;
             if (this.#clientType === CLIENT_TYPE.USER) {
                 this.#userTokenIntrospection();
+                clientDetails = await GeneralUserService.findByUserId(this.#decodedToken.userId)
+                clientName = [clientDetails.firstName ?? "", clientDetails.middleName ?? "", clientDetails.lastName ?? ""].join(" ")
+                clientEmail = clientDetails.email
             }
             if (this.#clientType === CLIENT_TYPE.APP) {
                 this.#clientAppTokenIntrospection()
             }
             return {
-                active: true, clientId: this.#decodedToken.userId, clientType: this.#clientType
+                active: true, clientId: this.#decodedToken.userId, clientType: this.#clientType, clientName, clientEmail
             }
         } catch (error) {
             return {

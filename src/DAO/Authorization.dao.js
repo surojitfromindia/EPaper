@@ -34,7 +34,9 @@ class AuthorizationDao {
                     resolve({
                         clientId: resJSON.clientId,
                         active: resJSON.active,
-                        clientType: resJSON.clientType
+                        clientType: resJSON.clientType,
+                        clientName: resJSON.clientName,
+                        clientEmail: resJSON.clientEmail,
                     })
                 })
             })

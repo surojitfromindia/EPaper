@@ -1,8 +1,10 @@
 import {Router} from 'express'
-import {getAllUsers, getAnUser, registerUser,} from '../../Controllers/v1/User.Controller.js';
+import {getAnUser, registerUser,} from '../../Controllers/v1/User.Controller.js';
+import {authorizeClient} from "../../Middlewares/Authorization/Authorization.middleware.js";
 
 const userRouter = Router();
 
-userRouter.post("/", registerUser).get("/:userId", getAnUser).get("/", getAllUsers)
+userRouter.use(authorizeClient)
+userRouter.post("/", registerUser).get("/:userId", getAnUser)
 
 export default userRouter;

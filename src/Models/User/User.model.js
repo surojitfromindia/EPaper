@@ -20,7 +20,6 @@ User.init(
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false,
             columnName: 'email',
         },
         status: {
@@ -31,8 +30,8 @@ User.init(
         },
         // this is a key coming from auth table
         clientId: {
-            type: DataTypes.INTEGER,
-            columnName: 'profile_id',
+            type: DataTypes.STRING,
+            columnName: 'client_id',
             allowNull: false,
             unique: true,
         }

@@ -62,6 +62,14 @@ class GeneralUserService {
 
     }
 
+    static async findByUserId(user_id) {
+        const user = await GeneralUserDao.findUserById({user_id})
+        if (user) {
+            return user
+        }
+        throw new DataNotFoundError()
+    }
+
 
 }
 

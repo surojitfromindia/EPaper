@@ -19,11 +19,11 @@ class UserDTO {
     }
 
     // transform a request to a user like entity
-    static toUserCreate(user_dto) {
+    static toUserCreate(client_info) {
         return {
-            name: user_dto.name,
-            email: user_dto.email,
-            middleName: user_dto.middle_name
+            name: client_info.clientName,
+            email: client_info.clientEmail,
+            clientId: client_info.clientId,
         }
     }
 }

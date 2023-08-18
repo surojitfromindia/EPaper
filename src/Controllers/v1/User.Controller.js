@@ -1,21 +1,25 @@
 import {UserService} from "../../Services/index.js";
+import {SuccessErrorWrapper} from "../../Utils/SuccessErrorWrapper.js";
 
-
-const registerUser = async (req, res) => {
-    const body = req.body;
+let registerUser = async (req, res) => {
+    const body = req.clientInfo;
     const created_user = await UserService.registerUser({user_details: body});
-    res.status(201).json({user: created_user});
+    return {user: created_user};
 }
+registerUser = SuccessErrorWrapper(registerUser, 201)
 
-const getAllUsers = async (req, res) => {
+let getAllUsers = async (req, res) => {
     const users = await UserService.getAllUsers();
-    res.status(200).json({users: users});
+    return {users: users};
 }
-const getAnUser = async (req, res) => {
-    const userId = req.params.userId;
+getAllUsers = SuccessErrorWrapper(getAllUsers, 200)
+
+let getAnUser = async (req, res) => {
+    const userId = Number(req.params.userId);
     const user = await UserService.getAnUserWithOrganization({user_id: userId});
-    res.status(200).json({user})
+    return {user}
 }
+getAnUser = SuccessErrorWrapper(getAnUser, 200)
 
 export {
     registerUser,
