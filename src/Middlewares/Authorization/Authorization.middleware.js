@@ -1,6 +1,6 @@
 import {AuthorizationDao} from "../../DAO/index.js";
 
-const permission = async (req, res, next) => {
+const authorizeClient = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader === undefined) {
         throw new Error('Access token missing in authorization header')
@@ -21,5 +21,5 @@ const permission = async (req, res, next) => {
     }
 }
 export {
-    permission
+    authorizeClient
 }
