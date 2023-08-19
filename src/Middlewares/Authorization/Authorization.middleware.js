@@ -35,7 +35,7 @@ const authorizeClient = async (req, res, next) => {
         })
         clientInfo.userOrganizations = userDetails?.organization_working_details ?? [];
         clientInfo.organizationId = req?.query.organization_id ? Number(req.query.organization_id) : null;
-        clientInfo.userId = userDetails.user_id;
+        clientInfo.userId = userDetails?.user_id ?? null;
 
         req.clientInfo = clientInfo;
         return next()

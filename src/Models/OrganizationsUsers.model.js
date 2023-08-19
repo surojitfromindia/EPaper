@@ -52,10 +52,22 @@ OrganizationsUsers.init(
             type: DataTypes.DATE,
             allowNull: true,
             columnName: 'accepted_on'
+        },
+        isDefaultOrganization: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            columnName: 'is_default_organization',
         }
     },
     {
         sequelize,
+        indexes: [
+            {
+                unique: true,
+                fields: ['user_id', 'organization_id', 'is_default_organization'],
+            }
+        ],
+
 
     }
 );
