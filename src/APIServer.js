@@ -8,7 +8,7 @@ const expressApp = Express();
 expressApp.use(json());
 expressApp.use('/v1', v1Router);
 expressApp.use(errorHandlerMiddleware)
-// await sequelize.sync({force: true, alter: true});
+// await sequelize.sync({force: false, alter: true});
 
 
 export default expressApp;

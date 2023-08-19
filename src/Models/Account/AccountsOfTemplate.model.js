@@ -1,6 +1,6 @@
 import {DataTypes, Model} from '@sequelize/core';
 import sequelize from '../../Config/DataBase.Config.js';
-import {AccountTemplateDetails} from '../index.js';
+import {AccountTemplateDetails, OrganizationBasic, User} from '../index.js';
 
 class AccountsOfTemplate extends Model {
 }
@@ -39,10 +39,9 @@ AccountsOfTemplate.init(
             type: DataTypes.TINYINT,
             allowNull: true,
             columnName: 'depth'
-
         },
         type: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM(['group', 'account_type', 'account']),
             allowNull: false,
             columnName: 'account_type',
         }
@@ -81,5 +80,24 @@ AccountsOfTemplate.belongsTo(AccountTemplateDetails, {
         name: "accountTemplateId"
     }, as: "AccountTemplate"
 })
+AccountsOfTemplate.belongsTo(User, {
+    foreignKey: {
+        allowNull: false,
+        columnName: "created_by",
+        name: "createdBy"
+    }, as: "createdByUser"
+})
+AccountsOfTemplate.belongsTo(OrganizationBasic, {
+    foreignKey: {
+        allowNull: false,
+        columnName: "organization_id",
+        name: "organizationId"
+    }, as: "organization"
+})
+
+await AccountsOfTemplate.sync({
+    force: true
+})
+
 
 export {AccountsOfTemplate};

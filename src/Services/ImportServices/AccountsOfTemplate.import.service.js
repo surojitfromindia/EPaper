@@ -5,7 +5,9 @@ import sequelize from '../../Config/DataBase.Config.js';
 
 // here I will use xlsx, read from xlsx and create accounts that belong to a template
 class AccountsOfTemplateImportService {
-    async import(file_location) {
+    async import({file_location, client_info}) {
+        const createdBy = client_info.userId;
+        const organizationId = client_info.organizationId
         // load the file from temp folder
         const workbook = XLSX.read(readFileSync(file_location));
 
@@ -14,7 +16,7 @@ class AccountsOfTemplateImportService {
             blankrows: false
         });
 
-        const {new_template, all_accounts_details} = await sequelize.transaction(async (t) => {
+        const {new_account_template} = await sequelize.transaction(async (t) => {
             // todo: add import validation later, such as every entry should have an account group.
             const template_details = {
                 name: 'Template 1', country: 'India', sector: 'IT',
@@ -46,25 +48,25 @@ class AccountsOfTemplateImportService {
                 }, {
                     name: "Gain Or Loss", code: "6", accountTemplateId: new_account_template_id, type: "group"
                 }
-            ];
+            ].map(acc => ({...acc, createdBy, organizationId}));
             raw_entries.filter(acc => acc.name).forEach((acc) => {
                 all_accounts_details.push({
                     name: acc.name,
                     code: acc?.code?.toString() ?? "",
                     parentCode: acc.parent_code?.toString() ?? "",
-
                     accountTemplateId: new_account_template_id,
                     type: acc.parent_name ? "account" : "account_type",
+                    createdBy,
+                    organizationId
                 })
             })
+            await AccountsOfTemplateDao.dumpAccounts({array_of_account_details: all_accounts_details}, {transaction: t});
+            await AccountsOfTemplateDao.createAccountsFromDump({account_template_id: new_account_template_id}, {transaction: t})
 
-            const dumped_accounts = await AccountsOfTemplateDao.dumpAccounts({array_of_account_details: all_accounts_details}, {transaction: t})
-            const raw_result = await AccountsOfTemplateDao.createAccountsFromDump({account_template_id: new_account_template_id}, {transaction: t})
-
-            return {new_account_template, all_accounts_details: {dumped_accounts, raw_result}}
+            return {new_account_template}
         });
 
-        return {new_template, all_accounts_details};
+        return {new_account_template};
     }
 }
 
