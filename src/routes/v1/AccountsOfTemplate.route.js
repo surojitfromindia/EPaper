@@ -1,12 +1,9 @@
 import {Router} from 'express'
-import {
-    createAccountOfTemplate,
-    importAccountsForTemplate
-} from "../../Controllers/v1/AccountsOfTemplate.Controller.js";
+import {addAccountToTemplate, importAccountsToTemplate} from "../../Controllers/v1/AccountsOfTemplate.Controller.js";
 
 const accountsOfTemplateRouter = Router();
 
-accountsOfTemplateRouter.post("/import", importAccountsForTemplate)
-accountsOfTemplateRouter.post("/", createAccountOfTemplate)
+accountsOfTemplateRouter.post("/import", importAccountsToTemplate)
+accountsOfTemplateRouter.post("/", addAccountToTemplate)
 
 export default accountsOfTemplateRouter;

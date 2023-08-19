@@ -8,8 +8,13 @@ class AccountTemplateDetailsDao {
         return await AccountTemplateDetails.findByPk(template.get("id"),);
     }
 
-    async get({template_id}) {
-        return await AccountTemplateDetails.findByPk(template_id)
+    async get({template_id, organization_id}) {
+        return await AccountTemplateDetails.findOne({
+            where: {
+                id: template_id,
+                organizationId: organization_id
+            }
+        })
     }
 }
 

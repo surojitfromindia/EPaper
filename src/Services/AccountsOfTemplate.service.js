@@ -1,31 +1,58 @@
 // here I handle business logic
 import sequelize from '../Config/DataBase.Config.js';
-import {AccountsOfTemplateDao} from '../DAO/index.js';
+import {AccountsOfTemplateDao, AccountsTemplateDetailsDao} from '../DAO/index.js';
 import {AccountsOfTemplateDTO} from "../DTO/index.js";
+import {DataNotFoundError} from "../Errors/APIErrors/index.js";
 
 class AccountsOfTemplateService {
-    async create({account_details}) {
-        const new_account = AccountsOfTemplateDTO.toAccountsOfTemplateCreate(account_details);
+    async addAccount({account_details, client_info}) {
+        const organizationId = client_info.organizationId;
+        const createdBy = client_info.userId;
+
+        const newAccountDetails = AccountsOfTemplateDTO.toAccountsOfTemplateCreate(account_details);
+        let accountTemplateId = newAccountDetails.accountTemplateId;
+        newAccountDetails.createdBy = createdBy;
+        newAccountDetails.organizationId = organizationId;
+
+        // find the account template
+        const accountTemplateDetails = await AccountsTemplateDetailsDao.get({
+            template_id: accountTemplateId,
+            organization_id: organizationId
+        })
+        if (!accountTemplateDetails) {
+            throw new DataNotFoundError('Account template not found')
+        }
+
         try {
             return await sequelize.transaction(async (t1) => {
                 //set default values
-                new_account.depth = 0;
+                let accountDepth = 0;
+                let accountType = 'group'
                 //check if a parent id is provided, and we get the depth of the parent and add 1 to it
-                if (new_account.accountParentId) {
-                    const parent_account = await AccountsOfTemplateDao.get({account_id: new_account.accountParentId})
-                    if (parent_account === null) {
-                        throw new Error("Parent account not found")
+                if (newAccountDetails.accountParentId) {
+                    const parentAccountDetails = await AccountsOfTemplateDao.get({account_id: newAccountDetails.accountParentId})
+                    if (parentAccountDetails === null) {
+                        throw new DataNotFoundError("Parent account not found")
                     }
-                    new_account.depth = parent_account.depth + 1;
+                    accountDepth = parentAccountDetails.depth + 1;
                 }
-
-                //todo: check template id
-                const created_account = await AccountsOfTemplateDao.create({account_details: new_account}, {transaction: t1});
-                return AccountsOfTemplateDTO.toAccountsOfTemplateDTO(created_account)
+                switch (accountDepth) {
+                    case 0:
+                        accountType = "group";
+                        break;
+                    case 1:
+                        accountType = 'account_type';
+                        break;
+                    default:
+                        accountType = 'account'
+                }
+                newAccountDetails.depth = accountDepth;
+                newAccountDetails.type = accountType;
+                const createdAccount = await AccountsOfTemplateDao.create({account_details: newAccountDetails}, {transaction: t1});
+                return AccountsOfTemplateDTO.toAccountsOfTemplateDTO(createdAccount)
             })
         } catch (error) {
-            console.log("Something went wrong", error.message)
-            return null;
+            throw error;
         }
     }
 

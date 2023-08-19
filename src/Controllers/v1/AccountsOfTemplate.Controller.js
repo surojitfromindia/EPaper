@@ -1,23 +1,27 @@
 import {AccountsTemplateImportService, AccountsTemplateService} from "../../Services/index.js";
+import {SuccessErrorWrapper} from "../../Utils/SuccessErrorWrapper.js";
 
 
-const createAccountOfTemplate = async (req, res) => {
+let addAccountToTemplate = async (req) => {
+    const clientInfo = req.clientInfo;
     const body = req.body;
-    const account = await AccountsTemplateService.create({account_details: body,});
-    res.status(201).json({account});
+    const account = await AccountsTemplateService.addAccount({account_details: body, client_info: clientInfo});
+    return {account};
 }
+addAccountToTemplate = SuccessErrorWrapper(addAccountToTemplate, 201)
 
-const importAccountsForTemplate = async (req, res) => {
+let importAccountsToTemplate = async (req) => {
     const clientInfo = req.clientInfo;
     const localTemplateLocation = __baseDir + "/temp/ListChartOfAccounts.xlsx";
     const accounts = await AccountsTemplateImportService.import({
         file_location: localTemplateLocation,
         client_info: clientInfo
     });
-    res.status(200).json({accounts});
+    return {accounts};
 }
+importAccountsToTemplate = SuccessErrorWrapper(importAccountsToTemplate, 201)
 
 export {
-    createAccountOfTemplate,
-    importAccountsForTemplate
+    addAccountToTemplate,
+    importAccountsToTemplate
 } 

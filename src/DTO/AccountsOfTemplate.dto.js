@@ -23,11 +23,12 @@ class AccountsTemplateDTO {
         return account_dto;
     }
 
-    static toAccountsOfTemplateCreate(account_dto) {
+    static toAccountsOfTemplateCreate(account_creation_payload) {
         return {
-            name: account_dto.name,
-            code: account_dto.code,
-            accountParentId: account_dto.account_parent_id
+            name: account_creation_payload.name,
+            code: account_creation_payload.code,
+            accountParentId: account_creation_payload.account_parent_id,
+            accountTemplateId: account_creation_payload.account_template_id,
         }
     }
 }
