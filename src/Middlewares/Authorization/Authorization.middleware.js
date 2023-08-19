@@ -1,4 +1,5 @@
 import {AuthorizationDao} from "../../DAO/index.js";
+import {UserService} from "../../Services/index.js";
 
 const authorizeClient = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -15,19 +16,25 @@ const authorizeClient = async (req, res, next) => {
     const authDao = new AuthorizationDao(Token);
     try {
         const introspectionResult = await authDao.introspectToken();
-        //TODO:
-        // store client related info here, if available.
-        // we will always have clientId, clientType in data
-        // other data such as id (from Users table), default organization, if not present in request.
         const basicClientInfo = {
             clientId: introspectionResult.clientId,
             clientEmail: introspectionResult.clientEmail,
             clientType: introspectionResult.clientType,
             clientName: introspectionResult.clientName,
         }
-        req.clientInfo = {
+        // try to find user information
+        const clientInfo = {
             ...basicClientInfo
         };
+        const userDetails = await UserService.getUserByClientId({
+            client_id: basicClientInfo.clientId,
+            include_organization_details: true
+        })
+        // const activeOrganizations = userDetails?.organization_working_details ?? [];
+        if (userDetails) {
+            clientInfo.userId = userDetails.user_id;
+        }
+        req.clientInfo = clientInfo;
         return next()
     } catch (error) {
         next(new Error(error.message))

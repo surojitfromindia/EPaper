@@ -3,8 +3,8 @@ import {OrganizationService} from "../../Services/index.js";
 
 const registerOrganization = async (req, res) => {
     const body = req.body;
-    const user_id = 1;
-    const organization = await OrganizationService.registerOrganization({organization_details: body, user_id});
+    const client_info = req.clientInfo;
+    const organization = await OrganizationService.registerOrganization({organization_details: body, client_info});
     res.status(201).json({organization});
 }
 

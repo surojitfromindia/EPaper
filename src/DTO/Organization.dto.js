@@ -16,13 +16,13 @@ class OrganizationDTO {
         return return_dto
     }
 
-    static toOrganizationCreate(organization_dto, user_id) {
+    static toOrganizationCreate(organization_payload, created_by) {
         return {
-            name: organization_dto.name,
-            primaryAddress: organization_dto.primary_address,
-            currencyCode: organization_dto.currency_code,
-            countryCode: organization_dto.country_code,
-            createdBy: user_id
+            name: organization_payload.name,
+            primaryAddress: organization_payload.primary_address,
+            currencyCode: organization_payload.currency_code,
+            countryCode: organization_payload.country_code,
+            createdBy: created_by
         }
     }
 }

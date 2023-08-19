@@ -19,12 +19,30 @@ class UserService {
     }
 
 
-    async getAnUserWithOrganization({user_id}) {
-        const user = await UserDao.getAnUserWithOrganization({user_id});
+    async getUserById({user_id, include_organization_details = false}) {
+        let user;
+        if (include_organization_details) {
+            user = await UserDao.getUserByIdWithOrganization({user_id})
+        } else {
+            user = await UserDao.getUserById({user_id})
+        }
         if (user) {
             return UserDTO.toUserDTO(user);
         }
         throw new DataNotFoundError();
+    }
+
+    async getUserByClientId({client_id, include_organization_details = false}) {
+        let user;
+        if (include_organization_details) {
+            user = await UserDao.getUserByClientIdWithOrganization({client_id})
+        } else {
+            user = await UserDao.getUserByClientId({client_id})
+        }
+        if (user) {
+            return UserDTO.toUserDTO(user);
+        }
+        return null
     }
 }
 
