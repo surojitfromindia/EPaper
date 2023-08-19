@@ -1,19 +1,16 @@
 import {OrganizationService} from "../../Services/index.js";
+import {SuccessErrorWrapper} from "../../Utils/SuccessErrorWrapper.js";
 
 
-const registerOrganization = async (req, res) => {
+let registerOrganization = async (req) => {
     const body = req.body;
     const client_info = req.clientInfo;
     const organization = await OrganizationService.registerOrganization({organization_details: body, client_info});
-    res.status(201).json({organization});
+    return {organization};
 }
+registerOrganization = SuccessErrorWrapper(registerOrganization, 201)
 
-const getAllOrganizations = async (req, res) => {
-    const organizations = await OrganizationService.getAllOrganizations();
-    res.status(200).json({organizations});
-}
 
 export {
     registerOrganization,
-    getAllOrganizations
-} 
+}

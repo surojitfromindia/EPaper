@@ -38,6 +38,14 @@ class GeneralUserService {
         return generalUserService;
     }
 
+    static async findByUserId(user_id) {
+        const user = await GeneralUserDao.findUserById({user_id})
+        if (user) {
+            return user
+        }
+        throw new DataNotFoundError()
+    }
+
     async #findByEmail() {
         const user = await GeneralUserDao.findByEmail({email: this.#email})
         if (user) {
@@ -60,14 +68,6 @@ class GeneralUserService {
             throw new UserCredentialMismatchError()
         }
 
-    }
-
-    static async findByUserId(user_id) {
-        const user = await GeneralUserDao.findUserById({user_id})
-        if (user) {
-            return user
-        }
-        throw new DataNotFoundError()
     }
 
 

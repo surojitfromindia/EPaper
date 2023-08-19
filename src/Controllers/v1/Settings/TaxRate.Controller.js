@@ -1,40 +1,49 @@
 import {TaxRateService} from "../../../Services/index.js";
+import {SuccessErrorWrapper} from "../../../Utils/SuccessErrorWrapper.js";
 
 
-const create = async (req, res) => {
+let create = async (req) => {
+    const clientInfo = req.clientInfo
     const body = req.body;
-    const userId = 1;
-    const organizationId = 1;
     const createTaxRate = await TaxRateService.create({
         tax_rate_details: body,
-        user_id: userId,
-        organization_id: organizationId
+        client_info: clientInfo,
     });
-    res.status(201).json({tax_rate: createTaxRate});
+    return {tax_rate: createTaxRate}
 }
+create = SuccessErrorWrapper(create, 201)
 
-const getAllTaxRates = async (req, res) => {
-    const organizationId = 1;
-    const tax_rates = await TaxRateService.getAllTaxRates({organization_id: organizationId});
-    res.status(200).json({tax_rates});
+
+let getAllTaxRates = async (req) => {
+    const clientInfo = req.clientInfo
+    const tax_rates = await TaxRateService.getAllTaxRates({client_info: clientInfo});
+    return {tax_rates}
 }
-const getATaxRate = async (req, res) => {
+getAllTaxRates = SuccessErrorWrapper(getAllTaxRates, 200)
+
+
+let getATaxRate = async (req) => {
+    const clientInfo = req.clientInfo
     const taxRateId = req.params.taxRateId;
-    const organizationId = 1;
-    const tax_rate = await TaxRateService.getATaxRate({tax_rate_id: taxRateId, organization_id: organizationId});
-    res.status(200).json({tax_rate})
+    const tax_rate = await TaxRateService.getATaxRate({tax_rate_id: taxRateId, client_info: clientInfo});
+    return {tax_rate}
+
 }
-const updateATaxRate = async (req, res) => {
+getATaxRate = SuccessErrorWrapper(getATaxRate, 200)
+
+let updateATaxRate = async (req) => {
+    const clientInfo = req.clientInfo
     const body = req.body;
     const taxRateId = req.params.taxRateId;
-    const organizationId = 1;
     const updatedTaxRate = await TaxRateService.updateATaxRate({
         tax_rate_details: body,
         tax_rate_id: taxRateId,
-        organization_id: organizationId
+        client_info: clientInfo
     });
-    res.status(201).json({tax_rate: updatedTaxRate});
+    return {tax_rate: updatedTaxRate}
 }
+updateATaxRate = SuccessErrorWrapper(updateATaxRate, 204)
+
 
 export {
     create,

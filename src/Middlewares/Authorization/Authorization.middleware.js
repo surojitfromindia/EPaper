@@ -24,16 +24,19 @@ const authorizeClient = async (req, res, next) => {
         }
         // try to find user information
         const clientInfo = {
-            ...basicClientInfo
+            ...basicClientInfo,
+            userId: null,
+            organizationId: null,
+            userOrganizations: [],
         };
         const userDetails = await UserService.getUserByClientId({
             client_id: basicClientInfo.clientId,
             include_organization_details: true
         })
-        // const activeOrganizations = userDetails?.organization_working_details ?? [];
-        if (userDetails) {
-            clientInfo.userId = userDetails.user_id;
-        }
+        clientInfo.userOrganizations = userDetails?.organization_working_details ?? [];
+        clientInfo.organizationId = req?.query.organization_id ? Number(req.query.organization_id) : null;
+        clientInfo.userId = userDetails.user_id;
+
         req.clientInfo = clientInfo;
         return next()
     } catch (error) {
