@@ -1,7 +1,10 @@
 import jsonWebToken from "jsonwebtoken";
-import {USER_TYPE_JWT_PRIVATE_KEY} from "../Constants/env.js";
-import {InvalidAccessTokenError, MalformedDataError,} from "../Errors/APIErrors/index.js";
-import {CLIENT_TYPE} from "../Constants/ClientType.js";
+import { USER_TYPE_JWT_PRIVATE_KEY } from "../Constants/env.js";
+import {
+  InvalidAccessTokenError,
+  MalformedDataError,
+} from "../Errors/APIErrors/index.js";
+import { CLIENT_TYPE } from "../Constants/ClientType.js";
 
 /**
  * Manage token generation and verification

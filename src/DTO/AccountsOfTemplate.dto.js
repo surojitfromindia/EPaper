@@ -1,5 +1,5 @@
 class AccountsTemplateDTO {
-  static toAccountsOfTemplateDTO(account) {
+  static toAccountsOfTemplate(account) {
     const account_dto = {
       account_id: account.id,
       name: account.name,
@@ -10,21 +10,21 @@ class AccountsTemplateDTO {
     if (account.accountParentId) {
       account_dto.account_parent_id = account.accountParentId;
       if (account.AccountParent)
-        account_dto.account_parent = this.toAccountsOfTemplateDTO(
+        account_dto.account_parent = this.toAccountsOfTemplate(
           account.AccountParent,
         );
     }
     if (account.accountGroupId) {
       account_dto.account_group_id = account.accountGroupIdId;
       if (account.AccountGroup)
-        account_dto.account_group = this.toAccountsOfTemplateDTO(
+        account_dto.account_group = this.toAccountsOfTemplate(
           account.AccountGroup,
         );
     }
     if (account.accountTypeId) {
       account_dto.account_type_id = account.accountTypeId;
       if (account.AccountType)
-        account_dto.account_type = this.toAccountsOfTemplateDTO(
+        account_dto.account_type = this.toAccountsOfTemplate(
           account.AccountType,
         );
     }

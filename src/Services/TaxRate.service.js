@@ -21,7 +21,7 @@ class TaxRateService {
         { transaction: t1 },
       );
     });
-    return TaxRateDTO.toTaxRateDTO(created_user);
+    return TaxRateDTO.toTaxRate(created_user);
   }
 
   async getAllTaxRates({ client_info }) {
@@ -29,7 +29,7 @@ class TaxRateService {
     const tax_rates = await TaxRateDao.getAll({
       organization_id: organizationId,
     });
-    return tax_rates.map((user) => TaxRateDTO.toTaxRateDTO(user));
+    return tax_rates.map((user) => TaxRateDTO.toTaxRate(user));
   }
 
   async getATaxRate({ tax_rate_id, client_info }) {
@@ -39,7 +39,7 @@ class TaxRateService {
       organization_id: organizationId,
     });
     if (taxRate) {
-      return TaxRateDto.toTaxRateDTO(taxRate);
+      return TaxRateDto.toTaxRate(taxRate);
     }
     throw new DataNotFoundError();
   }
@@ -53,7 +53,7 @@ class TaxRateService {
       organization_id: client_info.organizationId,
     });
     if (taxRate) {
-      return TaxRateDto.toTaxRateDTO(taxRate);
+      return TaxRateDto.toTaxRate(taxRate);
     }
     throw new DataNotFoundError();
   }

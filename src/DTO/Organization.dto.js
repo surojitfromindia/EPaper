@@ -1,7 +1,7 @@
 import { UserDTO } from "./index.js";
 
 class OrganizationDTO {
-  static toOrganizationDTO(organization) {
+  static toOrganization(organization) {
     const return_dto = {
       name: organization.name,
       primary_address: organization.primaryAddress,
@@ -11,9 +11,7 @@ class OrganizationDTO {
       created_by: organization.createdBy,
     };
     if (organization.createdByUser) {
-      return_dto.created_by_user = UserDTO.toUserDTO(
-        organization.createdByUser,
-      );
+      return_dto.created_by_user = UserDTO.toUser(organization.createdByUser);
     }
     return return_dto;
   }

@@ -58,7 +58,7 @@ class AccountsOfTemplateService {
           { account_details: newAccountDetails },
           { transaction: t1 },
         );
-        return AccountsOfTemplateDTO.toAccountsOfTemplateDTO(createdAccount);
+        return AccountsOfTemplateDTO.toAccountsOfTemplate(createdAccount);
       });
     } catch (error) {
       throw error;

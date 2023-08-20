@@ -6,6 +6,7 @@ import AccountsConfigDao from "./AccountsConfig.dao.js";
 import OrganizationsUsersDao from "./OrganizationsUsers.dao.js";
 import TaxRateDao from "./TaxRate.dao.js";
 import AuthorizationDao from "./Authorization.dao.js";
+import RegularItemDao from "./RegularItem.dao.js";
 
 export {
   UserDao,
@@ -16,4 +17,5 @@ export {
   OrganizationsUsersDao,
   TaxRateDao,
   AuthorizationDao,
+  RegularItemDao,
 };

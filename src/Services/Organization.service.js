@@ -27,7 +27,7 @@ class OrganizationService {
         isDefaultOrganization: isFirstOrganization ? true : null, // we are saving this fields as a three-column composite key
       },
     });
-    return OrganizationDTO.toOrganizationDTO(created_organization);
+    return OrganizationDTO.toOrganization(created_organization);
   }
 }
 

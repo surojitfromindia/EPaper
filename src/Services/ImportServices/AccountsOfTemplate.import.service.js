@@ -1,6 +1,10 @@
 import * as XLSX from "xlsx";
-import {readFileSync} from "node:fs";
-import {AccountsConfigDao, AccountsOfTemplateDao, AccountsTemplateDetailsDao,} from "../../DAO/index.js";
+import { readFileSync } from "node:fs";
+import {
+  AccountsConfigDao,
+  AccountsOfTemplateDao,
+  AccountsTemplateDetailsDao,
+} from "../../DAO/index.js";
 import sequelize from "../../Config/DataBase.Config.js";
 
 // here I will use xlsx, read from xlsx and addAccount accounts that belong to a template

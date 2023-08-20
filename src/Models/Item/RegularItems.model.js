@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
-import { OrganizationBasic, User } from "../index.js";
+import { OrganizationBasic, TaxRates, User } from "../index.js";
 
 class RegularItems extends Model {}
 
@@ -18,6 +18,11 @@ RegularItems.init(
       allowNull: false,
       columnName: "name",
     },
+    unit: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      columnName: "unit",
+    },
     productType: {
       type: DataTypes.ENUM("service", "goods"),
       allowNull: false,
@@ -25,7 +30,7 @@ RegularItems.init(
     },
     sellingPrice: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
       columnName: "selling_price",
     },
     sellingDescription: {
@@ -35,7 +40,7 @@ RegularItems.init(
     },
     purchasePrice: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
       columnName: "purchase_price",
     },
     purchaseDescription: {
@@ -43,6 +48,12 @@ RegularItems.init(
       allowNull: true,
       columnName: "purchase_description",
     },
+    itemFor: {
+      type: DataTypes.ENUM("sales", "purchase", "sales_and_purchase"),
+      allowNull: false,
+      columnName: "item_for",
+    },
+
     status: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -55,6 +66,14 @@ RegularItems.init(
   },
 );
 
+RegularItems.belongsTo(TaxRates, {
+  foreignKey: {
+    allowNull: false,
+    columnName: "tax_rate_id",
+    name: "taxRateId",
+  },
+  as: "taxRate",
+});
 RegularItems.belongsTo(User, {
   foreignKey: {
     allowNull: false,

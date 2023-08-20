@@ -1,7 +1,7 @@
 import { OrganizationDTO, UserDTO } from "./index.js";
 
 class OrganizationsUsersDTO {
-  static toOrganizationsUsersDTO(organization_user) {
+  static toOrganizationsUsers(organization_user) {
     const return_dto = {
       id: organization_user.id,
       job_status: organization_user.jobStatus,
@@ -14,10 +14,10 @@ class OrganizationsUsersDTO {
       accepted_on: organization_user.acceptedOn,
     };
     if (organization_user.user) {
-      return_dto.user = UserDTO.toUserDTO(organization_user.user);
+      return_dto.user = UserDTO.toUser(organization_user.user);
     }
     if (organization_user.organizationBasic) {
-      return_dto.organization = OrganizationDTO.toOrganizationDTO(
+      return_dto.organization = OrganizationDTO.toOrganization(
         organization_user.organizationBasic,
       );
     }

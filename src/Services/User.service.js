@@ -10,12 +10,12 @@ class UserService {
     const createdUser = await sequelize.transaction(async (t1) => {
       return await UserDao.create({ user: newUser }, { transaction: t1 });
     });
-    return UserDTO.toUserDTO(createdUser);
+    return UserDTO.toUser(createdUser);
   }
 
   async getAllUsers() {
     const users = await UserDao.getAll();
-    return users.map((user) => UserDTO.toUserDTO(user));
+    return users.map((user) => UserDTO.toUser(user));
   }
 
   async getUserById({ user_id, include_organization_details = false }) {
@@ -26,7 +26,7 @@ class UserService {
       user = await UserDao.getUserById({ user_id });
     }
     if (user) {
-      return UserDTO.toUserDTO(user);
+      return UserDTO.toUser(user);
     }
     throw new DataNotFoundError();
   }
@@ -39,7 +39,7 @@ class UserService {
       user = await UserDao.getUserByClientId({ client_id });
     }
     if (user) {
-      return UserDTO.toUserDTO(user);
+      return UserDTO.toUser(user);
     }
     return null;
   }

@@ -3,6 +3,7 @@ import OrganizationDTO from "./Organization.dto.js";
 import AccountsOfTemplateDTO from "./AccountsOfTemplate.dto.js";
 import OrganizationsUsersDTO from "./OrganizationsUsers.dto.js";
 import TaxRateDTO from "./TaxRate.dto.js";
+import RegularItemDto from "./RegularItem.dto.js";
 
 export {
   UserDTO,
@@ -10,4 +11,5 @@ export {
   AccountsOfTemplateDTO,
   OrganizationsUsersDTO,
   TaxRateDTO,
+  RegularItemDto,
 };
