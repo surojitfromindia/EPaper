@@ -1,34 +1,34 @@
-import {AccountsOfTemplate} from '../Models/index.js';
+import { AccountsOfTemplate } from "../Models/index.js";
 import sequelize from "../Config/DataBase.Config.js";
-import {QueryTypes} from "@sequelize/core";
+import { QueryTypes } from "@sequelize/core";
 
 class AccountsTemplateDao {
-    async create({account_details}, {transaction}) {
-        const account = await AccountsOfTemplate.create(account_details, {
-            transaction
-        });
-        return await AccountsOfTemplate.findByPk(account.get("id"), {
-            include: [{model: AccountsOfTemplate, as: "AccountParent"},
-                {model: AccountsOfTemplate, as: "AccountGroup"},
-                {model: AccountsOfTemplate, as: "AccountType"}
-            ]
-        });
-    }
+  async create({ account_details }, { transaction }) {
+    const account = await AccountsOfTemplate.create(account_details, {
+      transaction,
+    });
+    return await AccountsOfTemplate.findByPk(account.get("id"), {
+      include: [
+        { model: AccountsOfTemplate, as: "AccountParent" },
+        { model: AccountsOfTemplate, as: "AccountGroup" },
+        { model: AccountsOfTemplate, as: "AccountType" },
+      ],
+    });
+  }
 
-    async get({account_id}) {
-        return await AccountsOfTemplate.findByPk(account_id)
-    }
+  async get({ account_id }) {
+    return await AccountsOfTemplate.findByPk(account_id);
+  }
 
+  async dumpAccounts({ array_of_account_details }, { transaction }) {
+    return await AccountsOfTemplate.bulkCreate(array_of_account_details, {
+      transaction,
+    });
+  }
 
-    async dumpAccounts({array_of_account_details}, {transaction}) {
-        return await AccountsOfTemplate.bulkCreate(array_of_account_details, {
-            transaction
-        });
-    }
-
-    async createAccountsFromDump({account_template_id}, {transaction}) {
-        return await sequelize.query(
-            `
+  async createAccountsFromDump({ account_template_id }, { transaction }) {
+    return await sequelize.query(
+      `
                 with recursive sub_accounts as (
                     -- non recursive part
                     select a1.name,
@@ -64,13 +64,13 @@ class AccountsTemplateDao {
                     depth             = sb.depth
                 from sub_accounts sb
                 where ac.id = sb.id;
-            `, {
-                transaction,
-                type: QueryTypes.UPDATE
-            }
-        )
-    }
-
+            `,
+      {
+        transaction,
+        type: QueryTypes.UPDATE,
+      },
+    );
+  }
 }
 
 export default Object.freeze(new AccountsTemplateDao());

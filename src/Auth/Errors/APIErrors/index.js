@@ -4,8 +4,8 @@ import InvalidAccessTokenError from "./InvalidAccessTokenError.js";
 import MalformedDataError from "./MalformedDataError.js";
 
 export {
-    UserCredentialMismatchError,
-    DataNotFoundError,
-    InvalidAccessTokenError,
-    MalformedDataError
-}
+  UserCredentialMismatchError,
+  DataNotFoundError,
+  InvalidAccessTokenError,
+  MalformedDataError,
+};

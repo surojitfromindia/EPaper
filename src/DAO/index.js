@@ -8,12 +8,12 @@ import TaxRateDao from "./TaxRate.dao.js";
 import AuthorizationDao from "./Authorization.dao.js";
 
 export {
-    UserDao,
-    OrganizationDao,
-    AccountsOfTemplateDao,
-    AccountsTemplateDetailsDao,
-    AccountsConfigDao,
-    OrganizationsUsersDao,
-    TaxRateDao,
-    AuthorizationDao
-}
+  UserDao,
+  OrganizationDao,
+  AccountsOfTemplateDao,
+  AccountsTemplateDetailsDao,
+  AccountsConfigDao,
+  OrganizationsUsersDao,
+  TaxRateDao,
+  AuthorizationDao,
+};

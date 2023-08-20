@@ -1,7 +1,7 @@
 class CustomServerError extends Error {
-    constructor(message, error_code) {
-        super(message);
-    }
+  constructor(message) {
+    super(message);
+  }
 }
 
-export default CustomServerError
+export default CustomServerError;

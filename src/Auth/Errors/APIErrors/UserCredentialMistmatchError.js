@@ -1,7 +1,7 @@
 class UserCredentialMismatchError extends Error {
-    constructor() {
-        super("Credentials mismatch");
-    }
+  constructor() {
+    super("Credentials mismatch");
+  }
 }
 
-export default UserCredentialMismatchError
+export default UserCredentialMismatchError;

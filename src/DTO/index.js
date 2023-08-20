@@ -5,9 +5,9 @@ import OrganizationsUsersDTO from "./OrganizationsUsers.dto.js";
 import TaxRateDTO from "./TaxRate.dto.js";
 
 export {
-    UserDTO,
-    OrganizationDTO,
-    AccountsOfTemplateDTO,
-    OrganizationsUsersDTO,
-    TaxRateDTO
-}
+  UserDTO,
+  OrganizationDTO,
+  AccountsOfTemplateDTO,
+  OrganizationsUsersDTO,
+  TaxRateDTO,
+};

@@ -1,7 +1,7 @@
 class DataNotFoundError extends Error {
-    constructor(message) {
-        super(message ?? 'No data found');
-    }
+  constructor(message) {
+    super(message ?? "No data found");
+  }
 }
 
-export default DataNotFoundError
+export default DataNotFoundError;

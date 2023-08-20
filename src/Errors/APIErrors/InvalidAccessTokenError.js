@@ -1,7 +1,7 @@
 class InvalidAccessTokenError extends Error {
-    constructor() {
-        super('Access token is not valid');
-    }
+  constructor() {
+    super("Access token is not valid");
+  }
 }
 
-export default InvalidAccessTokenError
+export default InvalidAccessTokenError;

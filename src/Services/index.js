@@ -5,9 +5,9 @@ import AccountsTemplateImportService from "./ImportServices/AccountsOfTemplate.i
 import TaxRateService from "./TaxRate.service.js";
 
 export {
-    UserService,
-    OrganizationService,
-    AccountsTemplateService,
-    AccountsTemplateImportService,
-    TaxRateService
-}
+  UserService,
+  OrganizationService,
+  AccountsTemplateService,
+  AccountsTemplateImportService,
+  TaxRateService,
+};
