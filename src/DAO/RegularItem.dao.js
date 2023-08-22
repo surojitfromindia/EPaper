@@ -32,13 +32,17 @@ class RegularItemDao {
     });
   }
 
-  async updateItemDetails({ item_details, item_id, organization_id }) {
+  async updateItemDetails(
+    { item_details, item_id, organization_id },
+    { transaction },
+  ) {
     await RegularItems.update(item_details, {
       where: {
         id: item_id,
         organization_id,
         status: "active",
       },
+      transaction,
     });
     return await this.get({ item_id, organization_id });
   }

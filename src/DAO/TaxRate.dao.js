@@ -25,12 +25,16 @@ class TaxRateDao {
     });
   }
 
-  async updateTaxRate({ tax_rate_details, tax_rate_id, organization_id }) {
+  async updateTaxRate(
+    { tax_rate_details, tax_rate_id, organization_id },
+    { transaction },
+  ) {
     await TaxRates.update(tax_rate_details, {
       where: {
         id: tax_rate_id,
         organization_id,
       },
+      transaction,
     });
     return await this.get({ tax_rate_id, organization_id });
   }

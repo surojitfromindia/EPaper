@@ -47,13 +47,19 @@ class TaxRateService {
   async updateATaxRate({ tax_rate_id, tax_rate_details, client_info }) {
     const taxRateDetailsFromPayload =
       TaxRateDTO.toTaxRateUpdate(tax_rate_details);
-    const taxRate = await TaxRateDao.updateTaxRate({
-      tax_rate_details: taxRateDetailsFromPayload,
-      tax_rate_id,
-      organization_id: client_info.organizationId,
+    const updatedTaxRate = await sequelize.transaction(async (t1) => {
+      return await TaxRateDao.updateTaxRate(
+        {
+          tax_rate_details: taxRateDetailsFromPayload,
+          tax_rate_id,
+          organization_id: client_info.organizationId,
+        },
+        { transaction: t1 },
+      );
     });
-    if (taxRate) {
-      return TaxRateDto.toTaxRate(taxRate);
+
+    if (updatedTaxRate) {
+      return TaxRateDto.toTaxRate(updatedTaxRate);
     }
     throw new DataNotFoundError();
   }

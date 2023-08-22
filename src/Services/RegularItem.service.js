@@ -42,13 +42,19 @@ class RegularItemService {
 
   async updateAnItem({ item_id, item_details, client_info }) {
     const taxRateDetailsFromPayload = RegularItemDto.toItemUpdate(item_details);
-    const item = await RegularItemDao.updateItemDetails({
-      tax_rate_details: taxRateDetailsFromPayload,
-      item_id,
-      organization_id: client_info.organizationId,
+    const updatedItem = await sequelize.transaction(async (t1) => {
+      return await RegularItemDao.updateItemDetails(
+        {
+          tax_rate_details: taxRateDetailsFromPayload,
+          item_id,
+          organization_id: client_info.organizationId,
+        },
+        { transaction: t1 },
+      );
     });
-    if (item) {
-      return RegularItemDto.toItem(item);
+
+    if (updatedItem) {
+      return RegularItemDto.toItem(updatedItem);
     }
     throw new DataNotFoundError();
   }
