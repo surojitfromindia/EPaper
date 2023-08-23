@@ -30,10 +30,16 @@ AccountTemplateDetails.init(
       columnName: "sector",
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("active", "deactive"),
       allowNull: false,
       columnName: "status",
       defaultValue: "active",
+    },
+    isDefaultTemplate: {
+      type: DataTypes.BOOLEAN,
+      columnName: "is_default",
+      unique: true,
+      allowNull: true,
     },
   },
   {

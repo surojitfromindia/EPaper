@@ -6,6 +6,7 @@ import { AccountsConfig } from "./Account/AccountsConfig.model.js";
 import { OrganizationsUsers } from "./OrganizationsUsers.model.js";
 import { TaxRates } from "./Tax/TaxRates.model.js";
 import { RegularItems } from "./Item/RegularItems.model.js";
+import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model.js";
 
 await User.sync({ alter: true, force: false });
 await OrganizationBasic.sync({ alter: true, force: false });
@@ -15,6 +16,7 @@ await AccountsConfig.sync({ alter: true, force: false });
 // await OrganizationsUsers.sync({alter:false, force: false})
 await TaxRates.sync({ alter: true, force: false });
 await RegularItems.sync({ alter: true, force: false });
+await AccountsOfOrganization.sync({ alter: true, force: false });
 
 export {
   User,
@@ -25,4 +27,5 @@ export {
   AccountsConfig,
   TaxRates,
   RegularItems,
+  AccountsOfOrganization,
 };

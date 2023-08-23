@@ -2,7 +2,7 @@ import { AccountsOfTemplate } from "../Models/index.js";
 import sequelize from "../Config/DataBase.Config.js";
 import { QueryTypes } from "@sequelize/core";
 
-class AccountsTemplateDao {
+class AccountsOfTemplateDao {
   async create({ account_details }, { transaction }) {
     const account = await AccountsOfTemplate.create(account_details, {
       transaction,
@@ -71,6 +71,14 @@ class AccountsTemplateDao {
       },
     );
   }
+
+  async getAccountsByTemplateId({ template_id }) {
+    return await AccountsOfTemplate.findAll({
+      where: {
+        accountTemplateId: template_id,
+      },
+    });
+  }
 }
 
-export default Object.freeze(new AccountsTemplateDao());
+export default Object.freeze(new AccountsOfTemplateDao());

@@ -12,7 +12,7 @@ class TokenIntrospectionService {
    * @param {String} token_string
    */
   constructor(token_string) {
-    // here we pass a class of token then we call decoding on that to get the token
+    // here we pass a class of token then we call decoding on that to getById the token
     const token = new UserAuthToken(token_string);
     const decodedToken = token.getNonVerifiedDecodedToken();
     this.token = token;

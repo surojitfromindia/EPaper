@@ -19,7 +19,7 @@ class AccountsOfTemplateService {
     newAccountDetails.organizationId = organizationId;
 
     // find the account template
-    const accountTemplateDetails = await AccountsTemplateDetailsDao.get({
+    const accountTemplateDetails = await AccountsTemplateDetailsDao.getById({
       template_id: accountTemplateId,
       organization_id: organizationId,
     });
@@ -32,7 +32,7 @@ class AccountsOfTemplateService {
         //set default values
         let accountDepth = 0;
         let accountType = "group";
-        //check if a parent id is provided, and we get the depth of the parent and add 1 to it
+        //check if a parent id is provided, and we getById the depth of the parent and add 1 to it
         if (newAccountDetails.accountParentId) {
           const parentAccountDetails = await AccountsOfTemplateDao.get({
             account_id: newAccountDetails.accountParentId,

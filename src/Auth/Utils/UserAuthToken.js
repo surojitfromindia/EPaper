@@ -56,7 +56,7 @@ class UserAuthToken {
     }
   }
 
-  // get the decoded token
+  // getById the decoded token
   getNonVerifiedDecodedToken() {
     const decodePayload = jsonWebToken.decode(this.#token);
     if (decodePayload === null) {
