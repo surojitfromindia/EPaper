@@ -16,7 +16,6 @@ class AccountsOfTemplateService {
       AccountsOfTemplateDTO.toAccountsOfTemplateCreate(account_details);
     let accountTemplateId = newAccountDetails.accountTemplateId;
     newAccountDetails.createdBy = createdBy;
-    newAccountDetails.organizationId = organizationId;
 
     // find the account template
     const accountTemplateDetails = await AccountsTemplateDetailsDao.getById({

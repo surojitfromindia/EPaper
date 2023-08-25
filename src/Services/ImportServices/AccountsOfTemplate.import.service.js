@@ -81,7 +81,7 @@ class AccountsOfTemplateImportService {
           accountTemplateId: newAccountTemplateId,
           type: "group",
         },
-      ].map((acc) => ({ ...acc, createdBy, organizationId }));
+      ].map((acc) => ({ ...acc, createdBy }));
       rawEntries
         .filter((acc) => acc.name)
         .forEach((acc) => {

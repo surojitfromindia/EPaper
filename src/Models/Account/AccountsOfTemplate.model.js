@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
-import { AccountTemplateDetails, OrganizationBasic, User } from "../index.js";
+import { AccountTemplateDetails, User } from "../index.js";
 
 class AccountsOfTemplate extends Model {}
 
@@ -89,14 +89,6 @@ AccountsOfTemplate.belongsTo(User, {
     name: "createdBy",
   },
   as: "createdByUser",
-});
-AccountsOfTemplate.belongsTo(OrganizationBasic, {
-  foreignKey: {
-    allowNull: false,
-    columnName: "organization_id",
-    name: "organizationId",
-  },
-  as: "organization",
 });
 
 await AccountsOfTemplate.sync({
