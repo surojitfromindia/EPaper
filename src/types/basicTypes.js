@@ -14,3 +14,8 @@
  * @desc A sequelize transaction
  * @typedef {import('@sequelize/core').Transaction} SequelizeTransaction
  */
+
+/**
+ * @desc type for union between undefined and null
+ * @typedef {null|undefined} UndefinedOrNull
+ */

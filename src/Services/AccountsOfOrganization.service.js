@@ -7,6 +7,8 @@ import {
 import { AccountsOfOrganizationDTO } from "../DTO/index.js";
 import { DataNotFoundError } from "../Errors/APIErrors/index.js";
 import ld from "lodash";
+import { AccountsTree } from "../Utils/AccoutsTree.js";
+import AccountsOfOrganizationDto from "../DTO/AccountsOfOrganization.dto.js";
 
 class AccountsOfOrganizationService {
   /**
@@ -39,6 +41,7 @@ class AccountsOfOrganizationService {
         // a parent is required as we are only able to add after depth of 1 (from 2)
         const parentAccountDetails = await AccountsOfOrganizationDao.getById({
           account_id: newAccountDetails.accountParentId,
+          organization_id: organizationId,
         });
         if (parentAccountDetails === null) {
           throw new DataNotFoundError("Parent account not found");
@@ -63,6 +66,22 @@ class AccountsOfOrganizationService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getAllAccounts({ as_tree, client_info }) {
+    const organizationId = client_info.organizationId;
+    const accounts = await AccountsOfOrganizationDao.getAccountsFromDepth({
+      organization_id: organizationId,
+      depth: 2,
+    });
+    if (as_tree) {
+      return AccountsTree.createTreeOfOrganizationAccountsAsDTO({
+        accounts: accounts,
+      });
+    }
+    return accounts.map((acc) =>
+      AccountsOfOrganizationDto.toAccountOfOrganization(acc),
+    );
   }
 
   /**

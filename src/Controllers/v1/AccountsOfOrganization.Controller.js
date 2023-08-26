@@ -12,4 +12,15 @@ let addAccountToOrganization = async (req) => {
 };
 addAccountToOrganization = SuccessErrorWrapper(addAccountToOrganization, 201);
 
-export { addAccountToOrganization };
+let getAllAccounts = async (req) => {
+  const clientInfo = req.clientInfo;
+  const showAsTree = req.query["show_as_tree"] === "true" && true;
+  const accounts = await AccountsOfOrganizationService.getAllAccounts({
+    client_info: clientInfo,
+    as_tree: showAsTree,
+  });
+  return { accounts };
+};
+getAllAccounts = SuccessErrorWrapper(getAllAccounts, 200);
+
+export { addAccountToOrganization, getAllAccounts };

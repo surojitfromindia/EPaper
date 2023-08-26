@@ -1,4 +1,5 @@
 import { AccountsOfOrganization } from "../Models/index.js";
+import { Op } from "@sequelize/core";
 
 class AccountsOfOrganizationDao {
   async create({ account_details }, { transaction }) {
@@ -14,8 +15,37 @@ class AccountsOfOrganizationDao {
     });
   }
 
-  async getById({ account_id }) {
-    return await AccountsOfOrganization.findByPk(account_id);
+  async getById({ account_id, organization_id }) {
+    return await AccountsOfOrganization.findOne({
+      where: {
+        id: account_id,
+        organizationId: organization_id,
+      },
+    });
+  }
+
+  async getAccountsFromDepth({ organization_id, depth = 2 }) {
+    return await AccountsOfOrganization.findAll({
+      order: [["id", "ASC"]],
+      where: {
+        organizationId: organization_id,
+        depth: {
+          [Op.gte]: depth,
+        },
+      },
+      include: [
+        {
+          required: true,
+          model: AccountsOfOrganization,
+          as: "AccountParent",
+        },
+        {
+          required: true,
+          model: AccountsOfOrganization,
+          as: "AccountType",
+        },
+      ],
+    });
   }
 
   async createAccounts({ accounts }, { transaction }) {
@@ -31,15 +61,6 @@ class AccountsOfOrganizationDao {
     return await AccountsOfOrganization.bulkCreate(accounts, {
       transaction,
       updateOnDuplicate: update_on_duplicate,
-      raw,
-    });
-  }
-
-  async getAccountsByTemplateId({ template_id }, { raw = false }) {
-    return await AccountsOfOrganization.findAll({
-      where: {
-        accountTemplateId: template_id,
-      },
       raw,
     });
   }
