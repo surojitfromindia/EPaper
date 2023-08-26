@@ -1,13 +1,14 @@
-// i want to access the database from here in unit call
-
 import { OrganizationBasic, User } from "../Models/index.js";
 
 class OrganizationDao {
-  async create({ organization_details }) {
-    const organization_basic =
-      await OrganizationBasic.create(organization_details);
+  async create({ organization_details }, { transaction }) {
+    const organization_basic = await OrganizationBasic.create(
+      organization_details,
+      { transaction },
+    );
     return await OrganizationBasic.findByPk(organization_basic.get("id"), {
       include: [{ model: User, as: "createdByUser" }],
+      transaction,
     });
   }
 

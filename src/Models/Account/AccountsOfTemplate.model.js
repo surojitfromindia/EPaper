@@ -91,8 +91,4 @@ AccountsOfTemplate.belongsTo(User, {
   as: "createdByUser",
 });
 
-await AccountsOfTemplate.sync({
-  force: true,
-});
-
 export { AccountsOfTemplate };

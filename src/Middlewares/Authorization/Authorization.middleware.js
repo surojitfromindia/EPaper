@@ -23,6 +23,9 @@ const authorizeClient = async (req, res, next) => {
       clientName: introspectionResult.clientName,
     };
     // try to find user information
+    /**
+     * @type ClientInfoType
+     * */
     const clientInfo = {
       ...basicClientInfo,
       userId: null,

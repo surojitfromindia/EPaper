@@ -26,19 +26,21 @@ class AccountsOfOrganizationDao {
 
   async bulkUpdateAccounts(
     { accounts },
-    { transaction, update_on_duplicate = [] },
+    { transaction, update_on_duplicate = [], raw = false },
   ) {
     return await AccountsOfOrganization.bulkCreate(accounts, {
       transaction,
       updateOnDuplicate: update_on_duplicate,
+      raw,
     });
   }
 
-  async getAccountsByTemplateId({ template_id }) {
+  async getAccountsByTemplateId({ template_id }, { raw = false }) {
     return await AccountsOfOrganization.findAll({
       where: {
         accountTemplateId: template_id,
       },
+      raw,
     });
   }
 }

@@ -1,33 +1,67 @@
 // here I handle business logic
 import { OrganizationDao, OrganizationsUsersDao } from "../DAO/index.js";
 import { OrganizationDTO } from "../DTO/index.js";
+import sequelize from "../Config/DataBase.Config.js";
+import AccountsOfOrganizationService from "./AccountsOfOrganization.service.js";
 
 class OrganizationService {
+  /**
+   * Create a new organization.
+   * @param {Object} organization_details
+   * @param {ClientInfoType} client_info
+   * @returns {Promise<{country_code: *, organization_id: *, name: *, primary_address: *, created_by: *, currency_code: *}>}
+   */
   async registerOrganization({ organization_details, client_info }) {
     const createdBy = client_info.userId;
-    const new_organization = OrganizationDTO.toOrganizationCreate(
-      organization_details,
-      createdBy,
-    );
-    const created_organization = await OrganizationDao.create({
-      organization_details: new_organization,
-    });
-    // after creating an organization, check if the client has any previous organization,
-    // if not, we are setting this organization as default for this client.
-    const isFirstOrganization = client_info.userOrganizations.length === 0;
+    const newOrganization =
+      OrganizationDTO.toOrganizationCreate(organization_details);
+    newOrganization.createdBy = createdBy;
+    const createdOrganization = await sequelize.transaction(async (t1) => {
+      // create an organization with basic fields
+      const organizationBasic = await OrganizationDao.create(
+        {
+          organization_details: newOrganization,
+        },
+        { transaction: t1 },
+      );
+      const organizationId = organizationBasic.get("id");
+      const sector = organizationBasic.get("sector");
+      const countryCode = organizationBasic.get("countryCode");
 
-    // save organization-user association, this user will be considered as admin
-    await OrganizationsUsersDao.create({
-      organization_user_details: {
+      // after creating an organization, check if the client has any previous organization,
+      // if not, we are setting this organization as default for this client.
+      const isFirstOrganization = client_info.userOrganizations.length === 0;
+
+      // save organization-user association, this user will be considered as admin
+      const organizationUserDetails = {
         jobStatus: "working",
         status: "active",
         userId: createdBy,
         roleId: "admin",
-        organizationId: created_organization.get("id"),
+        organizationId: organizationBasic.get("id"),
         isDefaultOrganization: isFirstOrganization ? true : null, // we are saving this fields as a three-column composite key
-      },
+      };
+      await OrganizationsUsersDao.create(
+        {
+          organization_user_details: organizationUserDetails,
+        },
+        { transaction: t1 },
+      );
+
+      // create a copy of accounts
+      await AccountsOfOrganizationService.copyAccountsFromTemplateToOrganization(
+        {
+          organization_id: organizationId,
+          country_code: countryCode,
+          sector,
+          client_info,
+        },
+        { transaction: t1 },
+      );
+      return organizationBasic;
+      // end
     });
-    return OrganizationDTO.toOrganization(created_organization);
+    return OrganizationDTO.toOrganization(createdOrganization);
   }
 }
 

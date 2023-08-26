@@ -23,10 +23,11 @@ class AccountsOfTemplateImportService {
     const { accountTemplate } = await sequelize.transaction(async (t) => {
       const templateDetails = {
         name: "Template 1",
-        country: "India",
+        countryCode: "IN",
         sector: "IT",
         createdBy,
         organizationId,
+        isDefaultTemplate: true,
       };
       const newAccountTemplate = await AccountsTemplateDetailsDao.create(
         { template_details: templateDetails },

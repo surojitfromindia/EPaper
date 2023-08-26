@@ -1,6 +1,11 @@
 import { OrganizationDTO, UserDTO } from "./index.js";
 
 class OrganizationsUsersDTO {
+  /**
+   *
+   * @param {Object} organization_user
+   * @returns {OrganizationUserDetailsTypeAsDTO}
+   */
   static toOrganizationsUsers(organization_user) {
     const return_dto = {
       id: organization_user.id,

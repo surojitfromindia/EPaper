@@ -8,16 +8,22 @@ import { TaxRates } from "./Tax/TaxRates.model.js";
 import { RegularItems } from "./Item/RegularItems.model.js";
 import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model.js";
 
-await User.sync({ alter: true, force: false });
-await OrganizationBasic.sync({ alter: true, force: false });
-await AccountTemplateDetails.sync({ alter: true, force: false });
-await AccountsOfTemplate.sync({ alter: true, force: false });
-await AccountsConfig.sync({ alter: true, force: false });
-// await OrganizationsUsers.sync({alter:false, force: false})
-await TaxRates.sync({ alter: true, force: false });
-await RegularItems.sync({ alter: true, force: false });
-await AccountsOfOrganization.sync({ alter: true, force: false });
+const force = false;
+const alter = false;
 
+async function syncWithDb() {
+  await User.sync({ alter, force: false });
+  await OrganizationBasic.sync({ alter, force });
+  await AccountTemplateDetails.sync({ alter, force });
+  await AccountsOfTemplate.sync({ alter, force });
+  await AccountsConfig.sync({ alter, force });
+  // await OrganizationsUsers.sync({ alter: false, force: true });
+  await TaxRates.sync({ alter, force });
+  await RegularItems.sync({ alter, force });
+  await AccountsOfOrganization.sync({ alter: false, force: true });
+}
+
+syncWithDb();
 export {
   User,
   OrganizationBasic,

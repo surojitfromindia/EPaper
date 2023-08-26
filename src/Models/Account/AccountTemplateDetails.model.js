@@ -19,10 +19,10 @@ AccountTemplateDetails.init(
       allowNull: false,
       columnName: "name",
     },
-    country: {
+    countryCode: {
       type: DataTypes.STRING,
-      allowNull: true,
-      columnName: "country",
+      allowNull: false,
+      columnName: "country_code",
     },
     sector: {
       type: DataTypes.STRING,

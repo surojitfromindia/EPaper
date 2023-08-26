@@ -42,7 +42,7 @@ class AccountsOfTemplateDao {
                            a1.account_type
                     from "AccountsOfTemplates" as a1
                     where a1.parent_code IS NULL
-                      and account_template_id = 1
+                      and account_template_id = ${account_template_id}
                     union
                     select a2.name,
                            a2.code,
@@ -56,7 +56,7 @@ class AccountsOfTemplateDao {
                     from "AccountsOfTemplates" as a2,
                          sub_accounts sb
                     where sb.code = a2.parent_code
-                      and account_template_id = 1)
+                      and account_template_id = ${account_template_id})
                 update "AccountsOfTemplates" ac
                 set account_parent_id = sb.account_parent_id,
                     account_group_id  = sb.account_group_id,
@@ -72,11 +72,12 @@ class AccountsOfTemplateDao {
     );
   }
 
-  async getAccountsByTemplateId({ template_id }) {
+  async getAccountsByTemplateId({ template_id }, { raw = false }) {
     return await AccountsOfTemplate.findAll({
       where: {
         accountTemplateId: template_id,
       },
+      raw,
     });
   }
 }

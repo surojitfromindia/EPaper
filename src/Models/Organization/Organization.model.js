@@ -28,6 +28,11 @@ OrganizationBasic.init(
       allowNull: false,
       columnName: "country_code",
     },
+    sector: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      columnName: "sector",
+    },
     currencyCode: {
       type: DataTypes.STRING,
       allowNull: false,

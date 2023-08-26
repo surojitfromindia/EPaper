@@ -3,8 +3,10 @@
 import { OrganizationsUsers } from "../Models/index.js";
 
 class OrganizationsUsersDao {
-  async create({ organization_user_details }) {
-    return await OrganizationsUsers.create(organization_user_details, {});
+  async create({ organization_user_details }, { transaction }) {
+    return await OrganizationsUsers.create(organization_user_details, {
+      transaction,
+    });
   }
 
   async getAll() {

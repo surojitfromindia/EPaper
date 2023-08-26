@@ -1,11 +1,7 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
-import {
-  AccountsOfTemplate,
-  AccountTemplateDetails,
-  OrganizationBasic,
-  User,
-} from "../index.js";
+import { AccountTemplateDetails, OrganizationBasic, User } from "../index.js";
+import { AccountsOfTemplate } from "./AccountsOfTemplate.model.js";
 
 class AccountsOfOrganization extends Model {}
 
@@ -110,6 +106,39 @@ AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
     columnName: "origin_account_id",
     name: "originAccountId",
   },
+});
+// account information from a template account.
+AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "origin_account_id",
+    name: "originAccountId",
+  },
+  as: "originAccount",
+});
+AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "origin_account_parent_id",
+    name: "originAccountParentId",
+  },
+  as: "originAccountParent",
+});
+AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "origin_account_type_id",
+    name: "originAccountTypeId",
+  },
+  as: "originAccountType",
+});
+AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "origin_account_group_id",
+    name: "originAccountGroupId",
+  },
+  as: "originAccountGroup",
 });
 
 await AccountsOfOrganization.sync({

@@ -9,6 +9,12 @@ import { DataNotFoundError } from "../Errors/APIErrors/index.js";
 import ld from "lodash";
 
 class AccountsOfOrganizationService {
+  /**
+   * Add a single account to organization
+   * @param {Object} account_details
+   * @param {ClientInfoType} client_info
+   * @returns {Promise<{account_id: *, code: *, depth: *, name: *}>}
+   */
   async addAccount({ account_details, client_info }) {
     const organizationId = client_info.organizationId;
     const createdBy = client_info.userId;
@@ -68,6 +74,15 @@ class AccountsOfOrganizationService {
     }
   }
 
+  /**
+   * At time of organization creation we also create a set of accounts
+   * @param {number} organization_id
+   * @param {string} country_code
+   * @param {sector} sector
+   * @param {ClientInfoType} client_info
+   * @param {SequelizeTransaction} transaction
+   * @returns {Promise<void>}
+   */
   async copyAccountsFromTemplateToOrganization(
     { organization_id, country_code, sector, client_info },
     { transaction },
@@ -88,9 +103,12 @@ class AccountsOfOrganizationService {
     }
     // get the accounts of the template
     const templateAccounts =
-      await AccountsOfTemplateDao.getAccountsByTemplateId({
-        template_id: templateId,
-      });
+      await AccountsOfTemplateDao.getAccountsByTemplateId(
+        {
+          template_id: templateId,
+        },
+        { raw: true },
+      );
 
     // bulk create, then map, the update the accounts of organization
     // before that we create a template for the organization
@@ -98,10 +116,11 @@ class AccountsOfOrganizationService {
       {
         template_details: {
           organizationId: organization_id,
-          userId,
           sector,
-          country: country_code,
+          countryCode: country_code,
           name: `Account template for organization ${organization_id}`,
+          createdBy: userId,
+          originTemplateId: templateId,
         },
       },
       { transaction },
@@ -127,26 +146,36 @@ class AccountsOfOrganizationService {
    * @param {number} new_account_template_id
    * @param {number} organization_id
    * @param {number} user_id
-   * @param {import('@sequelize/core').Transaction} transaction
+   * @param {SequelizeTransaction} transaction
    * @returns {Promise<void>}
    */
   async #createTempAccountsAndMap(
     { template_accounts, new_account_template_id, organization_id, user_id },
     { transaction },
   ) {
+    const newAccounts = template_accounts.map(({ id, ...acc }) => ({
+      ...acc,
+      // information from template, used to correctly linking nodes
+      originAccountId: id,
+      originAccountParentId: acc.accountParentId,
+      originAccountTypeId: acc.accountTypeId,
+      originAccountGroupId: acc.accountGroupId,
+      // common payload
+      accountTemplateId: new_account_template_id,
+      createdBy: user_id,
+      organizationId: organization_id,
+    }));
     // create new accounts by copying the old accounts but replacing the organizationId and createdBy
-    const newCreatedAccounts = await AccountsOfOrganizationDao.createAccounts(
+    let newCreatedAccounts = await AccountsOfOrganizationDao.createAccounts(
       {
-        accounts: template_accounts.map((acc) => ({
-          ...acc,
-          originAccountId: acc.id,
-          accountTemplateId: new_account_template_id,
-          createdBy: user_id,
-          organizationId: organization_id,
-        })),
+        accounts: newAccounts,
       },
       { transaction },
     );
+    newCreatedAccounts = newCreatedAccounts.map((acc) =>
+      acc.get({ plain: true }),
+    );
+
     // after creating the accounts, we replace the accountParentId, accountTypeId, accountGroupId
     // but before that we need to make a key-pair object using lodash
     const newAccountsDic = ld.keyBy(newCreatedAccounts, "originAccountId");
@@ -156,25 +185,26 @@ class AccountsOfOrganizationService {
     // (accountParentId, accountTypeId, accountGroupId)
     const accountUpdateArray = newCreatedAccounts.map((acc) => {
       const updateAccount = {
+        ...acc,
         id: acc.id,
         accountParentId: null,
-        accountGroupId: null,
         accountTypeId: null,
+        accountGroupId: null,
       };
-      const accountParentId = acc.accountParentId;
-      const accountGroupId = acc.accountGroupId;
-      const accountTypeId = acc.accountTypeId;
+      const accountParentId = acc.originAccountParentId;
+      const accountTypeId = acc.originAccountTypeId;
+      const accountGroupId = acc.originAccountGroupId;
       // find and replace, if not found, set as null.
       if (accountParentId) {
         updateAccount.accountParentId =
           newAccountsDic[accountParentId]?.id ?? null;
       }
+      if (accountTypeId) {
+        updateAccount.accountTypeId = newAccountsDic[accountTypeId]?.id ?? null;
+      }
       if (accountGroupId) {
         updateAccount.accountGroupId =
           newAccountsDic[accountGroupId]?.id ?? null;
-      }
-      if (accountTypeId) {
-        updateAccount.accountTypeId = newAccountsDic[accountTypeId]?.id ?? null;
       }
       return updateAccount;
     });
