@@ -126,7 +126,7 @@ class AccountsOfOrganizationService {
       { transaction },
     );
     const newAccountTemplateId = newAccountTemplate.id;
-    await this.#createTempAccountsAndMap(
+    await this.#createAccounts(
       {
         template_accounts: templateAccounts,
         new_account_template_id: newAccountTemplateId,
@@ -142,14 +142,14 @@ class AccountsOfOrganizationService {
   /**
    * copy accounts of a template to the accounts of organization table, this table only store accounts
    * that are used inside the organization
-   * @param template_accounts
+   * @param {Array<Object>} template_accounts
    * @param {number} new_account_template_id
    * @param {number} organization_id
    * @param {number} user_id
    * @param {SequelizeTransaction} transaction
    * @returns {Promise<void>}
    */
-  async #createTempAccountsAndMap(
+  async #createAccounts(
     { template_accounts, new_account_template_id, organization_id, user_id },
     { transaction },
   ) {
@@ -176,14 +176,41 @@ class AccountsOfOrganizationService {
       acc.get({ plain: true }),
     );
 
+    // link those accounts with parent and map.
+    const accountUpdateArray = this.#mapTempAccounts({
+      new_temp_accounts: newCreatedAccounts,
+    });
+
+    // now we bulk update the accounts
+    await AccountsOfOrganizationDao.bulkUpdateAccounts(
+      {
+        accounts: accountUpdateArray,
+      },
+      {
+        transaction,
+        update_on_duplicate: [
+          "accountParentId",
+          "accountGroupId",
+          "accountTypeId",
+        ],
+      },
+    );
+  }
+
+  /**
+   *  Link temporally created accounts with parent-child way and returned the updated accounts.
+   * @param {Array<Object>} new_temp_accounts
+   * @returns {Array<Object>}
+   */
+  #mapTempAccounts({ new_temp_accounts }) {
     // after creating the accounts, we replace the accountParentId, accountTypeId, accountGroupId
     // but before that we need to make a key-pair object using lodash
-    const newAccountsDic = ld.keyBy(newCreatedAccounts, "originAccountId");
+    const newAccountsDic = ld.keyBy(new_temp_accounts, "originAccountId");
 
     // for each account of 'newCreatedAccounts' we find its (accountParentId, accountTypeId, accountGroupId)
     // from 'newAccountsDic' and use 'id' of that element (of newAccountsDic) to replace with
     // (accountParentId, accountTypeId, accountGroupId)
-    const accountUpdateArray = newCreatedAccounts.map((acc) => {
+    return new_temp_accounts.map((acc) => {
       const updateAccount = {
         ...acc,
         id: acc.id,
@@ -208,21 +235,6 @@ class AccountsOfOrganizationService {
       }
       return updateAccount;
     });
-
-    // now we bulk update the accounts
-    await AccountsOfOrganizationDao.bulkUpdateAccounts(
-      {
-        accounts: accountUpdateArray,
-      },
-      {
-        transaction,
-        update_on_duplicate: [
-          "accountParentId",
-          "accountGroupId",
-          "accountTypeId",
-        ],
-      },
-    );
   }
 }
 
