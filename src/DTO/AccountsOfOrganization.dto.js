@@ -10,21 +10,21 @@ class AccountsOfOrganizationDTO {
     if (account.accountParentId) {
       account_dto.account_parent_id = account.accountParentId;
       if (account.AccountParent)
-        account_dto.account_parent = this.toAccountsOfTemplate(
+        account_dto.account_parent = this.toAccountOfOrganization(
           account.AccountParent,
         );
     }
     if (account.accountGroupId) {
       account_dto.account_group_id = account.accountGroupIdId;
       if (account.AccountGroup)
-        account_dto.account_group = this.toAccountsOfTemplate(
+        account_dto.account_group = this.toAccountOfOrganization(
           account.AccountGroup,
         );
     }
     if (account.accountTypeId) {
       account_dto.account_type_id = account.accountTypeId;
       if (account.AccountType)
-        account_dto.account_type = this.toAccountsOfTemplate(
+        account_dto.account_type = this.toAccountOfOrganization(
           account.AccountType,
         );
     }

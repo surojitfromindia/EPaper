@@ -20,7 +20,7 @@ async function syncWithDb() {
   // await OrganizationsUsers.sync({ alter: false, force: true });
   await TaxRates.sync({ alter, force });
   await RegularItems.sync({ alter, force });
-  await AccountsOfOrganization.sync({ alter: false, force: true });
+  await AccountsOfOrganization.sync({ alter: false, force: false });
 }
 
 syncWithDb();

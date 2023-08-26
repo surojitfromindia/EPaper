@@ -141,8 +141,4 @@ AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
   as: "originAccountGroup",
 });
 
-await AccountsOfOrganization.sync({
-  force: true,
-});
-
 export { AccountsOfOrganization };

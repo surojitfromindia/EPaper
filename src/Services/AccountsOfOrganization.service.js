@@ -36,31 +36,22 @@ class AccountsOfOrganizationService {
 
     try {
       return await sequelize.transaction(async (t1) => {
-        //set default values
-        let accountDepth = 0;
-        let accountType = "group";
-        //check if a parent id is provided, and we getById the depth of the parent and add 1 to it
-        if (newAccountDetails.accountParentId) {
-          const parentAccountDetails = await AccountsOfOrganizationDao.get({
-            account_id: newAccountDetails.accountParentId,
-          });
-          if (parentAccountDetails === null) {
-            throw new DataNotFoundError("Parent account not found");
-          }
-          accountDepth = parentAccountDetails.depth + 1;
+        // a parent is required as we are only able to add after depth of 1 (from 2)
+        const parentAccountDetails = await AccountsOfOrganizationDao.getById({
+          account_id: newAccountDetails.accountParentId,
+        });
+        if (parentAccountDetails === null) {
+          throw new DataNotFoundError("Parent account not found");
         }
-        switch (accountDepth) {
-          case 0:
-            accountType = "group";
-            break;
-          case 1:
-            accountType = "account_type";
-            break;
-          default:
-            accountType = "account";
-        }
-        newAccountDetails.depth = accountDepth;
-        newAccountDetails.type = accountType;
+
+        // deduced other details from a parent account.
+        newAccountDetails.depth = parentAccountDetails.depth + 1;
+        newAccountDetails.type = "account";
+        newAccountDetails.accountGroupId = parentAccountDetails.accountGroupId;
+        newAccountDetails.accountTypeId =
+          parentAccountDetails.accountTypeId ?? parentAccountDetails.id;
+
+        // save in the database
         const createdAccount = await AccountsOfOrganizationDao.create(
           { account_details: newAccountDetails },
           { transaction: t1 },
