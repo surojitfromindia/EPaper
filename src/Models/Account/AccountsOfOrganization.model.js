@@ -48,6 +48,18 @@ AccountsOfOrganization.init(
   },
   {
     sequelize,
+    indexes: [
+      {
+        name: "acc_par_acc_inx",
+        unique: true,
+        fields: ["id", "account_parent_id"],
+      },
+      {
+        name: "acc_acc_par_inx",
+        unique: true,
+        fields: ["account_parent_id", "id"],
+      },
+    ],
   },
 );
 
