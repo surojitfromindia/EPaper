@@ -63,6 +63,19 @@ class OrganizationService {
     });
     return OrganizationDTO.toOrganization(createdOrganization);
   }
+
+  /**
+   * Return metadata about current organization.
+   * @param {ClientInfoType} client_info
+   * @returns {Promise<{OrganizationDetailsTypeAsDTO}>}
+   */
+  async getOrganizationState({ client_info }) {
+    const organizationId = client_info.organizationId;
+    const organization = await OrganizationDao.getById({
+      organization_id: organizationId,
+    });
+    return OrganizationDTO.toOrganization(organization);
+  }
 }
 
 export default Object.freeze(new OrganizationService());

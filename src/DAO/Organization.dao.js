@@ -12,15 +12,8 @@ class OrganizationDao {
     });
   }
 
-  async getAll() {
-    return await OrganizationBasic.findAll({
-      include: [
-        {
-          model: User,
-          as: "createdByUser",
-        },
-      ],
-    });
+  async getById({ organization_id }) {
+    return await OrganizationBasic.findByPk(organization_id, {});
   }
 }
 
