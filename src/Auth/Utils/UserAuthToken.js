@@ -11,11 +11,13 @@ import { CLIENT_TYPE } from "../Constants/ClientType.js";
  */
 class UserAuthToken {
   #token;
+  #base64token;
   #decodeToken;
   #isTokenVerified;
 
-  constructor(token) {
-    this.#token = token;
+  constructor(base64_token) {
+    this.#base64token = base64_token;
+    this.#token = new Buffer(base64_token, "base64").toString("ascii");
   }
 
   //we return an auth token when we sign a token
@@ -34,11 +36,13 @@ class UserAuthToken {
       USER_TYPE_JWT_PRIVATE_KEY,
       tokenOptions,
     );
-    return new UserAuthToken(token);
+
+    const base64Token = new Buffer(token).toString("base64");
+    return new UserAuthToken(base64Token);
   }
 
   getToken() {
-    return this.#token;
+    return this.#base64token;
   }
 
   // verify the given user auth token
