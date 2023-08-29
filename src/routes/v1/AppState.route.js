@@ -3,5 +3,5 @@ import { getAppState } from "../../Controllers/v1/AppState.Controller.js";
 
 const appStateRouter = Router();
 
-appStateRouter.post("/", getAppState);
+appStateRouter.get("/", getAppState);
 export default appStateRouter;

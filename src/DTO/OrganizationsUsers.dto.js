@@ -18,6 +18,9 @@ class OrganizationsUsersDTO {
       invited_on: organization_user.invitedOn,
       accepted_on: organization_user.acceptedOn,
     };
+    if (organization_user.isDefaultOrganization === true) {
+      return_dto.is_default_organization = true;
+    }
     if (organization_user.user) {
       return_dto.user = UserDTO.toUser(organization_user.user);
     }

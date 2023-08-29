@@ -36,11 +36,17 @@ const authorizeClient = async (req, res, next) => {
       client_id: basicClientInfo.clientId,
       include_organization_details: true,
     });
-    clientInfo.userOrganizations =
-      userDetails?.organization_working_details ?? [];
+    const userOrganizations = userDetails.organization_working_details ?? [];
+    clientInfo.userOrganizations = userOrganizations;
+
+    // find default organization
+    const defaultOrganization = userOrganizations.find(
+      (org) => org.is_default_organization,
+    );
+
     clientInfo.organizationId = req?.query.organization_id
       ? Number(req.query.organization_id)
-      : null;
+      : defaultOrganization.organization_id;
     clientInfo.userId = userDetails?.user_id ?? null;
 
     req.clientInfo = clientInfo;
