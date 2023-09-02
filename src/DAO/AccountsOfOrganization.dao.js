@@ -26,7 +26,11 @@ class AccountsOfOrganizationDao {
 
   async getAccountsFromDepth({ organization_id, depth = 2 }) {
     return await AccountsOfOrganization.findAll({
-      order: [["id", "ASC"]],
+      order: [
+        ["account_group_id", "ASC"],
+        ["account_type_id", "ASC"],
+        ["account_parent_id", "ASC"],
+      ],
       where: {
         organizationId: organization_id,
         depth: {

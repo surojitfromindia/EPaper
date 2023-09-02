@@ -1,5 +1,5 @@
 const errorHandlerMiddleware = (error, req, res, _next) => {
-  let httpErrorCode = 500;
+  let httpErrorCode = 404;
   let httpErrorMessage = "something went wrong";
   res.status(httpErrorCode).json({
     success: false,

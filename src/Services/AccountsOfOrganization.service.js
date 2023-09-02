@@ -8,7 +8,6 @@ import { AccountsOfOrganizationDTO } from "../DTO/index.js";
 import { DataNotFoundError } from "../Errors/APIErrors/index.js";
 import ld from "lodash";
 import { AccountsTree } from "../Utils/AccoutsTree.js";
-import AccountsOfOrganizationDto from "../DTO/AccountsOfOrganization.dto.js";
 
 class AccountsOfOrganizationService {
   /**
@@ -74,14 +73,14 @@ class AccountsOfOrganizationService {
       organization_id: organizationId,
       depth: 2,
     });
+    const treeOfAccounts = AccountsTree.createTreeOfOrganizationAccountsAsDTO({
+      accounts: accounts,
+    });
     if (as_tree) {
-      return AccountsTree.createTreeOfOrganizationAccountsAsDTO({
-        accounts: accounts,
-      });
+      return treeOfAccounts.getTreeArray();
+    } else {
+      return treeOfAccounts.flatArrayFromTreeAsDTO();
     }
-    return accounts.map((acc) =>
-      AccountsOfOrganizationDto.toAccountOfOrganization(acc),
-    );
   }
 
   /**
