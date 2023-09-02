@@ -1,5 +1,6 @@
 import { Tree } from "./Tree.js";
 import AccountsOfOrganizationDto from "../DTO/AccountsOfOrganization.dto.js";
+import ld from "lodash";
 
 class AccountsTree {
   #treeArray;
@@ -27,15 +28,17 @@ class AccountsTree {
     const accountsAsDTO = accounts.map(
       AccountsOfOrganizationDto.toAccountOfOrganization,
     );
-    return new AccountsTree(
-      Tree.makeTree({
-        entries: accountsAsDTO,
-        joinFrom: "account_id",
-        joinTo: "account_parent_id",
-        children_as: "accounts",
-        children_count_as: "no_of_children",
-      }),
-    );
+    const treeOfAccounts = Tree.makeTree({
+      entries: accountsAsDTO,
+      joinFrom: "account_id",
+      joinTo: "account_parent_id",
+      children_as: "accounts",
+      children_count_as: "no_of_children",
+    });
+
+    const rootLevelSorted = ld.sortBy(treeOfAccounts, ["account_parent_id"]);
+
+    return new AccountsTree(rootLevelSorted);
   }
 
   flatArrayFromTreeAsDTO() {

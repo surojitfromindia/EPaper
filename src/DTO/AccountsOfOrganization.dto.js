@@ -23,6 +23,9 @@ class AccountsOfOrganizationDTO {
         account_dto.account_type_name = account.AccountType.name;
       }
     }
+    if (account.accountGroupId) {
+      account_dto.account_group_id = account.accountGroupId;
+    }
     return account_dto;
   }
 
