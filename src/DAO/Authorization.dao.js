@@ -1,7 +1,8 @@
 import http from "http";
 import {
-  AuthServerRoot,
-  TokenIntrospectionEndPath,
+  AUTH_SERVER_ENDPOINT,
+  AUTH_SERVER_HOST,
+  AUTH_SERVER_PORT,
 } from "../Constants/AuthorizationEndpoints.Constants.js";
 
 const agent = new http.Agent({
@@ -23,9 +24,9 @@ class AuthorizationDao {
       const req = http.request(
         {
           agent,
-          host: AuthServerRoot,
-          path: TokenIntrospectionEndPath,
-          port: 5010,
+          host: AUTH_SERVER_HOST,
+          path: AUTH_SERVER_ENDPOINT,
+          port: AUTH_SERVER_PORT,
           method: "POST",
           headers: {
             "Content-Type": "application/json",
