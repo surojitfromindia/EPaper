@@ -169,6 +169,10 @@ class AccountsOfOrganizationService {
       originAccountParentId: acc.accountParentId,
       originAccountTypeId: acc.accountTypeId,
       originAccountGroupId: acc.accountGroupId,
+
+      accountParentId: null,
+      accountTypeId: null,
+      accountGroupId: null,
       // common payload
       accountTemplateId: new_account_template_id,
       createdBy: user_id,

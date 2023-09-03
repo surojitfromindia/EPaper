@@ -1,4 +1,6 @@
 import chalk from "chalk";
+import "dotenv/config.js";
+
 // import the express app from APIServer.js
 import APIServer from "./APIServer.js";
 import AuthServer from "./AuthServer.js";

@@ -17,13 +17,13 @@ async function syncWithDb() {
   await AccountTemplateDetails.sync({ alter, force });
   await AccountsOfTemplate.sync({ alter, force });
   await AccountsConfig.sync({ alter, force });
-  // await OrganizationsUsers.sync({ alter: false, force: true });
+  await OrganizationsUsers.sync({ alter, force });
   await TaxRates.sync({ alter, force });
   await RegularItems.sync({ alter, force });
-  await AccountsOfOrganization.sync({ alter: false, force: false });
+  await AccountsOfOrganization.sync({ alter, force });
 }
 
-syncWithDb();
+// syncWithDb();
 export {
   User,
   OrganizationBasic,
