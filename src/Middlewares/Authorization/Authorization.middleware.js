@@ -2,26 +2,26 @@ import { AuthorizationDao } from "../../DAO/index.js";
 import { UserService } from "../../Services/index.js";
 
 const authorizeClient = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const authCookie = req.cookies._ePaperCrd;
-  if (authHeader === undefined && authCookie === undefined) {
-    throw new Error("Access token missing in authorization header");
-  }
-  let authToken;
-  if (authHeader) {
-    const [Schema, Token] = authHeader.split(" ");
-    if (Schema !== "Bearer") {
-      throw new Error("Unknown authorization schema");
-    }
-    if (Token === undefined) {
-      throw new Error("Token not found");
-    }
-    authToken = Token;
-  } else if (authCookie) {
-    authToken = authCookie;
-  }
-  const authDao = new AuthorizationDao(authToken);
   try {
+    const authHeader = req.headers.authorization;
+    const authCookie = req.cookies._ePaperCrd;
+    if (authHeader === undefined && authCookie === undefined) {
+      throw new Error("Access token missing in authorization header");
+    }
+    let authToken;
+    if (authHeader) {
+      const [Schema, Token] = authHeader.split(" ");
+      if (Schema !== "Bearer") {
+        throw new Error("Unknown authorization schema");
+      }
+      if (Token === undefined) {
+        throw new Error("Token not found");
+      }
+      authToken = Token;
+    } else if (authCookie) {
+      authToken = authCookie;
+    }
+    const authDao = new AuthorizationDao(authToken);
     const introspectionResult = await authDao.introspectToken();
     const basicClientInfo = {
       clientId: introspectionResult.clientId,
