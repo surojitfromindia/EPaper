@@ -41,7 +41,7 @@ class UserService {
     if (user) {
       return UserDTO.toUser(user);
     }
-    throw new DataNotFoundError();
+    throw new DataNotFoundError("no user found");
   }
 }
 
