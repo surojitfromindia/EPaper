@@ -3,15 +3,15 @@ import { OrganizationDTO, UserDTO } from "./index.js";
 class OrganizationsUsersDTO {
   /**
    *
-   * @param {Object} organization_user
-   * @returns {OrganizationUserDetailsTypeAsDTO}
+   * @param {OrganizationUserDetailsType} organization_user
+   * @return {OrganizationUserDetailsTypeAsDTO}
    */
   static toOrganizationsUsers(organization_user) {
     const return_dto = {
       id: organization_user.id,
-      job_status: organization_user.jobStatus,
       organization_id: organization_user.organizationId,
       user_id: organization_user.userId,
+      job_status: organization_user.jobStatus,
       role_id: organization_user.roleId,
       status: organization_user.status,
       invited_by: organization_user.invitedBy,

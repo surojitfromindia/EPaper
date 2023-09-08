@@ -2,6 +2,11 @@ import organizationDto from "./Organization.dto.js";
 import organizationsUsersDto from "./OrganizationsUsers.dto.js";
 
 class UserDTO {
+  /**
+   *
+   * @param {any} user
+   * @returns {UserDetailsTypeAsDTO}
+   */
   static toUser(user) {
     const basicUser = {
       name: user.name,

@@ -5,6 +5,7 @@ import AccountsTemplateImportService from "./ImportServices/AccountsOfTemplate.i
 import TaxRateService from "./TaxRate.service.js";
 import RegularItemService from "./RegularItem.service.js";
 import AccountsOfOrganizationService from "./AccountsOfOrganization.service.js";
+import AppStateService from "./AppState.service.js";
 
 export {
   UserService,
@@ -14,4 +15,5 @@ export {
   TaxRateService,
   RegularItemService,
   AccountsOfOrganizationService,
+  AppStateService,
 };

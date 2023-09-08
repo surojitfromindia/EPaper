@@ -3,7 +3,7 @@ import { UserDTO } from "./index.js";
 class OrganizationDTO {
   /**
    * Transform an dao to organization response
-   * @param {Object} organization
+   * @param {OrganizationDetailsType} organization
    * @returns {OrganizationDetailsTypeAsDTO}
    * */
   static toOrganization(organization) {
@@ -22,6 +22,11 @@ class OrganizationDTO {
     return return_dto;
   }
 
+  /**
+   *
+   * @param {OrganizationDetailsCreatePayloadType} organization_payload
+   * @returns {OrganizationDetailsCreateTransformationPayloadType}
+   */
   static toOrganizationCreate(organization_payload) {
     return {
       name: organization_payload.name,
