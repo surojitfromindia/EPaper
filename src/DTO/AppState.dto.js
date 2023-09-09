@@ -8,8 +8,8 @@ class AppStateDTO {
    * */
   static toAppState(app_state) {
     return {
-      user_details: UserDTO.toUser(app_state.userDetails),
-      organization_details: OrganizationDTO.toOrganization(
+      user: UserDTO.toUser(app_state.userDetails),
+      organization: OrganizationDTO.toOrganization(
         app_state.organizationDetails,
       ),
     };

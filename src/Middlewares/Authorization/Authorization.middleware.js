@@ -6,16 +6,25 @@ const authorizeClient = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     const authCookie = req.cookies._ePaperCrd;
     if (authHeader === undefined && authCookie === undefined) {
-      throw new Error("Access token missing in authorization header");
+      handleAuthorizationError(
+        next,
+        new Error("Access token missing in authorization header"),
+      );
+      return;
     }
     let authToken;
     if (authHeader) {
       const [Schema, Token] = authHeader.split(" ");
       if (Schema !== "Bearer") {
-        throw new Error("Unknown authorization schema");
+        handleAuthorizationError(
+          next,
+          new Error("Unknown authorization schema"),
+        );
+        return;
       }
       if (Token === undefined) {
-        throw new Error("Token not found");
+        handleAuthorizationError(next, new Error("Token not found"));
+        return;
       }
       authToken = Token;
     } else if (authCookie) {
@@ -59,7 +68,16 @@ const authorizeClient = async (req, res, next) => {
     req.clientInfo = clientInfo;
     return next();
   } catch (error) {
-    next(new Error(error.message));
+    handleAuthorizationError(next, error);
   }
+};
+
+/**
+ * handle authorization error.
+ * @param {import('express').NextFunction} expressNext
+ * @param {Error} error
+ */
+const handleAuthorizationError = (expressNext, error) => {
+  expressNext(new Error(error.message));
 };
 export { authorizeClient };

@@ -1,8 +1,8 @@
 /**
  * @desc App state details DTO
  * @typedef {Object} AppStateDetailsTypeDTO
- * @property {UserDetailsTypeAsDTO} user_details
- * @property {OrganizationDetailsTypeAsDTO} organization_details
+ * @property {UserDetailsTypeAsDTO} user
+ * @property {OrganizationDetailsTypeAsDTO} organization
  */
 
 /**
