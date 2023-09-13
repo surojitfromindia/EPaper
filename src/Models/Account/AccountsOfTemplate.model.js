@@ -1,6 +1,8 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
 import { AccountTemplateDetails, User } from "../index.js";
+import { AccountGroups } from "./AccountGroups.model.js";
+import { AccountTypes } from "./AccountTypes.model.js";
 
 class AccountsOfTemplate extends Model {}
 
@@ -39,11 +41,6 @@ AccountsOfTemplate.init(
       allowNull: true,
       columnName: "depth",
     },
-    type: {
-      type: DataTypes.ENUM(["group", "account_type", "account"]),
-      allowNull: false,
-      columnName: "account_type",
-    },
   },
   {
     sequelize,
@@ -58,17 +55,17 @@ AccountsOfTemplate.belongsTo(AccountsOfTemplate, {
   },
   as: "AccountParent",
 });
-AccountsOfTemplate.belongsTo(AccountsOfTemplate, {
+AccountsOfTemplate.belongsTo(AccountGroups, {
   foreignKey: {
-    allowNull: true,
+    allowNull: false,
     columnName: "account_group_id",
     name: "accountGroupId",
   },
   as: "AccountGroup",
 });
-AccountsOfTemplate.belongsTo(AccountsOfTemplate, {
+AccountsOfTemplate.belongsTo(AccountTypes, {
   foreignKey: {
-    allowNull: true,
+    allowNull: false,
     columnName: "account_type_id",
     name: "accountTypeId",
   },

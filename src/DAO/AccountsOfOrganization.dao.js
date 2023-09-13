@@ -1,4 +1,8 @@
-import { AccountsOfOrganization } from "../Models/index.js";
+import {
+  AccountGroups,
+  AccountsOfOrganization,
+  AccountTypes,
+} from "../Models/index.js";
 import { Op } from "@sequelize/core";
 
 class AccountsOfOrganizationDao {
@@ -9,8 +13,8 @@ class AccountsOfOrganizationDao {
     return await AccountsOfOrganization.findByPk(account.get("id"), {
       include: [
         { model: AccountsOfOrganization, as: "AccountParent" },
-        { model: AccountsOfOrganization, as: "AccountGroup" },
-        { model: AccountsOfOrganization, as: "AccountType" },
+        { model: AccountGroups, as: "AccountGroup" },
+        { model: AccountTypes, as: "AccountType" },
       ],
     });
   }
@@ -34,14 +38,19 @@ class AccountsOfOrganizationDao {
       },
       include: [
         {
-          required: true,
+          required: false,
           model: AccountsOfOrganization,
           as: "AccountParent",
         },
         {
           required: true,
-          model: AccountsOfOrganization,
+          model: AccountTypes,
           as: "AccountType",
+        },
+        {
+          required: true,
+          model: AccountGroups,
+          as: "AccountGroup",
         },
       ],
     });

@@ -71,7 +71,7 @@ class AccountsOfOrganizationService {
     const organizationId = client_info.organizationId;
     const accounts = await AccountsOfOrganizationDao.getAccountsFromDepth({
       organization_id: organizationId,
-      depth: 2,
+      depth: 0,
     });
     const treeOfAccounts = AccountsTree.createTreeOfOrganizationAccountsAsDTO({
       accounts: accounts,
@@ -167,12 +167,8 @@ class AccountsOfOrganizationService {
       // information from template, used to correctly linking nodes
       originAccountId: id,
       originAccountParentId: acc.accountParentId,
-      originAccountTypeId: acc.accountTypeId,
-      originAccountGroupId: acc.accountGroupId,
 
       accountParentId: null,
-      accountTypeId: null,
-      accountGroupId: null,
       // common payload
       accountTemplateId: new_account_template_id,
       createdBy: user_id,
@@ -228,23 +224,12 @@ class AccountsOfOrganizationService {
         ...acc,
         id: acc.id,
         accountParentId: null,
-        accountTypeId: null,
-        accountGroupId: null,
       };
       const accountParentId = acc.originAccountParentId;
-      const accountTypeId = acc.originAccountTypeId;
-      const accountGroupId = acc.originAccountGroupId;
       // find and replace, if not found, set as null.
       if (accountParentId) {
         updateAccount.accountParentId =
           newAccountsDic[accountParentId]?.id ?? null;
-      }
-      if (accountTypeId) {
-        updateAccount.accountTypeId = newAccountsDic[accountTypeId]?.id ?? null;
-      }
-      if (accountGroupId) {
-        updateAccount.accountGroupId =
-          newAccountsDic[accountGroupId]?.id ?? null;
       }
       return updateAccount;
     });

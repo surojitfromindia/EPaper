@@ -7,12 +7,12 @@
  * @property {string} name account name
  * @property {string} code
  * @property {number} depth
- * @property {number|null} accountParentId
- * @property {number|null} accountGroupId
- * @property {number|null} accountTypeId
- * @property {COAType|null} AccountParent
- * @property {COAType|null} AccountGroup
- * @property {COAType|null} AccountType
+ * @property {number|UndefinedOrNull} accountParentId
+ * @property {number} accountGroupId
+ * @property {number} accountTypeId
+ * @property {COAType|UndefinedOrNull} AccountParent
+ * @property {AccountGroup|UndefinedOrNull} AccountGroup
+ * @property {AccountType|UndefinedOrNull} AccountType
  */
 
 /**
@@ -23,9 +23,9 @@
  * @property {string} name account name
  * @property {string} code
  * @property {number} depth
- * @property {number|UndefinedOrNull} account_paren_id
- * @property {number|UndefinedOrNull} account_group_id
- * @property {number|UndefinedOrNull} account_type_id
+ * @property {number|UndefinedOrNull} account_parent_id
+ * @property {number} account_group_id
+ * @property {number} account_type_id
  * @property {string|UndefinedOrNull} account_parent_name
  * @property {string|UndefinedOrNull} account_group_name
  * @property {string|UndefinedOrNull} account_type_name

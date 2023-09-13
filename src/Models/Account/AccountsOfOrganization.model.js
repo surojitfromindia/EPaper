@@ -1,6 +1,12 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
-import { AccountTemplateDetails, OrganizationBasic, User } from "../index.js";
+import {
+  AccountGroups,
+  AccountTemplateDetails,
+  AccountTypes,
+  OrganizationBasic,
+  User,
+} from "../index.js";
 import { AccountsOfTemplate } from "./AccountsOfTemplate.model.js";
 
 class AccountsOfOrganization extends Model {}
@@ -40,11 +46,6 @@ AccountsOfOrganization.init(
       allowNull: true,
       columnName: "depth",
     },
-    type: {
-      type: DataTypes.ENUM(["group", "account_type", "account"]),
-      allowNull: false,
-      columnName: "account_type",
-    },
   },
   {
     sequelize,
@@ -59,15 +60,15 @@ AccountsOfOrganization.belongsTo(AccountsOfOrganization, {
   },
   as: "AccountParent",
 });
-AccountsOfOrganization.belongsTo(AccountsOfOrganization, {
+AccountsOfOrganization.belongsTo(AccountGroups, {
   foreignKey: {
-    allowNull: true,
+    allowNull: false,
     columnName: "account_group_id",
     name: "accountGroupId",
   },
   as: "AccountGroup",
 });
-AccountsOfOrganization.belongsTo(AccountsOfOrganization, {
+AccountsOfOrganization.belongsTo(AccountTypes, {
   foreignKey: {
     allowNull: true,
     columnName: "account_type_id",
@@ -100,13 +101,6 @@ AccountsOfOrganization.belongsTo(OrganizationBasic, {
   as: "organization",
 });
 
-AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
-  foreignKey: {
-    allowNull: true,
-    columnName: "origin_account_id",
-    name: "originAccountId",
-  },
-});
 // account information from a template account.
 AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
   foreignKey: {
@@ -123,22 +117,6 @@ AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
     name: "originAccountParentId",
   },
   as: "originAccountParent",
-});
-AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
-  foreignKey: {
-    allowNull: true,
-    columnName: "origin_account_type_id",
-    name: "originAccountTypeId",
-  },
-  as: "originAccountType",
-});
-AccountsOfOrganization.belongsTo(AccountsOfTemplate, {
-  foreignKey: {
-    allowNull: true,
-    columnName: "origin_account_group_id",
-    name: "originAccountGroupId",
-  },
-  as: "originAccountGroup",
 });
 
 export { AccountsOfOrganization };
