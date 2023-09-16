@@ -10,7 +10,7 @@ import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model.j
 import { AccountGroups } from "./Account/AccountGroups.model.js";
 import { AccountTypes } from "./Account/AccountTypes.model.js";
 
-const force = true;
+const force = false;
 const alter = true;
 
 async function syncWithDb() {
@@ -18,13 +18,13 @@ async function syncWithDb() {
   // await OrganizationBasic.sync({ alter, force });
   // await AccountGroups.sync({ alter, force });
   // await AccountTypes.sync({ alter, force });
-  await AccountTemplateDetails.sync({ alter, force });
-  await AccountsOfTemplate.sync({ alter, force });
+  // await AccountTemplateDetails.sync({ alter, force });
+  // await AccountsOfTemplate.sync({ alter, force });
   // await AccountsConfig.sync({ alter, force });
   // await OrganizationsUsers.sync({ alter, force });
   // await TaxRates.sync({ alter, force });
   // await RegularItems.sync({ alter, force });
-  await AccountsOfOrganization.sync({ alter, force });
+  // await AccountsOfOrganization.sync({ alter });
 }
 
 // syncWithDb();

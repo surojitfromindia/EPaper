@@ -12,7 +12,7 @@ class AccountsOfOrganizationDao {
     });
     return await AccountsOfOrganization.findByPk(account.get("id"), {
       include: [
-        { model: AccountsOfOrganization, as: "AccountParent" },
+        { model: AccountsOfOrganization, as: "AccountParent", required: false },
         { model: AccountGroups, as: "AccountGroup" },
         { model: AccountTypes, as: "AccountType" },
       ],
@@ -25,6 +25,11 @@ class AccountsOfOrganizationDao {
         id: account_id,
         organizationId: organization_id,
       },
+      include: [
+        { model: AccountsOfOrganization, as: "AccountParent", required: false },
+        { model: AccountGroups, as: "AccountGroup" },
+        { model: AccountTypes, as: "AccountType" },
+      ],
     });
   }
 

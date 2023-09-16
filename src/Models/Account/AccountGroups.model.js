@@ -13,6 +13,7 @@ AccountGroups.init(
       allowNull: false,
     },
     name: {
+      unique: true,
       type: DataTypes.STRING,
       allowNull: false,
       columnName: "name",

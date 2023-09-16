@@ -14,6 +14,7 @@ AccountTypes.init(
       allowNull: false,
     },
     name: {
+      unique: true,
       type: DataTypes.STRING,
       allowNull: false,
       columnName: "name",
@@ -40,7 +41,7 @@ AccountTypes.belongsTo(AccountGroups, {
     columnName: "account_group_id",
     name: "accountGroupId",
   },
-  as: "accountGroup",
+  as: "AccountGroup",
 });
 
 export { AccountTypes };

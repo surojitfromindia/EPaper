@@ -3,6 +3,7 @@ import {
   AccountsOfOrganizationDao,
   AccountsOfTemplateDao,
   AccountsTemplateDetailsDao,
+  AccountTypesDao,
 } from "../DAO/index.js";
 import { AccountsOfOrganizationDTO } from "../DTO/index.js";
 import { DataNotFoundError } from "../Errors/APIErrors/index.js";
@@ -22,37 +23,47 @@ class AccountsOfOrganizationService {
 
     const newAccountDetails =
       AccountsOfOrganizationDTO.toAccountOfOrganizationCreate(account_details);
-    let accountTemplateId = newAccountDetails.accountTemplateId;
+    // let accountTemplateId = newAccountDetails.accountTemplateId;
     newAccountDetails.createdBy = createdBy;
     newAccountDetails.organizationId = organizationId;
 
     // find the account template
-    const accountTemplateDetails = await AccountsTemplateDetailsDao.getById({
-      template_id: accountTemplateId,
-      organization_id: organizationId,
-    });
+    const accountTemplateDetails =
+      await AccountsTemplateDetailsDao.getByOrganizationId({
+        organization_id: organizationId,
+      });
     if (!accountTemplateDetails) {
       throw new DataNotFoundError("Account template not found");
     }
+    newAccountDetails.accountTemplateId = accountTemplateDetails.id;
+
+    // find the account type and grab the group id
+    const accountTypeName = newAccountDetails.accountTypeName;
+    const accountTypeDetails = await AccountTypesDao.getByName({
+      name: accountTypeName,
+    });
+    if (accountTypeDetails === null) {
+      throw new DataNotFoundError("Account type not found");
+    }
+    newAccountDetails.accountTypeId = accountTypeDetails.id;
+    newAccountDetails.accountGroupId = accountTypeDetails.accountGroupId;
+
+    // a parent is optional
+    let newAccountDepth = 0;
+    if (newAccountDetails.accountParentId) {
+      const parentAccountDetails = await AccountsOfOrganizationDao.getById({
+        account_id: newAccountDetails.accountParentId,
+        organization_id: organizationId,
+      });
+      newAccountDepth = parentAccountDetails.depth + 1;
+      if (!parentAccountDetails) {
+        throw new DataNotFoundError("Parent account not found");
+      }
+    }
+    newAccountDetails.depth = newAccountDepth;
 
     try {
       return await sequelize.transaction(async (t1) => {
-        // a parent is required as we are only able to add after depth of 1 (from 2)
-        const parentAccountDetails = await AccountsOfOrganizationDao.getById({
-          account_id: newAccountDetails.accountParentId,
-          organization_id: organizationId,
-        });
-        if (parentAccountDetails === null) {
-          throw new DataNotFoundError("Parent account not found");
-        }
-
-        // deduced other details from a parent account.
-        newAccountDetails.depth = parentAccountDetails.depth + 1;
-        newAccountDetails.type = "account";
-        newAccountDetails.accountGroupId = parentAccountDetails.accountGroupId;
-        newAccountDetails.accountTypeId =
-          parentAccountDetails.accountTypeId ?? parentAccountDetails.id;
-
         // save in the database
         const createdAccount = await AccountsOfOrganizationDao.create(
           { account_details: newAccountDetails },
@@ -67,6 +78,12 @@ class AccountsOfOrganizationService {
     }
   }
 
+  /**
+   * @desc get chart of accounts
+   * @param {boolean} as_tree
+   * @param {ClientInfoType} client_info
+   * @return {Promise<*[]>}
+   */
   async getAllAccounts({ as_tree, client_info }) {
     const organizationId = client_info.organizationId;
     const accounts = await AccountsOfOrganizationDao.getAccountsFromDepth({
@@ -81,6 +98,39 @@ class AccountsOfOrganizationService {
     } else {
       return treeOfAccounts.flatArrayFromTreeAsDTO();
     }
+  }
+
+  /**
+   * @desc get edit page for account add or edit
+   * @param {ClientInfoType} client_info
+   * @param {number=} account_id provided an account id if fetching for edit.
+   * @return {Promise<{accounts_list: *, account_types: *}>}
+   */
+  async getEditPage({ client_info, account_id }) {
+    const organizationId = client_info.organizationId;
+    let accountDetails = null;
+    let accountTypes;
+    let accountsListAsDTO;
+
+    // if account_id exists, we the account details
+    if (account_id) {
+      accountDetails = await this.#getAccount({
+        account_id,
+        organization_id: organizationId,
+      });
+    }
+
+    accountTypes = await AccountTypesDao.getAll();
+
+    accountsListAsDTO = await this.getAllAccounts({
+      as_tree: false,
+      client_info,
+    });
+    return AccountsOfOrganizationDTO.toAccountEditPage({
+      account_details: accountDetails,
+      account_types: accountTypes,
+      account_list_as_dto: accountsListAsDTO,
+    });
   }
 
   /**
@@ -186,7 +236,7 @@ class AccountsOfOrganizationService {
     );
 
     // link those accounts with parent and map.
-    const accountUpdateArray = this.#mapTempAccounts({
+    const accountUpdateArray = AccountsOfOrganizationUtils.mapTempAccounts({
       new_temp_accounts: newCreatedAccounts,
     });
 
@@ -207,11 +257,32 @@ class AccountsOfOrganizationService {
   }
 
   /**
+   * @desc get account
+   * @param {ClientInfoType} client_info
+   * @param {number} account_id
+   * @return {Promise<void>}
+   */
+  async #getAccount({ account_id, organization_id }) {
+    const account = await AccountsOfOrganizationDao.getById({
+      account_id,
+      organization_id,
+    });
+    if (!account) {
+      throw new DataNotFoundError("Account not found");
+    }
+    return account;
+  }
+}
+
+export default Object.freeze(new AccountsOfOrganizationService());
+
+class AccountsOfOrganizationUtils {
+  /**
    *  Link temporally created accounts with parent-child way and returned the updated accounts.
    * @param {Array<Object>} new_temp_accounts
    * @returns {Array<Object>}
    */
-  #mapTempAccounts({ new_temp_accounts }) {
+  static mapTempAccounts({ new_temp_accounts }) {
     // after creating the accounts, we replace the accountParentId, accountTypeId, accountGroupId
     // but before that we need to make a key-pair object using lodash
     const newAccountsDic = ld.keyBy(new_temp_accounts, "originAccountId");
@@ -235,5 +306,3 @@ class AccountsOfOrganizationService {
     });
   }
 }
-
-export default Object.freeze(new AccountsOfOrganizationService());

@@ -46,6 +46,11 @@ AccountsOfOrganization.init(
       allowNull: true,
       columnName: "depth",
     },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      columnName: "description",
+    },
   },
   {
     sequelize,

@@ -18,10 +18,9 @@
 /**
  * @desc An account either of organization or from a template
  * @typedef {Object} COATypeAsDTO
- * @property {number} user_id creator of the account
  * @property {number} account_id account id
- * @property {string} name account name
- * @property {string} code
+ * @property {string} account_name account name
+ * @property {string} account_code
  * @property {number} depth
  * @property {number|UndefinedOrNull} account_parent_id
  * @property {number} account_group_id

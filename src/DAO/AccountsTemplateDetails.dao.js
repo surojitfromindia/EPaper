@@ -37,6 +37,14 @@ class AccountTemplateDetailsDao {
       },
     });
   }
+
+  async getByOrganizationId({ organization_id }) {
+    return await AccountTemplateDetails.findOne({
+      where: {
+        organizationId: organization_id,
+      },
+    });
+  }
 }
 
 export default Object.freeze(new AccountTemplateDetailsDao());

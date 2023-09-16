@@ -1,3 +1,5 @@
+import { AccountTypesDTO } from "./index.js";
+
 class AccountsOfOrganizationDTO {
   /**
    *
@@ -7,12 +9,11 @@ class AccountsOfOrganizationDTO {
   static toAccountOfOrganization(account) {
     const account_dto = {
       account_id: account.id,
-      name: account.name,
-      code: account.code,
+      account_name: account.name,
+      account_code: account.code,
       depth: account.depth,
-      user_id: account.userId,
-      account_type_id: account.accountTypeId,
-      account_group_id: account.accountGroupId,
+      // account_type_id: account.accountTypeId,
+      // account_group_id: account.accountGroupId,
     };
     if (account.accountParentId) {
       account_dto.account_parent_id = account.accountParentId;
@@ -35,11 +36,28 @@ class AccountsOfOrganizationDTO {
 
   static toAccountOfOrganizationCreate(account_creation_payload) {
     return {
-      name: account_creation_payload.name,
-      code: account_creation_payload.code,
-      accountParentId: account_creation_payload.account_parent_id,
-      accountTemplateId: account_creation_payload.account_template_id,
+      name: account_creation_payload.account_name,
+      code: account_creation_payload.account_code,
+      accountParentId: account_creation_payload.account_parent_id ?? null,
+      accountTypeName: account_creation_payload.account_type_name,
+      description: account_creation_payload.description ?? "",
     };
+  }
+
+  static toAccountEditPage({
+    account_types,
+    account_list_as_dto,
+    account_details,
+  }) {
+    const basic_data = {
+      account_types: account_types.map(AccountTypesDTO.toAccountType),
+      accounts_list: account_list_as_dto,
+    };
+    if (account_details) {
+      basic_data["chart_of_account"] =
+        this.toAccountOfOrganization(account_details);
+    }
+    return basic_data;
   }
 }
 
