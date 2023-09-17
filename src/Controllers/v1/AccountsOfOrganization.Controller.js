@@ -40,4 +40,44 @@ let getAccountEditPage = async (req) => {
 };
 getAccountEditPage = SuccessErrorWrapper(getAccountEditPage, "done", 200);
 
-export { addAccountToOrganization, getAllAccounts, getAccountEditPage };
+let deleteAccounts = async (req) => {
+  const req_query = req?.query;
+  const clientInfo = req.clientInfo;
+  const accountIds =
+    req_query.account_ids &&
+    req_query.account_ids.split(",").map((e) => Number(e));
+  await AccountsOfOrganizationService.deleteAccounts({
+    client_info: clientInfo,
+    account_ids: accountIds,
+  });
+  return { account_ids: accountIds };
+};
+deleteAccounts = SuccessErrorWrapper(
+  deleteAccounts,
+  "selected accounts has been deleted",
+  204,
+);
+
+let deleteAccount = async (req) => {
+  const req_param = req?.params;
+  const clientInfo = req.clientInfo;
+  const accountIds = req_param && [Number(req_param.id)];
+  await AccountsOfOrganizationService.deleteAccounts({
+    client_info: clientInfo,
+    account_ids: accountIds,
+  });
+  return { account_ids: accountIds };
+};
+deleteAccount = SuccessErrorWrapper(
+  deleteAccount,
+  "selected account has been deleted",
+  204,
+);
+
+export {
+  addAccountToOrganization,
+  getAllAccounts,
+  getAccountEditPage,
+  deleteAccount,
+  deleteAccounts,
+};

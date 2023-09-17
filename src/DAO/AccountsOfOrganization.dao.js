@@ -24,6 +24,7 @@ class AccountsOfOrganizationDao {
       where: {
         id: account_id,
         organizationId: organization_id,
+        status: "active",
       },
       include: [
         { model: AccountsOfOrganization, as: "AccountParent", required: false },
@@ -33,13 +34,14 @@ class AccountsOfOrganizationDao {
     });
   }
 
-  async getAccountsFromDepth({ organization_id, depth = 2 }) {
+  async getAccountsFromDepth({ organization_id, depth = 0 }) {
     return await AccountsOfOrganization.findAll({
       where: {
         organizationId: organization_id,
         depth: {
           [Op.gte]: depth,
         },
+        status: "active",
       },
       include: [
         {
@@ -76,6 +78,61 @@ class AccountsOfOrganizationDao {
       updateOnDuplicate: update_on_duplicate,
       raw,
     });
+  }
+
+  async getAccountsOnlyIdAndNames({ account_ids = [], organization_id }) {
+    return AccountsOfOrganization.findAll({
+      where: {
+        organizationId: organization_id,
+        id: {
+          [Op.in]: account_ids,
+        },
+        status: {
+          [Op.in]: ["active", "inactive"],
+        },
+      },
+      attributes: ["id", "status", "name"],
+    });
+  }
+
+  async markAccountAsDeleted(
+    { account_ids = [], organization_id },
+    { transaction },
+  ) {
+    await this.#updateAccountsStatus(
+      {
+        account_ids,
+        organization_id,
+        status: "deleted",
+      },
+      {
+        transaction,
+      },
+    );
+    return true;
+  }
+
+  async #updateAccountsStatus(
+    { account_ids = [], organization_id, status },
+    { transaction },
+  ) {
+    await AccountsOfOrganization.update(
+      {
+        status,
+      },
+      {
+        where: {
+          organizationId: organization_id,
+          id: {
+            [Op.in]: account_ids,
+          },
+          status: {
+            [Op.in]: ["active", "inactive"],
+          },
+        },
+        transaction,
+      },
+    );
   }
 }
 

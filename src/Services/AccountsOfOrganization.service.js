@@ -133,6 +133,66 @@ class AccountsOfOrganizationService {
     });
   }
 
+  async deleteAccounts({ client_info, account_ids = [] }) {
+    try {
+      const organizationId = client_info.organizationId;
+      return await sequelize.transaction(async (t1) => {
+        await this.#markAccountsAsDeleted(
+          { account_ids, organization_id: organizationId },
+          { transaction: t1 },
+        );
+        return true;
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Remove a list of accounts
+   * @param {object} options
+   * @param {number} options.organization_id
+   * @param {Array.<number>} options.account_ids
+   * @param {object} options2
+   * @param {SequelizeTransaction} options2.transaction
+   * @return {Promise{Array.<Error>}} return array of errors.
+   */
+  async #markAccountsAsDeleted(
+    { account_ids = [], organization_id },
+    { transaction },
+  ) {
+    const accountsFound =
+      await AccountsOfOrganizationDao.getAccountsOnlyIdAndNames({
+        account_ids,
+        organization_id,
+      });
+    const errors = [];
+    // now check if each of the 'account_ids' exist in 'accountsFound'
+    for (let account_id of account_ids) {
+      const accountFound = accountsFound.findIndex(
+        (acc) => acc?.id === account_id,
+      );
+      if (accountFound === -1) {
+        errors.push(new DataNotFoundError(`${account_id} does not exists`));
+        break;
+      }
+    }
+    if (errors.length > 0) {
+      return { errors };
+    }
+
+    // update the account status
+    await AccountsOfOrganizationDao.markAccountAsDeleted(
+      {
+        organization_id,
+        account_ids,
+      },
+      { transaction },
+    );
+
+    return { errors: [] };
+  }
+
   /**
    * At time of organization creation we also create a set of accounts
    * @param {number} organization_id

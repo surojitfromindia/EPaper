@@ -36,7 +36,7 @@ AccountsOfOrganization.init(
       columnName: "parent_code",
     },
     status: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("active", "inactive", "deleted"),
       allowNull: false,
       columnName: "status",
       defaultValue: "active",

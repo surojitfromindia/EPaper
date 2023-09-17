@@ -36,7 +36,11 @@ class AccountsTree {
       children_count_as: "no_of_children",
     });
 
-    const rootLevelSorted = ld.sortBy(treeOfAccounts, ["account_parent_id"]);
+    const rootLevelSorted = ld.sortBy(treeOfAccounts, [
+      "account_group_name",
+      "account_type_name",
+      "account_parent_id",
+    ]);
 
     return new AccountsTree(rootLevelSorted);
   }
