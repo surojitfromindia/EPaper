@@ -10,6 +10,10 @@ let registerOrganization = async (req) => {
   });
   return { organization };
 };
-registerOrganization = SuccessErrorWrapper(registerOrganization, 201);
+registerOrganization = SuccessErrorWrapper(
+  registerOrganization,
+  "organization created",
+  201,
+);
 
 export { registerOrganization };

@@ -10,7 +10,7 @@ let createItem = async (req) => {
   });
   return { item: data };
 };
-createItem = SuccessErrorWrapper(createItem, 201);
+createItem = SuccessErrorWrapper(createItem, "item created", 201);
 
 let getAllItems = async (req) => {
   const clientInfo = req.clientInfo;
@@ -19,7 +19,7 @@ let getAllItems = async (req) => {
   });
   return { items: data };
 };
-getAllItems = SuccessErrorWrapper(getAllItems, 200);
+getAllItems = SuccessErrorWrapper(getAllItems, "done", 200);
 
 let getAnItem = async (req) => {
   const clientInfo = req.clientInfo;
@@ -30,7 +30,7 @@ let getAnItem = async (req) => {
   });
   return { item: data };
 };
-getAnItem = SuccessErrorWrapper(getAnItem, 200);
+getAnItem = SuccessErrorWrapper(getAnItem, "done", 200);
 
 let updateAnItem = async (req) => {
   const clientInfo = req.clientInfo;
@@ -43,6 +43,6 @@ let updateAnItem = async (req) => {
   });
   return { tax_rate: data };
 };
-updateAnItem = SuccessErrorWrapper(updateAnItem, 204);
+updateAnItem = SuccessErrorWrapper(updateAnItem, "item updated", 204);
 
 export { createItem, getAllItems, getAnItem, updateAnItem };

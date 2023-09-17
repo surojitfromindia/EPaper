@@ -10,7 +10,7 @@ let create = async (req) => {
   });
   return { tax_rate: createTaxRate };
 };
-create = SuccessErrorWrapper(create, 201);
+create = SuccessErrorWrapper(create, "tax rate created", 201);
 
 let getAllTaxRates = async (req) => {
   const clientInfo = req.clientInfo;
@@ -19,7 +19,7 @@ let getAllTaxRates = async (req) => {
   });
   return { tax_rates };
 };
-getAllTaxRates = SuccessErrorWrapper(getAllTaxRates, 200);
+getAllTaxRates = SuccessErrorWrapper(getAllTaxRates, "done", 200);
 
 let getATaxRate = async (req) => {
   const clientInfo = req.clientInfo;
@@ -30,7 +30,7 @@ let getATaxRate = async (req) => {
   });
   return { tax_rate };
 };
-getATaxRate = SuccessErrorWrapper(getATaxRate, 200);
+getATaxRate = SuccessErrorWrapper(getATaxRate, "done", 200);
 
 let updateATaxRate = async (req) => {
   const clientInfo = req.clientInfo;
@@ -43,6 +43,6 @@ let updateATaxRate = async (req) => {
   });
   return { tax_rate: updatedTaxRate };
 };
-updateATaxRate = SuccessErrorWrapper(updateATaxRate, 204);
+updateATaxRate = SuccessErrorWrapper(updateATaxRate, "tax rate update", 204);
 
 export { create, getAllTaxRates, getATaxRate, updateATaxRate };

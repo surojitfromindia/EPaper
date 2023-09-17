@@ -13,7 +13,11 @@ let addAccountToTemplate = async (req) => {
   });
   return { account };
 };
-addAccountToTemplate = SuccessErrorWrapper(addAccountToTemplate, 201);
+addAccountToTemplate = SuccessErrorWrapper(
+  addAccountToTemplate,
+  "account added to template",
+  201,
+);
 
 let importAccountsToTemplate = async (req) => {
   const clientInfo = req.clientInfo;
@@ -24,6 +28,10 @@ let importAccountsToTemplate = async (req) => {
   });
   return { accounts };
 };
-importAccountsToTemplate = SuccessErrorWrapper(importAccountsToTemplate, 201);
+importAccountsToTemplate = SuccessErrorWrapper(
+  importAccountsToTemplate,
+  "accounts for template imported",
+  201,
+);
 
 export { addAccountToTemplate, importAccountsToTemplate };

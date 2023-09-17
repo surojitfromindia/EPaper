@@ -8,6 +8,6 @@ let getAppState = async (req) => {
   });
   return { app_state: appState };
 };
-getAppState = SuccessErrorWrapper(getAppState, 200);
+getAppState = SuccessErrorWrapper(getAppState, "done", 200);
 
 export { getAppState };

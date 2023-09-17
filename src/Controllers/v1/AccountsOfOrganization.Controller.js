@@ -10,7 +10,11 @@ let addAccountToOrganization = async (req) => {
   });
   return { chart_of_account: account };
 };
-addAccountToOrganization = SuccessErrorWrapper(addAccountToOrganization, 201);
+addAccountToOrganization = SuccessErrorWrapper(
+  addAccountToOrganization,
+  "chart of account created",
+  201,
+);
 
 let getAllAccounts = async (req) => {
   const clientInfo = req.clientInfo;
@@ -21,7 +25,7 @@ let getAllAccounts = async (req) => {
   });
   return { chart_of_accounts: accounts };
 };
-getAllAccounts = SuccessErrorWrapper(getAllAccounts, 200);
+getAllAccounts = SuccessErrorWrapper(getAllAccounts, "done", 200);
 
 let getAccountEditPage = async (req) => {
   const req_query = req?.query;
@@ -34,6 +38,6 @@ let getAccountEditPage = async (req) => {
   });
   return { ...editPage };
 };
-getAccountEditPage = SuccessErrorWrapper(getAccountEditPage, 200);
+getAccountEditPage = SuccessErrorWrapper(getAccountEditPage, "done", 200);
 
 export { addAccountToOrganization, getAllAccounts, getAccountEditPage };
