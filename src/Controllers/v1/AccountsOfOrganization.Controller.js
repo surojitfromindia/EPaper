@@ -74,10 +74,24 @@ deleteAccount = SuccessErrorWrapper(
   204,
 );
 
+let getAccount = async (req) => {
+  const req_params = req?.params;
+  const clientInfo = req.clientInfo;
+  const accountId = Number(req_params.id);
+
+  const accounts = await AccountsOfOrganizationService.getAccount({
+    client_info: clientInfo,
+    account_id: accountId,
+  });
+  return { chart_of_accounts: accounts };
+};
+getAccount = SuccessErrorWrapper(getAccount, "done", 200);
+
 export {
   addAccountToOrganization,
   getAllAccounts,
   getAccountEditPage,
   deleteAccount,
   deleteAccounts,
+  getAccount,
 };

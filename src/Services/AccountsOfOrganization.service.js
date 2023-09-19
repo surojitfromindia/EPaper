@@ -149,6 +149,21 @@ class AccountsOfOrganizationService {
   }
 
   /**
+   * @param {object} options
+   * @param {ClientInfoType} options.client_info
+   * @param {number} options.account_id
+   * @return {Promise<any>}
+   */
+  async getAccount({ client_info, account_id }) {
+    const organizationId = client_info.organizationId;
+    const account = this.#getAccount({
+      organization_id: organizationId,
+      account_id,
+    });
+    return AccountsOfOrganizationDTO.toAccountOfOrganization(account);
+  }
+
+  /**
    * Remove a list of accounts
    * @param {object} options
    * @param {number} options.organization_id
@@ -320,7 +335,7 @@ class AccountsOfOrganizationService {
    * @desc get account
    * @param {ClientInfoType} client_info
    * @param {number} account_id
-   * @return {Promise<void>}
+   * @return {Promise<any>}
    */
   async #getAccount({ account_id, organization_id }) {
     const account = await AccountsOfOrganizationDao.getById({

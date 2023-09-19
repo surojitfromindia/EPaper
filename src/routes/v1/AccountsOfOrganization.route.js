@@ -3,6 +3,7 @@ import {
   addAccountToOrganization,
   deleteAccount,
   deleteAccounts,
+  getAccount,
   getAccountEditPage,
   getAllAccounts,
 } from "../../Controllers/v1/AccountsOfOrganization.Controller.js";
@@ -14,6 +15,7 @@ accountsOfOrganizationRouter
   .get("/", getAllAccounts)
   .get("/edit_page", getAccountEditPage)
   .delete("/", deleteAccounts)
-  .delete("/:id", deleteAccount);
+  .delete("/:id", deleteAccount)
+  .get("/:id", getAccount);
 
 export default accountsOfOrganizationRouter;
