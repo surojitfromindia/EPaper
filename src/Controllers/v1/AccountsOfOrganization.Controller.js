@@ -83,7 +83,7 @@ let getAccount = async (req) => {
     client_info: clientInfo,
     account_id: accountId,
   });
-  return { chart_of_accounts: accounts };
+  return { chart_of_account: accounts };
 };
 getAccount = SuccessErrorWrapper(getAccount, "done", 200);
 

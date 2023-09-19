@@ -156,7 +156,7 @@ class AccountsOfOrganizationService {
    */
   async getAccount({ client_info, account_id }) {
     const organizationId = client_info.organizationId;
-    const account = this.#getAccount({
+    const account = await this.#getAccount({
       organization_id: organizationId,
       account_id,
     });
