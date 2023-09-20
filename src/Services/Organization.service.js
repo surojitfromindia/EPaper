@@ -3,6 +3,7 @@ import { OrganizationDao, OrganizationsUsersDao } from "../DAO/index.js";
 import { OrganizationDTO } from "../DTO/index.js";
 import sequelize from "../Config/DataBase.Config.js";
 import AccountsOfOrganizationService from "./AccountsOfOrganization.service.js";
+import { PreferenceService } from "./index.js";
 
 class OrganizationService {
   /**
@@ -58,8 +59,14 @@ class OrganizationService {
         },
         { transaction: t1 },
       );
+
+      // also create default preferences of organization
+      await PreferenceService.initAllDefaultPreferences(
+        { organization_id: organizationId },
+        { transaction: t1 },
+      );
+
       return organizationBasic;
-      // end
     });
     return OrganizationDTO.toOrganization(createdOrganization);
   }

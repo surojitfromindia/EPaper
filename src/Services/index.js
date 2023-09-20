@@ -6,6 +6,9 @@ import TaxRateService from "./TaxRate.service.js";
 import RegularItemService from "./RegularItem.service.js";
 import AccountsOfOrganizationService from "./AccountsOfOrganization.service.js";
 import AppStateService from "./AppState.service.js";
+import PreferenceService, {
+  ItemPreferenceService,
+} from "./PreferenceServices/Preference.service.js";
 
 export {
   UserService,
@@ -16,4 +19,6 @@ export {
   RegularItemService,
   AccountsOfOrganizationService,
   AppStateService,
+  PreferenceService,
+  ItemPreferenceService,
 };
