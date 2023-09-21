@@ -7,7 +7,7 @@ const ITEM_PREFERENCE = {
   isItemNameDuplicationEnabled: true,
 };
 
-const DEFAULT_VALUES = {
+const PREFERENCE_DEFAULTS = {
   ITEM_PREFERENCE,
 };
-export { DEFAULT_VALUES };
+export { PREFERENCE_DEFAULTS };

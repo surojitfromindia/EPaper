@@ -1,10 +1,10 @@
-import { DEFAULT_VALUES } from "../../Constants/DefaultValues.js";
+import { PREFERENCE_DEFAULTS } from "../../Constants/Preference.Constant.js";
 import ItemPreferenceDao from "../../DAO/ItemPreference.dao.js";
 import { PreferenceNotFoundError } from "../../Errors/APIErrors/index.js";
 
 class ItemPreferenceService {
   async create({ organization_id }, { transaction }) {
-    const itemPreference = DEFAULT_VALUES.ITEM_PREFERENCE;
+    const itemPreference = PREFERENCE_DEFAULTS.ITEM_PREFERENCE;
     itemPreference.organizationId = organization_id;
     await ItemPreferenceDao.create(
       {

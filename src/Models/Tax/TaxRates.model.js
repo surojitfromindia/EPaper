@@ -1,6 +1,8 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
 import { OrganizationBasic, User } from "../index.js";
+import { MathLib } from "../../Utils/MathLib/mathLib.js";
+import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant.js";
 
 class TaxRates extends Model {}
 
@@ -27,6 +29,18 @@ TaxRates.init(
       type: DataTypes.DECIMAL,
       allowNull: false,
       columnName: "rate",
+      get() {
+        return MathLib.getWithPrecision(
+          MAXIMUM_NUMERIC_PRECISION,
+          this.getDataValue("rate"),
+        );
+      },
+    },
+    rateFormatted: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.getDataValue("rate");
+      },
     },
     countryCode: {
       type: DataTypes.STRING,

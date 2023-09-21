@@ -22,6 +22,7 @@ class TaxRateDao {
       where: {
         organization_id,
       },
+      raw: false,
     });
   }
 

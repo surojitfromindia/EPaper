@@ -5,7 +5,10 @@ class TaxRateDTO {
       name: tax_rate.name,
       description: tax_rate.description,
       rate: tax_rate.rate,
+      rate_formatted: tax_rate.rateFormatted,
       country_code: tax_rate.countryCode,
+      is_editable: tax_rate.isEditable,
+      is_deletable: tax_rate.isDeletable,
     };
   }
 

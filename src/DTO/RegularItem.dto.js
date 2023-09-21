@@ -1,5 +1,5 @@
 import { TaxRateDTO } from "./index.js";
-import { convertNullValueToString } from "../Utils/NumberParser.js";
+import { convertNullValueToString } from "../Utils/MathLib/NumberParser.js";
 
 class RegularItemDTO {
   static toItem(item_details) {
