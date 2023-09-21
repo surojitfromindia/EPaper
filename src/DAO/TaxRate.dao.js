@@ -38,6 +38,12 @@ class TaxRateDao {
     });
     return await this.get({ tax_rate_id, organization_id });
   }
+
+  async createAll({ tax_rates_details }, { transaction }) {
+    return await TaxRates.bulkCreate(tax_rates_details, {
+      transaction,
+    });
+  }
 }
 
 export default Object.freeze(new TaxRateDao());

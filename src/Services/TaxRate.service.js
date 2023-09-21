@@ -4,6 +4,7 @@ import { TaxRateDTO } from "../DTO/index.js";
 import { TaxRateDao } from "../DAO/index.js";
 import TaxRateDto from "../DTO/TaxRate.dto.js";
 import { DataNotFoundError } from "../Errors/APIErrors/index.js";
+import { TAX_DEFAULTS } from "../Constants/Taxes.Constant.js";
 
 class TaxRateService {
   async create({ tax_rate_details, client_info }) {
@@ -62,6 +63,31 @@ class TaxRateService {
       return TaxRateDto.toTaxRate(updatedTaxRate);
     }
     throw new DataNotFoundError();
+  }
+
+  async initDefaultTaxRates(
+    { client_info, organization_id, organization_country_code },
+    { transaction },
+  ) {
+    const organizationId = organization_id;
+    const userId = client_info.userId;
+    let taxRates = TAX_DEFAULTS._OTHER_;
+    const countryTaxRates = TAX_DEFAULTS[organization_country_code];
+    if (countryTaxRates) {
+      taxRates = countryTaxRates.map((tax) => ({
+        ...tax,
+        organizationId,
+        createdBy: userId,
+      }));
+    }
+    return await sequelize.transaction(async (t1) => {
+      return await TaxRateDao.createAll(
+        {
+          tax_rates_details: taxRates,
+        },
+        { transaction },
+      );
+    });
   }
 }
 

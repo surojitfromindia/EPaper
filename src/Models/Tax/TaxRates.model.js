@@ -34,7 +34,7 @@ TaxRates.init(
       columnName: "country_code",
     },
     taxType: {
-      type: DataTypes.ENUM(["direct_tax"]),
+      type: DataTypes.ENUM(["direct_tax", "tax"]),
       allowNull: false,
       columnName: "tax_type",
     },
@@ -43,6 +43,16 @@ TaxRates.init(
       allowNull: false,
       columnName: "status",
       defaultValue: "active",
+    },
+    isEditable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      columnName: "is_editable",
+    },
+    isDeletable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      columnName: "is_deletable",
     },
   },
   {
