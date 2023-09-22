@@ -133,6 +133,12 @@ class AccountsOfOrganizationService {
     });
   }
 
+  /**
+   * @desc Delete multiple accounts
+   * @param {ClientInfoType} client_info
+   * @param {number[]} account_ids
+   * @return {Promise<boolean>}
+   */
   async deleteAccounts({ client_info, account_ids = [] }) {
     try {
       const organizationId = client_info.organizationId;
@@ -347,6 +353,10 @@ class AccountsOfOrganizationService {
     }
     return account;
   }
+
+  ofItem({ client_info }) {
+    return new AccountsOfItem({ client_info });
+  }
 }
 
 export default Object.freeze(new AccountsOfOrganizationService());
@@ -379,5 +389,25 @@ class AccountsOfOrganizationUtils {
       }
       return updateAccount;
     });
+  }
+}
+
+class AccountsOfItem {
+  constructor({ client_info }) {
+    this.client_info = client_info;
+  }
+
+  async getAccountsForItem() {
+    const organizationId = this.client_info.organizationId;
+    const fetchAccountTypes = ["income", "expense", "cost_of_goods_sold"];
+    // return income accounts and purchase accounts
+    const accounts = await AccountsOfOrganizationDao.getAccountsByAccountTypes({
+      organization_id: organizationId,
+      account_types: fetchAccountTypes,
+    });
+    return {
+      income_accounts: accounts,
+      purchase_accounts: accounts,
+    };
   }
 }

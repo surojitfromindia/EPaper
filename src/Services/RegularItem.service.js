@@ -2,6 +2,7 @@ import sequelize from "../Config/DataBase.Config.js";
 import { RegularItemDto } from "../DTO/index.js";
 import { RegularItemDao } from "../DAO/index.js";
 import { DataNotFoundError } from "../Errors/APIErrors/index.js";
+import { AccountsOfOrganizationService, TaxRateService } from "./index.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
@@ -57,6 +58,28 @@ class RegularItemService {
       return RegularItemDto.toItem(updatedItem);
     }
     throw new DataNotFoundError();
+  }
+
+  /**
+   * @desc get edit page for item add or edit
+   * @param {ClientInfoType} client_info
+   * @param {number=} item_id provided an item id if fetching for edit.
+   */
+  async getEditPage({ client_info, item_id }) {
+    // fetch all taxes
+    const taxes = await TaxRateService.getAllTaxRates({ client_info });
+    // fetch income accounts
+    const accountsOfItem = AccountsOfOrganizationService.ofItem({
+      client_info,
+    });
+    const { income_accounts, purchase_accounts } =
+      await accountsOfItem.getAccountsForItem();
+    // fetch purchase accounts
+    return {
+      taxes,
+      income_accounts,
+      purchase_accounts,
+    };
   }
 }
 

@@ -3,8 +3,22 @@ import {
   AccountsOfOrganization,
   AccountTypes,
 } from "../Models/index.js";
-import { Op } from "@sequelize/core";
+import { Op, sql } from "@sequelize/core";
 
+const DEFAULT_SELECTED_ATTRIBUTES = [
+  "id",
+  "name",
+  "code",
+  "accountParentId",
+  "accountTypeId",
+  "accountGroupId",
+  "description",
+  "status",
+  "depth",
+];
+const DEFAULT_ACCOUNT_PARENT_ATTRIBUTES = ["id", "name"];
+const DEFAULT_ACCOUNT_TYPE_ATTRIBUTES = ["id", "name", "nameFormatted"];
+const DEFAULT_ACCOUNT_GROUP_ATTRIBUTES = ["id", "name", "nameFormatted"];
 class AccountsOfOrganizationDao {
   async create({ account_details }, { transaction }) {
     const account = await AccountsOfOrganization.create(account_details, {
@@ -36,6 +50,7 @@ class AccountsOfOrganizationDao {
 
   async getAccountsFromDepth({ organization_id, depth = 0 }) {
     return await AccountsOfOrganization.findAll({
+      attributes: DEFAULT_SELECTED_ATTRIBUTES,
       where: {
         organizationId: organization_id,
         depth: {
@@ -45,16 +60,19 @@ class AccountsOfOrganizationDao {
       },
       include: [
         {
+          attributes: DEFAULT_ACCOUNT_PARENT_ATTRIBUTES,
           required: false,
           model: AccountsOfOrganization,
           as: "AccountParent",
         },
         {
+          attributes: DEFAULT_ACCOUNT_TYPE_ATTRIBUTES,
           required: true,
           model: AccountTypes,
           as: "AccountType",
         },
         {
+          attributes: DEFAULT_ACCOUNT_GROUP_ATTRIBUTES,
           required: true,
           model: AccountGroups,
           as: "AccountGroup",
@@ -133,6 +151,29 @@ class AccountsOfOrganizationDao {
         transaction,
       },
     );
+  }
+
+  async getAccountsByAccountTypes({ organization_id, account_types }) {
+    return await AccountsOfOrganization.findAll({
+      attributes: DEFAULT_SELECTED_ATTRIBUTES,
+      where: {
+        organizationId: organization_id,
+        status: "active",
+        accountTypeId: {
+          [Op.in]: sql`(select "id" from "AccountTypes" where "name" = any ($account_types))`,
+        },
+      },
+      bind: {
+        account_types,
+      },
+      include: [
+        {
+          attributes: DEFAULT_ACCOUNT_TYPE_ATTRIBUTES,
+          model: AccountTypes,
+          as: "AccountType",
+        },
+      ],
+    });
   }
 }
 

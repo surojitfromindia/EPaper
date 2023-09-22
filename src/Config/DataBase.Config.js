@@ -14,6 +14,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     ssl,
   },
   logging: (message) => console.log(chalk.cyan(message, "\n\n")),
+  logQueryParameters: true,
 });
 
 export default sequelize;

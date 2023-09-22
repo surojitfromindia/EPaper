@@ -5,7 +5,8 @@ const itemRouter = Router();
 
 itemRouter
   .post("/", RegularItemController.createItem)
-  .get("/:itemId", RegularItemController.getAnItem)
+  .get("/edit_page", RegularItemController.getItemEditPage)
+  .get("/:item_id", RegularItemController.getAnItem)
   .get("/", RegularItemController.getAllItems)
-  .put("/:itemId", RegularItemController.updateAnItem);
+  .put("/:item_id", RegularItemController.updateAnItem);
 export default itemRouter;
