@@ -8,6 +8,7 @@ class RegularItemDTO {
       name: item_details.name,
       unit: item_details.unit,
       product_type: item_details.productType,
+      product_type_formatted: productTypeFormat(item_details.productType),
       selling_price: convertNullValueToString(
         item_details.sellingPrice,
       ).tryParseOrNull(),
@@ -23,7 +24,6 @@ class RegularItemDTO {
       item_for: item_details.itemFor,
       status: item_details.status,
       tax_rate_id: item_details.taxRateId,
-      created_by: item_details.createdBy,
     };
     if (item_details.taxRate) {
       basicItemDetails.tax_rate = TaxRateDTO.toTaxRate(item_details.taxRate);
@@ -83,3 +83,16 @@ class RegularItemDTO {
 }
 
 export default RegularItemDTO;
+
+/**
+ *
+ * @param {("goods"|"service")} product_type
+ */
+const productTypeFormat = (product_type) => {
+  switch (product_type) {
+    case "goods":
+      return "Goods";
+    case "service":
+      return "Service";
+  }
+};
