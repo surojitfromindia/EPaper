@@ -3,7 +3,7 @@ import { OrganizationDao, OrganizationsUsersDao } from "../DAO/index.js";
 import { OrganizationDTO } from "../DTO/index.js";
 import sequelize from "../Config/DataBase.Config.js";
 import AccountsOfOrganizationService from "./AccountsOfOrganization.service.js";
-import { PreferenceService, TaxRateService } from "./index.js";
+import { PreferenceService, SettingService } from "./index.js";
 
 class OrganizationService {
   /**
@@ -66,14 +66,16 @@ class OrganizationService {
         { transaction: t1 },
       );
 
-      // also create predefined taxes
-      await TaxRateService.initDefaultTaxRates(
+      // also create predefined taxes and other fields
+      await SettingService.initAllDefaultSettings(
         {
           client_info,
           organization_id: organizationId,
           organization_country_code: countryCode,
         },
-        { transaction: t1 },
+        {
+          transaction: t1,
+        },
       );
 
       return organizationBasic;

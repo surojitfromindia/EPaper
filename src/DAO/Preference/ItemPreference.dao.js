@@ -1,4 +1,4 @@
-import { ItemPreference } from "../Models/index.js";
+import { ItemPreference } from "../../Models/index.js";
 
 class ItemPreferenceDao {
   async create({ preference_details }, { transaction }) {
@@ -7,7 +7,7 @@ class ItemPreferenceDao {
     });
   }
 
-  async get({ organization_id }, {}) {
+  async get({ organization_id }) {
     return await ItemPreference.get({
       where: {
         organizationId: organization_id,

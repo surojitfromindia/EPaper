@@ -2,7 +2,7 @@ import {
   AccountGroups,
   AccountsOfOrganization,
   AccountTypes,
-} from "../Models/index.js";
+} from "../../Models/index.js";
 import { Op, sql } from "@sequelize/core";
 
 const DEFAULT_SELECTED_ATTRIBUTES = [
@@ -153,6 +153,12 @@ class AccountsOfOrganizationDao {
     );
   }
 
+  /**
+   *
+   * @param {number} organization_id
+   * @param {string[]} account_types
+   * @return {Promise<any[]>}
+   */
   async getAccountsByAccountTypes({ organization_id, account_types }) {
     return await AccountsOfOrganization.findAll({
       attributes: DEFAULT_SELECTED_ATTRIBUTES,

@@ -1,4 +1,4 @@
-import { AccountsConfig } from "../Models/index.js";
+import { AccountsConfig } from "../../Models/index.js";
 
 class AccountsConfigDao {
   async create({ accounts_config_details }, { transaction }) {

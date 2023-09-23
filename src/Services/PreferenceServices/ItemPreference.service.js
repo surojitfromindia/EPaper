@@ -1,5 +1,5 @@
 import { PREFERENCE_DEFAULTS } from "../../Constants/Preference.Constant.js";
-import ItemPreferenceDao from "../../DAO/ItemPreference.dao.js";
+import { ItemPreferenceDao } from "../../DAO/index.js";
 import { PreferenceNotFoundError } from "../../Errors/APIErrors/index.js";
 
 class ItemPreferenceService {

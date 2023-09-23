@@ -10,6 +10,7 @@ import { RegularItems } from "./Item/RegularItems.model.js";
 import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model.js";
 import { AccountGroups } from "./Account/AccountGroups.model.js";
 import { AccountTypes } from "./Account/AccountTypes.model.js";
+import { ItemUnit } from "./ItemUnit/ItemUnit.model.js";
 
 const force = false;
 const alter = true;
@@ -23,13 +24,14 @@ async function syncWithDb() {
   // await AccountsOfTemplate.sync({ alter, force });
   // await AccountsConfig.sync({ alter, force });
   // await OrganizationsUsers.sync({ alter, force });
-  await TaxRates.sync({ alter, force });
+  // await TaxRates.sync({ alter, force });
   // await RegularItems.sync({ alter, force });
   // await AccountsOfOrganization.sync({ alter });
   // await ItemPreference.sync({ alter });
+  // await ItemUnit.sync({ alter });
 }
 
-// syncWithDb();
+syncWithDb();
 export {
   User,
   OrganizationBasic,
@@ -43,4 +45,5 @@ export {
   RegularItems,
   AccountsOfOrganization,
   ItemPreference,
+  ItemUnit,
 };

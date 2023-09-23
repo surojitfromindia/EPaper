@@ -1,4 +1,4 @@
-import { TaxRateDTO } from "./index.js";
+import { AccountsOfOrganizationDTO, ItemUnitDTO, TaxRateDTO } from "./index.js";
 import { convertNullValueToString } from "../Utils/MathLib/NumberParser.js";
 
 class RegularItemDTO {
@@ -56,6 +56,28 @@ class RegularItemDTO {
       purchaseDescription: item_payload.purchase_description,
       itemFor: item_payload.item_for,
       taxRateId: item_payload.tax_rate_id,
+    };
+  }
+
+  static toItemEditPage({
+    taxes,
+    units,
+    income_accounts_list,
+    purchase_accounts_list,
+    inventory_accounts_list,
+  }) {
+    return {
+      taxes: taxes.map(TaxRateDTO.toTaxRate),
+      units: units.map(ItemUnitDTO.toItemUnit),
+      income_accounts_list: income_accounts_list.map(
+        AccountsOfOrganizationDTO.toAccountOfOrganization,
+      ),
+      purchase_accounts_list: purchase_accounts_list.map(
+        AccountsOfOrganizationDTO.toAccountOfOrganization,
+      ),
+      inventory_accounts_list: inventory_accounts_list.map(
+        AccountsOfOrganizationDTO.toAccountOfOrganization,
+      ),
     };
   }
 }

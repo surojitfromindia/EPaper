@@ -176,7 +176,7 @@ class AccountsOfOrganizationService {
    * @param {Array.<number>} options.account_ids
    * @param {object} options2
    * @param {SequelizeTransaction} options2.transaction
-   * @return {Promise{Array.<Error>}} return array of errors.
+   * @return {Promise<Array.<Error>>}} return array of errors.
    */
   async #markAccountsAsDeleted(
     { account_ids = [], organization_id },
@@ -400,14 +400,29 @@ class AccountsOfItem {
   async getAccountsForItem() {
     const organizationId = this.client_info.organizationId;
     const fetchAccountTypes = ["income", "expense", "cost_of_goods_sold"];
+    const income_accounts_list = [];
+    const purchase_accounts_list = [];
+    const inventory_accounts_list = [];
     // return income accounts and purchase accounts
     const accounts = await AccountsOfOrganizationDao.getAccountsByAccountTypes({
       organization_id: organizationId,
       account_types: fetchAccountTypes,
     });
+    for (const account of accounts) {
+      switch (account?.AccountType?.name) {
+        case "income":
+        case "cost_of_goods_sold":
+          income_accounts_list.push(account);
+          break;
+        case "expense":
+          purchase_accounts_list.push(account);
+          break;
+      }
+    }
     return {
-      income_accounts: accounts,
-      purchase_accounts: accounts,
+      purchase_accounts_list,
+      income_accounts_list,
+      inventory_accounts_list,
     };
   }
 }

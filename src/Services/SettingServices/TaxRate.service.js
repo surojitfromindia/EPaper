@@ -1,8 +1,8 @@
 // here I handle business logic
-import sequelize from "../Config/DataBase.Config.js";
-import { TaxRateDao } from "../DAO/index.js";
-import { DataNotFoundError } from "../Errors/APIErrors/index.js";
-import { TAX_DEFAULTS } from "../Constants/Taxes.Constant.js";
+import sequelize from "../../Config/DataBase.Config.js";
+import { TaxRateDao } from "../../DAO/index.js";
+import { DataNotFoundError } from "../../Errors/APIErrors/index.js";
+import { TAX_DEFAULTS } from "../../Constants/Taxes.Constant.js";
 
 class TaxRateService {
   async create({ tax_rate_details, client_info }) {
@@ -74,14 +74,12 @@ class TaxRateService {
         createdBy: userId,
       }));
     }
-    return await sequelize.transaction(async (t1) => {
-      return await TaxRateDao.createAll(
-        {
-          tax_rates_details: taxRates,
-        },
-        { transaction },
-      );
-    });
+    return await TaxRateDao.createAll(
+      {
+        tax_rates_details: taxRates,
+      },
+      { transaction },
+    );
   }
 }
 

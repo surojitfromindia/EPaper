@@ -1,5 +1,5 @@
-import { AccountsOfTemplate } from "../Models/index.js";
-import sequelize from "../Config/DataBase.Config.js";
+import { AccountsOfTemplate } from "../../Models/index.js";
+import sequelize from "../../Config/DataBase.Config.js";
 import { QueryTypes } from "@sequelize/core";
 
 class AccountsOfTemplateDao {

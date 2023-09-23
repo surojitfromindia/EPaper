@@ -1,4 +1,4 @@
-import { TaxRates } from "../Models/index.js";
+import { TaxRates } from "../../Models/index.js";
 
 class TaxRateDao {
   async create({ tax_rate_details }, { transaction }) {

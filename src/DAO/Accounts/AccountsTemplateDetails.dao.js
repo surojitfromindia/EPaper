@@ -1,5 +1,5 @@
-import { AccountTemplateDetails } from "../Models/index.js";
-import { PRIME_ORGANIZATION_ID } from "../Constants/PrimeOrganization.Constants.js";
+import { AccountTemplateDetails } from "../../Models/index.js";
+import { PRIME_ORGANIZATION_ID } from "../../Constants/PrimeOrganization.Constants.js";
 
 class AccountTemplateDetailsDao {
   async create({ template_details }, { transaction }) {

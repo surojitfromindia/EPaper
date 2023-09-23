@@ -1,5 +1,6 @@
 import { RegularItemService } from "../../Services/index.js";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper.js";
+import RegularItemDTO from "../../DTO/RegularItem.dto.js";
 
 let createItem = async (req) => {
   const clientInfo = req.clientInfo;
@@ -54,7 +55,7 @@ let getItemEditPage = async (req) => {
     client_info: clientInfo,
     item_id: itemId,
   });
-  return { ...editPage };
+  return RegularItemDTO.toItemEditPage(editPage);
 };
 getItemEditPage = SuccessErrorWrapper(getItemEditPage, "done", 200);
 

@@ -1,4 +1,4 @@
-import { AccountGroups } from "../Models/index.js";
+import { AccountGroups } from "../../Models/index.js";
 
 class AccountGroupsDao {
   async getAll() {
