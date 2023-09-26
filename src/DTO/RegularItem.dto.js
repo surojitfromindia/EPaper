@@ -1,4 +1,4 @@
-import { AccountsOfOrganizationDTO, ItemUnitDTO, TaxRateDTO } from "./index.js";
+import { ItemUnitDTO, TaxRateDTO } from "./index.js";
 import { convertNullValueToString } from "../Utils/MathLib/NumberParser.js";
 
 class RegularItemDTO {
@@ -69,15 +69,9 @@ class RegularItemDTO {
     return {
       taxes: taxes.map(TaxRateDTO.toTaxRate),
       units: units.map(ItemUnitDTO.toItemUnit),
-      income_accounts_list: income_accounts_list.map(
-        AccountsOfOrganizationDTO.toAccountOfOrganization,
-      ),
-      purchase_accounts_list: purchase_accounts_list.map(
-        AccountsOfOrganizationDTO.toAccountOfOrganization,
-      ),
-      inventory_accounts_list: inventory_accounts_list.map(
-        AccountsOfOrganizationDTO.toAccountOfOrganization,
-      ),
+      income_accounts_list,
+      purchase_accounts_list,
+      inventory_accounts_list,
     };
   }
 }

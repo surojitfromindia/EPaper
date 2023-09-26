@@ -7,6 +7,7 @@ import {
   ItemUnitService,
   TaxRateService,
 } from "./index.js";
+import { AccountsTree } from "../Utils/AccoutsTree.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
@@ -88,9 +89,17 @@ class RegularItemService {
     return {
       taxes,
       units: itemUnits,
-      income_accounts_list,
-      purchase_accounts_list,
-      inventory_accounts_list,
+      income_accounts_list: AccountsTree.createTreeOfOrganizationAccountsAsDTO({
+        accounts: income_accounts_list,
+      }).flatArrayFromTreeAsDTO(),
+      purchase_accounts_list:
+        AccountsTree.createTreeOfOrganizationAccountsAsDTO({
+          accounts: purchase_accounts_list,
+        }).flatArrayFromTreeAsDTO(),
+      inventory_accounts_list:
+        AccountsTree.createTreeOfOrganizationAccountsAsDTO({
+          accounts: inventory_accounts_list,
+        }).flatArrayFromTreeAsDTO(),
     };
   }
 }
