@@ -24,9 +24,11 @@ class RegularItemDTO {
       item_for: item_details.itemFor,
       status: item_details.status,
       tax_rate_id: item_details.taxRateId,
+      sales_account_id: item_details.salesAccountId,
+      purchase_accounts_id: item_details.purchaseAccountId,
     };
-    if (item_details.taxRate) {
-      basicItemDetails.tax_rate = TaxRateDTO.toTaxRate(item_details.taxRate);
+    if (item_details.tax) {
+      basicItemDetails.tax = TaxRateDTO.toTaxRate(item_details.tax);
     }
     return basicItemDetails;
   }
@@ -41,7 +43,9 @@ class RegularItemDTO {
       purchasePrice: item_payload.purchase_price,
       purchaseDescription: item_payload.purchase_description,
       itemFor: item_payload.item_for,
-      taxRateId: item_payload.tax_rate_id,
+      taxId: item_payload.tax_id,
+      salesAccountId: item_payload.sales_account_id,
+      purchaseAccountId: item_payload.purchase_accounts_id,
     };
   }
 

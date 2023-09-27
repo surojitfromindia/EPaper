@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
 import { OrganizationBasic, TaxRates, User } from "../index.js";
+import { AccountsOfOrganization } from "../Account/AccountsOfOrganization.model.js";
 
 class RegularItems extends Model {}
 
@@ -66,14 +67,6 @@ RegularItems.init(
   },
 );
 
-RegularItems.belongsTo(TaxRates, {
-  foreignKey: {
-    allowNull: false,
-    columnName: "tax_rate_id",
-    name: "taxRateId",
-  },
-  as: "taxRate",
-});
 RegularItems.belongsTo(User, {
   foreignKey: {
     allowNull: false,
@@ -89,6 +82,30 @@ RegularItems.belongsTo(OrganizationBasic, {
     name: "organizationId",
   },
   as: "organization",
+});
+RegularItems.belongsTo(AccountsOfOrganization, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "sales_account_id",
+    name: "salesAccountId",
+  },
+  as: "salesAccount",
+});
+RegularItems.belongsTo(AccountsOfOrganization, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "purchase_account_id",
+    name: "purchaseAccountId",
+  },
+  as: "purchaseAccount",
+});
+RegularItems.belongsTo(TaxRates, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "tax_id",
+    name: "taxId",
+  },
+  as: "tax",
 });
 
 export { RegularItems };

@@ -1,15 +1,17 @@
 import { RegularItemService } from "../../Services/index.js";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper.js";
 import RegularItemDTO from "../../DTO/RegularItem.dto.js";
+import { RegularItemDto } from "../../DTO/index.js";
 
 let createItem = async (req) => {
   const clientInfo = req.clientInfo;
   const body = req.body;
-  const data = await RegularItemService.create({
-    item_details: body,
+  const itemDetailsFromPayload = RegularItemDto.toItemCreate(body);
+  const createdItem = await RegularItemService.create({
+    item_details: itemDetailsFromPayload,
     client_info: clientInfo,
   });
-  return { item: data };
+  return { item: RegularItemDto.toItem(createdItem) };
 };
 createItem = SuccessErrorWrapper(createItem, "item created", 201);
 

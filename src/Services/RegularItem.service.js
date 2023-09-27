@@ -11,10 +11,9 @@ import { AccountsTree } from "../Utils/AccoutsTree.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
-    const itemDetailsFromPayload = RegularItemDto.toItemCreate(item_details);
     const createdItem = await sequelize.transaction(async (t1) => {
       const itemDetails = {
-        ...itemDetailsFromPayload,
+        ...item_details,
         organizationId: client_info.organizationId,
         createdBy: client_info.userId,
       };

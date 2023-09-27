@@ -13,6 +13,7 @@ String.prototype.tryParseOrNull = tryParseOrNull;
 
 function convertNullValueToString(value) {
   if (value === null) return "";
+  if (value === undefined) return "";
   return value;
 }
 

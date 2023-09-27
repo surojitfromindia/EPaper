@@ -25,7 +25,7 @@ async function syncWithDb() {
   // await AccountsConfig.sync({ alter, force });
   // await OrganizationsUsers.sync({ alter, force });
   // await TaxRates.sync({ alter, force });
-  // await RegularItems.sync({ alter, force });
+  // await RegularItems.sync({ alter, force: true });
   // await AccountsOfOrganization.sync({ alter });
   // await ItemPreference.sync({ alter });
   // await ItemUnit.sync({ alter });
