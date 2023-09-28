@@ -69,14 +69,18 @@ class RegularItemDTO {
     income_accounts_list,
     purchase_accounts_list,
     inventory_accounts_list,
+    item_details,
   }) {
-    return {
+    const basic_data = {
       taxes: taxes.map(TaxRateDTO.toTaxRate),
       units: units.map(ItemUnitDTO.toItemUnit),
       income_accounts_list,
       purchase_accounts_list,
       inventory_accounts_list,
     };
+    if (item_details) {
+      basic_data["item"] = RegularItemDTO.toItem(item_details);
+    }
   }
 }
 
