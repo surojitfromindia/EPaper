@@ -2,6 +2,8 @@ import { DataTypes, Model } from "@sequelize/core";
 import sequelize from "../../Config/DataBase.Config.js";
 import { OrganizationBasic, TaxRates, User } from "../index.js";
 import { AccountsOfOrganization } from "../Account/AccountsOfOrganization.model.js";
+import { MathLib } from "../../Utils/MathLib/mathLib.js";
+import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant.js";
 
 class RegularItems extends Model {}
 
@@ -33,6 +35,13 @@ RegularItems.init(
       type: DataTypes.DECIMAL,
       allowNull: true,
       columnName: "selling_price",
+      get() {
+        const value = this.getDataValue("sellingPrice");
+        if (value) {
+          return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+        }
+        return value;
+      },
     },
     sellingDescription: {
       type: DataTypes.STRING,
@@ -43,6 +52,13 @@ RegularItems.init(
       type: DataTypes.DECIMAL,
       allowNull: true,
       columnName: "purchase_price",
+      get() {
+        const value = this.getDataValue("purchasePrice");
+        if (value) {
+          return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+        }
+        return value;
+      },
     },
     purchaseDescription: {
       type: DataTypes.STRING,
@@ -73,7 +89,7 @@ RegularItems.belongsTo(User, {
     columnName: "created_by",
     name: "createdBy",
   },
-  as: "createdByUser",
+  as: "CreatedByUser",
 });
 RegularItems.belongsTo(OrganizationBasic, {
   foreignKey: {
@@ -81,7 +97,7 @@ RegularItems.belongsTo(OrganizationBasic, {
     columnName: "organization_id",
     name: "organizationId",
   },
-  as: "organization",
+  as: "Organization",
 });
 RegularItems.belongsTo(AccountsOfOrganization, {
   foreignKey: {
@@ -89,7 +105,7 @@ RegularItems.belongsTo(AccountsOfOrganization, {
     columnName: "sales_account_id",
     name: "salesAccountId",
   },
-  as: "salesAccount",
+  as: "SalesAccount",
 });
 RegularItems.belongsTo(AccountsOfOrganization, {
   foreignKey: {
@@ -97,7 +113,7 @@ RegularItems.belongsTo(AccountsOfOrganization, {
     columnName: "purchase_account_id",
     name: "purchaseAccountId",
   },
-  as: "purchaseAccount",
+  as: "PurchaseAccount",
 });
 RegularItems.belongsTo(TaxRates, {
   foreignKey: {
@@ -105,7 +121,7 @@ RegularItems.belongsTo(TaxRates, {
     columnName: "tax_id",
     name: "taxId",
   },
-  as: "tax",
+  as: "Tax",
 });
 
 export { RegularItems };

@@ -31,7 +31,7 @@ async function syncWithDb() {
   // await ItemUnit.sync({ alter });
 }
 
-syncWithDb();
+// syncWithDb();
 export {
   User,
   OrganizationBasic,

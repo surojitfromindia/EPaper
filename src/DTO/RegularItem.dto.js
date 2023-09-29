@@ -1,4 +1,4 @@
-import { ItemUnitDTO, TaxRateDTO } from "./index.js";
+import { AccountsOfOrganizationDTO, ItemUnitDTO, TaxRateDTO } from "./index.js";
 import { convertNullValueToString } from "../Utils/MathLib/NumberParser.js";
 
 class RegularItemDTO {
@@ -9,26 +9,47 @@ class RegularItemDTO {
       unit: item_details.unit,
       product_type: item_details.productType,
       product_type_formatted: productTypeFormat(item_details.productType),
-      selling_price: convertNullValueToString(
-        item_details.sellingPrice,
-      ).tryParseOrNull(),
       selling_description: convertNullValueToString(
         item_details.sellingDescription,
       ),
-      purchase_price: convertNullValueToString(
-        item_details.purchasePrice,
-      ).tryParseOrNull(),
       purchase_description: convertNullValueToString(
         item_details.purchaseDescription,
       ),
       item_for: item_details.itemFor,
       status: item_details.status,
-      tax_rate_id: item_details.taxRateId,
-      sales_account_id: item_details.salesAccountId,
-      purchase_accounts_id: item_details.purchaseAccountId,
+      tax_id: item_details.taxId,
     };
-    if (item_details.tax) {
-      basicItemDetails.tax = TaxRateDTO.toTaxRate(item_details.tax);
+    if (item_details.purchasePrice) {
+      basicItemDetails.purchase_price = item_details.purchasePrice;
+    }
+    if (item_details.sellingPrice) {
+      basicItemDetails.selling_price = item_details.sellingPrice;
+    }
+    if (item_details.salesAccountId) {
+      basicItemDetails.sales_account_id = item_details.salesAccountId;
+    }
+    if (item_details.SalesAccount) {
+      basicItemDetails.sales_account_name =
+        AccountsOfOrganizationDTO.toAccountOfOrganization(
+          item_details.SalesAccount,
+        ).account_name;
+    }
+    if (item_details.purchaseAccountId) {
+      basicItemDetails.purchase_account_id = item_details.purchaseAccountId;
+    }
+    if (item_details.PurchaseAccount) {
+      basicItemDetails.purchase_account_name =
+        AccountsOfOrganizationDTO.toAccountOfOrganization(
+          item_details.PurchaseAccount,
+        ).account_name;
+    }
+
+    if (item_details.Tax) {
+      const taxDetails = TaxRateDTO.toTaxRate(item_details.Tax);
+      basicItemDetails.tax_percentage_formatted =
+        taxDetails.tax_percentage_formatted;
+      basicItemDetails.tax_percentage = taxDetails.tax_percentage;
+      basicItemDetails.tax_name = taxDetails.tax_name;
     }
     return basicItemDetails;
   }
@@ -45,7 +66,7 @@ class RegularItemDTO {
       itemFor: item_payload.item_for,
       taxId: item_payload.tax_id,
       salesAccountId: item_payload.sales_account_id,
-      purchaseAccountId: item_payload.purchase_accounts_id,
+      purchaseAccountId: item_payload.purchase_account_id,
     };
   }
 
@@ -81,6 +102,7 @@ class RegularItemDTO {
     if (item_details) {
       basic_data["item"] = RegularItemDTO.toItem(item_details);
     }
+    return basic_data;
   }
 }
 

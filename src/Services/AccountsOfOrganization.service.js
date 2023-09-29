@@ -176,7 +176,7 @@ class AccountsOfOrganizationService {
    * @param {Array.<number>} options.account_ids
    * @param {object} options2
    * @param {SequelizeTransaction} options2.transaction
-   * @return {Promise<Array.<Error>>}} return array of errors.
+   * @return {Promise<{errors: *[]}>}} return array of errors.
    */
   async #markAccountsAsDeleted(
     { account_ids = [], organization_id },
@@ -354,6 +354,11 @@ class AccountsOfOrganizationService {
     return account;
   }
 
+  /**
+   * get accounts related to item
+   * @param client_info
+   * @return {AccountsOfItem}
+   */
   ofItem({ client_info }) {
     return new AccountsOfItem({ client_info });
   }
@@ -411,10 +416,10 @@ class AccountsOfItem {
     for (const account of accounts) {
       switch (account?.AccountType?.name) {
         case "income":
-        case "cost_of_goods_sold":
           income_accounts_list.push(account);
           break;
         case "expense":
+        case "cost_of_goods_sold":
           purchase_accounts_list.push(account);
           break;
       }

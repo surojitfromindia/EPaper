@@ -11,7 +11,7 @@ import { AccountsTree } from "../Utils/AccoutsTree.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
-    const createdItem = await sequelize.transaction(async (t1) => {
+    return await sequelize.transaction(async (t1) => {
       const itemDetails = {
         ...item_details,
         organizationId: client_info.organizationId,
@@ -22,25 +22,23 @@ class RegularItemService {
         { transaction: t1 },
       );
     });
-    return RegularItemDto.toItem(createdItem);
   }
 
   async getAllItems({ client_info }) {
     const organizationId = client_info.organizationId;
-    const items = await RegularItemDao.getAll({
+    return await RegularItemDao.getAll({
       organization_id: organizationId,
     });
-    return items.map((item) => RegularItemDto.toItem(item));
   }
 
   async getAnItem({ item_id, client_info }) {
     const organizationId = client_info.organizationId;
-    const taxRate = await RegularItemDao.get({
+    const item = await RegularItemDao.get({
       item_id,
       organization_id: organizationId,
     });
-    if (taxRate) {
-      return RegularItemDto.toItem(taxRate);
+    if (item) {
+      return item;
     }
     throw new DataNotFoundError();
   }
@@ -59,22 +57,31 @@ class RegularItemService {
     });
 
     if (updatedItem) {
-      return RegularItemDto.toItem(updatedItem);
+      return updatedItem;
     }
     throw new DataNotFoundError();
   }
 
   /**
    * @desc get edit page for item add or edit
-   * @param {ClientInfoType} client_info
-   * @param {number=} item_id provided an item id if fetching for edit.
+   * @param {object} param0
+   * @param {ClientInfoType} param0.client_info
+   * @param {number=} param0.item_id provided an item id if fetching for edit.
    */
-  async getEditPage({ client_info }) {
+  async getEditPage({ client_info, item_id }) {
+    let itemDetails = null;
+    let taxes;
+    let itemUnits;
+    if (item_id) {
+      itemDetails = await this.getAnItem({
+        item_id,
+        client_info,
+      });
+    }
     // fetch all taxes
-    const taxes = await TaxRateService.getAllTaxRates({ client_info });
-
+    taxes = await TaxRateService.getAllTaxRates({ client_info });
     // fetch all units
-    const itemUnits = await ItemUnitService.getAllItemUnits({ client_info });
+    itemUnits = await ItemUnitService.getAllItemUnits({ client_info });
     // fetch income accounts
     const accountsOfItem = AccountsOfOrganizationService.ofItem({
       client_info,
@@ -86,6 +93,7 @@ class RegularItemService {
     } = await accountsOfItem.getAccountsForItem();
     // fetch purchase accounts
     return {
+      item_details: itemDetails,
       taxes,
       units: itemUnits,
       income_accounts_list: AccountsTree.createTreeOfOrganizationAccountsAsDTO({

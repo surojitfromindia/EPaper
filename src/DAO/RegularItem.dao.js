@@ -1,4 +1,8 @@
-import { RegularItems, TaxRates } from "../Models/index.js";
+import {
+  AccountsOfOrganization,
+  RegularItems,
+  TaxRates,
+} from "../Models/index.js";
 
 class RegularItemDao {
   async create({ item_details }, { transaction }) {
@@ -18,6 +22,18 @@ class RegularItemDao {
       include: [
         {
           model: TaxRates,
+          as: "Tax",
+          required: true,
+        },
+        {
+          model: AccountsOfOrganization,
+          as: "SalesAccount",
+          required: false,
+        },
+        {
+          model: AccountsOfOrganization,
+          as: "PurchaseAccount",
+          required: false,
         },
       ],
     });
