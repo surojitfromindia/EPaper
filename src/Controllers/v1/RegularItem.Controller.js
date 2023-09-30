@@ -39,8 +39,9 @@ let updateAnItem = async (req) => {
   const clientInfo = req.clientInfo;
   const body = req.body;
   const itemId = req.params.item_id;
+  const itemDetailsFromPayload = RegularItemDto.toItemUpdate(body);
   const item = await RegularItemService.updateAnItem({
-    item_details: body,
+    item_details: itemDetailsFromPayload,
     item_id: itemId,
     client_info: clientInfo,
   });

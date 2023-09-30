@@ -80,7 +80,9 @@ class RegularItemDTO {
       purchasePrice: item_payload.purchase_price,
       purchaseDescription: item_payload.purchase_description,
       itemFor: item_payload.item_for,
-      taxRateId: item_payload.tax_rate_id,
+      taxId: item_payload.tax_id,
+      salesAccountId: item_payload.sales_account_id,
+      purchaseAccountId: item_payload.purchase_account_id,
     };
   }
 

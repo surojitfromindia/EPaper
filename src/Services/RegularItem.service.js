@@ -1,5 +1,4 @@
 import sequelize from "../Config/DataBase.Config.js";
-import { RegularItemDto } from "../DTO/index.js";
 import { RegularItemDao } from "../DAO/index.js";
 import { DataNotFoundError } from "../Errors/APIErrors/index.js";
 import {
@@ -11,11 +10,14 @@ import { AccountsTree } from "../Utils/AccoutsTree.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
+    const organizationId = client_info.organization_id;
+    const createdBy = client_info.userId;
+    const newItem = this.#formatItemBody({ item_details });
     return await sequelize.transaction(async (t1) => {
       const itemDetails = {
-        ...item_details,
-        organizationId: client_info.organizationId,
-        createdBy: client_info.userId,
+        ...newItem,
+        organizationId,
+        createdBy,
       };
       return await RegularItemDao.create(
         { item_details: itemDetails },
@@ -44,11 +46,11 @@ class RegularItemService {
   }
 
   async updateAnItem({ item_id, item_details, client_info }) {
-    const taxRateDetailsFromPayload = RegularItemDto.toItemUpdate(item_details);
+    const updateItemBody = this.#formatItemBody({ item_details });
     const updatedItem = await sequelize.transaction(async (t1) => {
       return await RegularItemDao.updateItemDetails(
         {
-          tax_rate_details: taxRateDetailsFromPayload,
+          item_details: updateItemBody,
           item_id,
           organization_id: client_info.organizationId,
         },
@@ -108,6 +110,24 @@ class RegularItemService {
           accounts: inventory_accounts_list,
         }).flatArrayFromTreeAsDTO(),
     };
+  }
+
+  #formatItemBody({ item_details }) {
+    const item = {};
+    Object.assign(item, item_details);
+    // depending on "itemFor" we set sales/purchase values
+    const itemFor = item.itemFor;
+    if (itemFor !== "sales_and_purchase" && itemFor !== "sales") {
+      item.sellingPrice = 0;
+      item.sellingDescription = "";
+      item.salesAccountId = null;
+    }
+    if (itemFor !== "sales_and_purchase" && itemFor !== "purchase") {
+      item.purchasePrice = 0;
+      item.purchaseDescription = "";
+      item.purchaseAccountId = null;
+    }
+    return item;
   }
 }
 
