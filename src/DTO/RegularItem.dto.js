@@ -15,16 +15,13 @@ class RegularItemDTO {
       purchase_description: convertNullValueToString(
         item_details.purchaseDescription,
       ),
+      purchase_price: item_details.purchasePrice,
+      selling_price: item_details.sellingPrice,
       item_for: item_details.itemFor,
+      item_for_formatted: itemForFormat(item_details.itemFor),
       status: item_details.status,
       tax_id: item_details.taxId,
     };
-    if (item_details.purchasePrice) {
-      basicItemDetails.purchase_price = item_details.purchasePrice;
-    }
-    if (item_details.sellingPrice) {
-      basicItemDetails.selling_price = item_details.sellingPrice;
-    }
     if (item_details.salesAccountId) {
       basicItemDetails.sales_account_id = item_details.salesAccountId;
     }
@@ -120,5 +117,19 @@ const productTypeFormat = (product_type) => {
       return "Goods";
     case "service":
       return "Service";
+  }
+};
+
+/**
+ * @param {("sales"|"purchase"|"sales_and_purchase")} item_for
+ */
+const itemForFormat = (item_for) => {
+  switch (item_for) {
+    case "sales":
+      return "sales item";
+    case "purchase":
+      return "purchase item";
+    case "sales_and_purchase":
+      return "sales and purchase item";
   }
 };

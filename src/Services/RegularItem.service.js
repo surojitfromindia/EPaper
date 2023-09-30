@@ -10,7 +10,7 @@ import { AccountsTree } from "../Utils/AccoutsTree.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
-    const organizationId = client_info.organization_id;
+    const organizationId = client_info.organizationId;
     const createdBy = client_info.userId;
     const newItem = this.#formatItemBody({ item_details });
     return await sequelize.transaction(async (t1) => {
