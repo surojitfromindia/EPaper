@@ -13,6 +13,8 @@ import { AccountTypes } from "./Account/AccountTypes.model.js";
 import { ItemUnit } from "./ItemUnit/ItemUnit.model.js";
 import { GeneralPreference } from "./Preference/GeneralPreference/GeneralPreference.model.js";
 import { Contacts } from "./Contact/Contacts.model.js";
+import { Invoice } from "./Invoice/Invoices.model.js";
+import { InvoiceLineItem } from "./Invoice/InvoiceLineItems.model.js";
 
 const force = false;
 const alter = true;
@@ -33,6 +35,8 @@ async function syncWithDb() {
   // await ItemUnit.sync({ alter });
   // await GeneralPreference.sync({ alter });
   // await Contacts.sync({ alter });
+  await Invoice.sync({ alter });
+  await InvoiceLineItem.sync({ alter });
 }
 
 // syncWithDb();
