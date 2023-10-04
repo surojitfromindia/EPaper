@@ -11,6 +11,8 @@ import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model.j
 import { AccountGroups } from "./Account/AccountGroups.model.js";
 import { AccountTypes } from "./Account/AccountTypes.model.js";
 import { ItemUnit } from "./ItemUnit/ItemUnit.model.js";
+import { GeneralPreference } from "./Preference/GeneralPreference/GeneralPreference.model.js";
+import { Contacts } from "./Contact/Contacts.model.js";
 
 const force = false;
 const alter = true;
@@ -29,6 +31,8 @@ async function syncWithDb() {
   // await AccountsOfOrganization.sync({ alter });
   // await ItemPreference.sync({ alter });
   // await ItemUnit.sync({ alter });
+  // await GeneralPreference.sync({ alter });
+  // await Contacts.sync({ alter });
 }
 
 // syncWithDb();
@@ -45,5 +49,7 @@ export {
   RegularItems,
   AccountsOfOrganization,
   ItemPreference,
+  GeneralPreference,
   ItemUnit,
+  Contacts,
 };

@@ -12,6 +12,7 @@ import AccountTypesDao from "./Accounts/AccountTypes.dao.js";
 import AccountGroupsDao from "./Accounts/AccountGroups.dao.js";
 import ItemPreferenceDao from "./Preference/ItemPreference.dao.js";
 import ItemUnitDao from "./Settings/ItemUnit.dao.js";
+import GeneralPreferenceDao from "./Preference/GeneralPreference.dao.js";
 
 export {
   UserDao,
@@ -28,4 +29,5 @@ export {
   AccountGroupsDao,
   ItemPreferenceDao,
   ItemUnitDao,
+  GeneralPreferenceDao,
 };
