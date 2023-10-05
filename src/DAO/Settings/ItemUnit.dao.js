@@ -17,6 +17,16 @@ class ItemUnitDao {
     });
   }
 
+  async getByUnit({ organization_id, unit }) {
+    return await ItemUnit.findOne({
+      where: {
+        organization_id,
+        unit,
+      },
+      raw: false,
+    });
+  }
+
   async createAll({ item_units_details }, { transaction }) {
     return await ItemUnit.bulkCreate(item_units_details, {
       transaction,

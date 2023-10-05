@@ -15,12 +15,12 @@ ItemUnit.init(
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       columnName: "name",
     },
     unit: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
       columnName: "unit",
     },
     status: {

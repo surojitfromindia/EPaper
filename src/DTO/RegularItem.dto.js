@@ -6,7 +6,6 @@ class RegularItemDTO {
     const basicItemDetails = {
       item_id: item_details.id,
       name: item_details.name,
-      unit: item_details.unit,
       product_type: item_details.productType,
       product_type_formatted: productTypeFormat(item_details.productType),
       selling_description: convertNullValueToString(
@@ -22,6 +21,12 @@ class RegularItemDTO {
       status: item_details.status,
       tax_id: item_details.taxId,
     };
+    if (item_details.unitId) {
+      basicItemDetails.unit_id = item_details.unitId;
+    }
+    if (item_details.Unit) {
+      basicItemDetails.unit = item_details.Unit.unit;
+    }
     if (item_details.salesAccountId) {
       basicItemDetails.sales_account_id = item_details.salesAccountId;
     }

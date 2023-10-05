@@ -4,6 +4,7 @@ import { OrganizationBasic, TaxRates, User } from "../index.js";
 import { AccountsOfOrganization } from "../Account/AccountsOfOrganization.model.js";
 import { MathLib } from "../../Utils/MathLib/mathLib.js";
 import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant.js";
+import { ItemUnit } from "../ItemUnit/ItemUnit.model.js";
 
 class RegularItems extends Model {}
 
@@ -20,11 +21,6 @@ RegularItems.init(
       type: DataTypes.STRING,
       allowNull: false,
       columnName: "name",
-    },
-    unit: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      columnName: "unit",
     },
     productType: {
       type: DataTypes.ENUM("service", "goods"),
@@ -122,6 +118,14 @@ RegularItems.belongsTo(TaxRates, {
     name: "taxId",
   },
   as: "Tax",
+});
+RegularItems.belongsTo(ItemUnit, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "unit_id",
+    name: "unitId",
+  },
+  as: "Unit",
 });
 
 export { RegularItems };

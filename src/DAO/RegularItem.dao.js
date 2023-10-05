@@ -1,5 +1,6 @@
 import {
   AccountsOfOrganization,
+  ItemUnit,
   RegularItems,
   TaxRates,
 } from "../Models/index.js";
@@ -26,6 +27,11 @@ class RegularItemDao {
           required: true,
         },
         {
+          model: ItemUnit,
+          as: "Unit",
+          required: false,
+        },
+        {
           model: AccountsOfOrganization,
           as: "SalesAccount",
           required: false,
@@ -45,6 +51,13 @@ class RegularItemDao {
         organization_id,
         status: "active",
       },
+      include: [
+        {
+          model: ItemUnit,
+          as: "Unit",
+          required: false,
+        },
+      ],
     });
   }
 

@@ -7,6 +7,7 @@ import { AccountsOfOrganization } from "../Account/AccountsOfOrganization.model.
 import { TaxRates } from "../Tax/TaxRates.model.js";
 import { RegularItems } from "../Item/RegularItems.model.js";
 import sequelize from "../../Config/DataBase.Config.js";
+import { ItemUnit } from "../ItemUnit/ItemUnit.model.js";
 
 class InvoiceLineItem extends Model {}
 
@@ -28,6 +29,11 @@ InvoiceLineItem.init(
       type: DataTypes.STRING,
       allowNull: false,
       columnName: "item_description",
+    },
+    unit: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      columnName: "unit",
     },
 
     // discount
@@ -207,6 +213,14 @@ InvoiceLineItem.belongsTo(TaxRates, {
     name: "taxId",
   },
   as: "Tax",
+});
+InvoiceLineItem.belongsTo(ItemUnit, {
+  foreignKey: {
+    allowNull: true,
+    columnName: "unit_id",
+    name: "unitId",
+  },
+  as: "Unit",
 });
 
 export { InvoiceLineItem };

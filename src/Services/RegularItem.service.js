@@ -19,6 +19,11 @@ class RegularItemService {
         organizationId,
         createdBy,
       };
+      itemDetails.unitId = await this.#createItemUnitIfNotExists(
+        { client_info, unit: itemDetails.unit },
+        { transaction: t1 },
+      );
+
       return await RegularItemDao.create(
         { item_details: itemDetails },
         { transaction: t1 },
@@ -48,6 +53,11 @@ class RegularItemService {
   async updateAnItem({ item_id, item_details, client_info }) {
     const updateItemBody = this.#formatItemBody({ item_details });
     const updatedItem = await sequelize.transaction(async (t1) => {
+      updateItemBody.unitId = await this.#createItemUnitIfNotExists(
+        { client_info, unit: updateItemBody.unit },
+        { transaction: t1 },
+      );
+
       return await RegularItemDao.updateItemDetails(
         {
           item_details: updateItemBody,
@@ -128,6 +138,30 @@ class RegularItemService {
       item.purchaseAccountId = null;
     }
     return item;
+  }
+
+  async #createItemUnitIfNotExists({ client_info, unit }, { transaction }) {
+    if (!unit) {
+      return null;
+    }
+    const unitDetails = await ItemUnitService.getItemUnitByUnit({
+      client_info,
+      unit,
+    });
+    if (unitDetails) {
+      return unitDetails.id;
+    }
+    // else create a new unit
+    const newItemUnit = {
+      unit,
+      organizationId: client_info.organizationId,
+      createdBy: client_info.userId,
+    };
+    const createdItemUnit = await ItemUnitService.createWithTransaction(
+      { client_info, item_unit_details: newItemUnit },
+      { transaction },
+    );
+    return createdItemUnit.id;
   }
 }
 
