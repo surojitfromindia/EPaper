@@ -431,3 +431,5 @@ class AccountsOfItem {
     };
   }
 }
+
+export { AccountsOfItem };

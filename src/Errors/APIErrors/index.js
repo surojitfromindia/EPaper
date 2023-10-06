@@ -3,6 +3,7 @@ import DataNotFoundError from "./DataNotFoundError.js";
 import InvalidAccessTokenError from "./InvalidAccessTokenError.js";
 import MalformedDataError from "./MalformedDataError.js";
 import PreferenceNotFoundError from "./PreferenceNotFoundError.js";
+import IntegrityErrors from "./IntegrityErrors.js";
 
 export {
   UserCredentialMismatchError,
@@ -10,4 +11,5 @@ export {
   InvalidAccessTokenError,
   MalformedDataError,
   PreferenceNotFoundError,
+  IntegrityErrors,
 };

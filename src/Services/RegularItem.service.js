@@ -1,18 +1,36 @@
 import sequelize from "../Config/DataBase.Config.js";
 import { RegularItemDao } from "../DAO/index.js";
-import { DataNotFoundError } from "../Errors/APIErrors/index.js";
+import {
+  DataNotFoundError,
+  IntegrityErrors,
+} from "../Errors/APIErrors/index.js";
 import {
   AccountsOfOrganizationService,
   ItemUnitService,
   TaxRateService,
 } from "./index.js";
 import { AccountsTree } from "../Utils/AccoutsTree.js";
+import { AccountIntegrity } from "../IntegrityValidationServices/index.js";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
     const organizationId = client_info.organizationId;
     const createdBy = client_info.userId;
     const newItem = this.#formatItemBody({ item_details });
+    const accountIntegrity = new AccountIntegrity({
+      client_info,
+    });
+    const { errors, valid: areAccountsValid } =
+      await accountIntegrity.checkForItemAccounts({
+        sales_account_id: newItem.salesAccountId,
+        purchase_account_id: newItem.purchaseAccountId,
+      });
+    if (!areAccountsValid) {
+      throw new IntegrityErrors({
+        message: "some item accounts are not valid",
+        errors,
+      });
+    }
     return await sequelize.transaction(async (t1) => {
       const itemDetails = {
         ...newItem,
@@ -52,6 +70,20 @@ class RegularItemService {
 
   async updateAnItem({ item_id, item_details, client_info }) {
     const updateItemBody = this.#formatItemBody({ item_details });
+    const accountIntegrity = new AccountIntegrity({
+      client_info,
+    });
+    const { errors, valid: areAccountsValid } =
+      await accountIntegrity.checkForItemAccounts({
+        sales_account_id: updateItemBody.salesAccountId,
+        purchase_account_id: updateItemBody.purchaseAccountId,
+      });
+    if (!areAccountsValid) {
+      throw new IntegrityErrors({
+        message: "some item accounts are not valid",
+        errors,
+      });
+    }
     const updatedItem = await sequelize.transaction(async (t1) => {
       updateItemBody.unitId = await this.#createItemUnitIfNotExists(
         { client_info, unit: updateItemBody.unit },

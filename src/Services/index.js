@@ -7,7 +7,9 @@ import SettingService, {
   TaxRateService,
 } from "./SettingServices/Setting.service.js";
 import RegularItemService from "./RegularItem.service.js";
-import AccountsOfOrganizationService from "./AccountsOfOrganization.service.js";
+import AccountsOfOrganizationService, {
+  AccountsOfItem,
+} from "./AccountsOfOrganization.service.js";
 import AppStateService from "./AppState.service.js";
 import PreferenceService, {
   ItemPreferenceService,
@@ -26,4 +28,5 @@ export {
   ItemPreferenceService,
   SettingService,
   ItemUnitService,
+  AccountsOfItem,
 };
