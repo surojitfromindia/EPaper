@@ -2,12 +2,13 @@
   "name": "epaper",
   "version": "1.0.0",
   "description": "Backend api service for e-invoicing.",
-  "main": "src/app.js",
-  "type": "module",
+  "main": "src/app.ts",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "dev:debug": "nodemon --inspect=5000 src/app.js"
+    "build": "tsc",
+    "start": "node ./dist/app.js",
+    "dev": "nodemon ./src/app.ts",
+    "debug": "nodemon --inspect=5858 -e ts,tsx --exec node -r ts-node/register ./src/app.ts",
+    "test": "jest -i --runInBand --detectOpenHandles"
   },
   "keywords": [
     "invoice",
@@ -30,7 +31,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
-    "prettier": "3.0.2"
+    "prettier": "3.0.2",
+    "ts-node": "^10.9.1",
+    "@types/node": "^20.8.2",
+    "@types/express": "^4.17.18",
+    "typescript": "^5.2.2",
+    "@types/cors": "^2.8.14",
+    "@types/cookie-parser": "^1.4.4"
   },
   "engines": {
     "node": ">=16.0.0"
