@@ -9,6 +9,7 @@ import { AccountsOfOrganizationDTO } from "../DTO/index";
 import { DataNotFoundError } from "../Errors/APIErrors/index";
 import ld from "lodash";
 import { AccountsTree } from "../Utils/AccoutsTree";
+import { ClientInfo } from "../Middlewares/Authorization/Authorization.middleware";
 
 class AccountsOfOrganizationService {
   /**
@@ -306,13 +307,14 @@ class AccountsOfOrganizationService {
       organizationId: organization_id,
     }));
     // create new accounts by copying the old accounts but replacing the organizationId and createdBy
-    let newCreatedAccounts = await AccountsOfOrganizationDao.createAccounts(
-      {
-        accounts: newAccounts,
-      },
-      { transaction },
-    );
-    newCreatedAccounts = newCreatedAccounts.map((acc) =>
+    const newCreatedAccountsRaw =
+      await AccountsOfOrganizationDao.createAccounts(
+        {
+          accounts: newAccounts,
+        },
+        { transaction },
+      );
+    const newCreatedAccounts = newCreatedAccountsRaw.map((acc) =>
       acc.get({ plain: true }),
     );
 
@@ -398,6 +400,7 @@ class AccountsOfOrganizationUtils {
 }
 
 class AccountsOfItem {
+  client_info: ClientInfo;
   constructor({ client_info }) {
     this.client_info = client_info;
   }

@@ -1,6 +1,6 @@
 class AccountsTemplateDTO {
-  static toAccountsOfTemplate(account) {
-    const account_dto = {
+  static toAccountsOfTemplate(account: any): any {
+    const account_dto: any = {
       account_id: account.id,
       name: account.name,
       code: account.code,
@@ -31,7 +31,7 @@ class AccountsTemplateDTO {
     return account_dto;
   }
 
-  static toAccountsOfTemplateCreate(account_creation_payload) {
+  static toAccountsOfTemplateCreate(account_creation_payload): any {
     return {
       name: account_creation_payload.name,
       code: account_creation_payload.code,

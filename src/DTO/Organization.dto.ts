@@ -7,7 +7,7 @@ class OrganizationDTO {
    * @returns {OrganizationDetailsTypeAsDTO}
    * */
   static toOrganization(organization) {
-    const return_dto = {
+    const return_dto: any = {
       name: organization.name,
       primary_address: organization.primaryAddress,
       organization_id: organization.id,

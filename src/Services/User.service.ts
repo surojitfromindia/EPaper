@@ -19,7 +19,7 @@ class UserService {
   }
 
   async getUserById({ user_id, include_organization_details = false }) {
-    let user;
+    let user: any;
     if (include_organization_details) {
       user = await UserDao.getUserByIdWithOrganization({ user_id });
     } else {

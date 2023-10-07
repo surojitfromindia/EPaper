@@ -14,7 +14,7 @@ class OrganizationService {
    */
   async registerOrganization({ organization_details, client_info }) {
     const createdBy = client_info.userId;
-    const newOrganization =
+    const newOrganization: any =
       OrganizationDTO.toOrganizationCreate(organization_details);
     newOrganization.createdBy = createdBy;
     const createdOrganization = await sequelize.transaction(async (t1) => {

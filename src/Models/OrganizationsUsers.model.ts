@@ -120,6 +120,8 @@ import {
 @Table({
   underscored: true,
   tableName: "OrganizationsUsers",
+  createdAt: false,
+  updatedAt: false,
 })
 class OrganizationsUsers extends Model<
   InferAttributes<OrganizationsUsers>,
@@ -163,17 +165,28 @@ class OrganizationsUsers extends Model<
   declare isDefaultOrganization: string;
 
   @Attribute(DataTypes.INTEGER)
-  @AllowNull
+  @NotNull
   declare userId: number;
 
-  @BelongsTo(() => User, "userId")
+  @BelongsTo(() => User, {
+    foreignKey: {
+      name: "userId",
+      allowNull: false,
+    },
+  })
   declare User: NonAttribute<User>;
 
   @Attribute(DataTypes.INTEGER)
-  @AllowNull
+  @NotNull
   declare organizationId: number;
 
-  @BelongsTo(() => OrganizationBasic, "organizationId")
-  declare Organization: NonAttribute<OrganizationBasic>;
+  @BelongsTo(() => OrganizationBasic, {
+    foreignKey: {
+      name: "organizationId",
+      allowNull: false,
+    },
+  })
+  declare Organization: NonAttribute<User>;
 }
+
 export { OrganizationsUsers };

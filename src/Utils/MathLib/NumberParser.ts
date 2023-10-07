@@ -1,6 +1,7 @@
-import * as math from "mathjs";
+// import * as math from "mathjs";
+const math = require("mathjs");
 
-function tryParseOrNull() {
+function tryParseOrNull(this: string) {
   const str = this; // it can be null or undefined
   if (str === null || str === "" || str === undefined) {
     return null;
@@ -8,8 +9,6 @@ function tryParseOrNull() {
 
   return math.number(str);
 }
-
-String.prototype.tryParseOrNull = tryParseOrNull;
 
 function convertNullValueToString(value) {
   if (value === null) return "";

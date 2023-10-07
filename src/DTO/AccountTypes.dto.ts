@@ -1,6 +1,6 @@
 class AccountTypesDTO {
-  static toAccountType(account_type) {
-    const account_dto = {
+  static toAccountType(account_type: any) {
+    const account_dto: any = {
       account_type_name: account_type.name,
       account_type_name_formatted: account_type.nameFormatted,
     };

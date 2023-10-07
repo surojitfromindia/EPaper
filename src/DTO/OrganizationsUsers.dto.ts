@@ -7,7 +7,7 @@ class OrganizationsUsersDTO {
    * @return {OrganizationUserDetailsTypeAsDTO}
    */
   static toOrganizationsUsers(organization_user) {
-    const return_dto = {
+    const return_dto: any = {
       id: organization_user.id,
       organization_id: organization_user.organizationId,
       user_id: organization_user.userId,
@@ -24,9 +24,9 @@ class OrganizationsUsersDTO {
     if (organization_user.user) {
       return_dto.user = UserDTO.toUser(organization_user.user);
     }
-    if (organization_user.organizationBasic) {
+    if (organization_user.Organization) {
       return_dto.organization = OrganizationDTO.toOrganization(
-        organization_user.organizationBasic,
+        organization_user.Organization,
       );
     }
     return return_dto;

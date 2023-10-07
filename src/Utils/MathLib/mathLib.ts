@@ -1,4 +1,4 @@
-import * as MathJs from "mathjs";
+const MathJs = require("mathjs");
 import { NUMERIC_PRECISION } from "../../Constants/General.Constant";
 
 class MathLib {

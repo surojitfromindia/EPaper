@@ -21,7 +21,10 @@ const getAllUserController = SuccessErrorWrapper(getAllUsers, "done", 200);
 
 let getAnUser = async (req: Request) => {
   const userId = Number(req.params.userId);
-  const user = await UserService.getUserById({ user_id: userId });
+  const user = await UserService.getUserById({
+    user_id: userId,
+    include_organization_details: true,
+  });
   return { user };
 };
 const getAnUserController = SuccessErrorWrapper(getAnUser, "done", 200);

@@ -5,7 +5,10 @@ import { PreferenceNotFoundError } from "../../Errors/APIErrors/index";
 class ItemPreferenceService {
   async create({ organization_id }, { transaction }) {
     const itemPreference = PREFERENCE_DEFAULTS.ITEM_PREFERENCE;
-    itemPreference.organizationId = organization_id;
+    const newItemPreference = {
+      ...itemPreference,
+      organizationId: organization_id,
+    };
     await ItemPreferenceDao.create(
       {
         preference_details: itemPreference,

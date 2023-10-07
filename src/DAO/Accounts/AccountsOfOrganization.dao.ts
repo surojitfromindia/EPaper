@@ -50,7 +50,7 @@ class AccountsOfOrganizationDao {
 
   async getAccountsFromDepth({ organization_id, depth = 0 }) {
     return await AccountsOfOrganization.findAll({
-      attributes: DEFAULT_SELECTED_ATTRIBUTES,
+      // attributes: DEFAULT_SELECTED_ATTRIBUTES,
       where: {
         organizationId: organization_id,
         depth: {
@@ -157,10 +157,10 @@ class AccountsOfOrganizationDao {
     account_types,
   }: {
     organization_id: number;
-    account_types: string;
+    account_types: string[];
   }) {
     return await AccountsOfOrganization.findAll({
-      attributes: DEFAULT_SELECTED_ATTRIBUTES,
+      // attributes: DEFAULT_SELECTED_ATTRIBUTES,
       where: {
         organizationId: organization_id,
         status: "active",

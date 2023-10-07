@@ -17,7 +17,7 @@ class RegularItemDao {
     return await RegularItems.findOne({
       where: {
         id: item_id,
-        organization_id,
+        organizationId: organization_id,
         status: "active",
       },
       include: [
@@ -48,7 +48,7 @@ class RegularItemDao {
   async getAll({ organization_id }) {
     return await RegularItems.findAll({
       where: {
-        organization_id,
+        organizationId: organization_id,
         status: "active",
       },
       include: [
@@ -68,7 +68,7 @@ class RegularItemDao {
     await RegularItems.update(item_details, {
       where: {
         id: item_id,
-        organization_id,
+        organizationId: organization_id,
         status: "active",
       },
       transaction,

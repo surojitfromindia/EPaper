@@ -151,8 +151,8 @@ class RegularItemService {
     };
   }
 
-  #formatItemBody({ item_details }) {
-    const item = {};
+  #formatItemBody({ item_details }): any {
+    const item: any = {};
     Object.assign(item, item_details);
     // depending on "itemFor" we set sales/purchase values
     const itemFor = item.itemFor;

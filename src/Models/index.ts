@@ -7,12 +7,12 @@ import { ItemPreference } from "./Preference/ItemPreference.model";
 import { ItemUnit } from "./ItemUnit/ItemUnit.model";
 import { AccountGroups } from "./Account/AccountGroups.model";
 import { AccountTypes } from "./Account/AccountTypes.model";
+import { AccountTemplateDetails } from "./Account/AccountTemplateDetails.model";
+import { AccountsConfig } from "./Account/AccountsConfig.model";
+import { AccountsOfTemplate } from "./Account/AccountsOfTemplate.model";
+import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model";
+import { RegularItems } from "./Item/RegularItems.model";
 //
-// import { AccountTemplateDetails } from "./Account/AccountTemplateDetails.model";
-// import { AccountsOfTemplate } from "./Account/AccountsOfTemplate.model";
-// import { AccountsConfig } from "./Account/AccountsConfig.model";
-// import { RegularItems } from "./Item/RegularItems.model";
-// import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model";
 // import { Contacts } from "./Contact/Contacts.model";
 
 // const force = false;
@@ -49,10 +49,10 @@ export {
   ItemUnit,
   AccountGroups,
   AccountTypes,
-  // AccountTemplateDetails,
-  // AccountsOfTemplate,
-  // AccountsConfig,
-  // RegularItems,
-  // AccountsOfOrganization,
+  AccountTemplateDetails,
+  AccountsConfig,
+  AccountsOfTemplate,
+  AccountsOfOrganization,
+  RegularItems,
   // Contacts,
 };

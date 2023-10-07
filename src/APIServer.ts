@@ -1,6 +1,6 @@
 // here I export an express server
 import Express, { json } from "express";
-// import v1Router from "./routes/v1/index";
+import v1Router from "./routes/v1/index";
 import { errorHandlerMiddleware } from "./Errors/errorHandlerMiddleware";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -16,7 +16,7 @@ expressApp.use(
 );
 expressApp.use(cookieParser());
 expressApp.use(json());
-// expressApp.use("/v1", v1Router);
+expressApp.use("/v1", v1Router);
 expressApp.use(errorHandlerMiddleware);
 
 export default expressApp;

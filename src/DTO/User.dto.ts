@@ -1,4 +1,3 @@
-import organizationDto from "./Organization.dto";
 import organizationsUsersDto from "./OrganizationsUsers.dto";
 
 class UserDTO {
@@ -7,21 +6,16 @@ class UserDTO {
    * @param {any} user
    * @returns {UserDetailsTypeAsDTO}
    */
-  static toUser(user) {
+  static toUser(user: any) {
     const basicUser = {
       name: user.name,
       user_id: user.id,
       email: user.email,
       organization_working_details: [],
-      organizations: [],
     };
-    if (user.organizationsBasic?.length > 0) {
-      basicUser.organizations = user.organizationsBasic.map(
-        organizationDto.toOrganization,
-      );
-    }
-    if (user.activeOrganizations?.length > 0) {
-      basicUser.organization_working_details = user.activeOrganizations.map(
+
+    if (user.UserOrganizations?.length > 0) {
+      basicUser.organization_working_details = user.UserOrganizations.map(
         organizationsUsersDto.toOrganizationsUsers,
       );
     }

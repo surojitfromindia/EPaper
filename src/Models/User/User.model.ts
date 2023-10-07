@@ -4,16 +4,20 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "@sequelize/core";
 import {
   AllowNull,
   Attribute,
   AutoIncrement,
+  BelongsToMany,
   Default,
   NotNull,
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
+import { OrganizationBasic } from "../Organization/Organization.model";
+import { OrganizationsUsers } from "../OrganizationsUsers.model";
 
 // class User extends Model {}
 //
@@ -57,6 +61,8 @@ import {
 @Table({
   underscored: true,
   tableName: "Users",
+  createdAt: false,
+  updatedAt: false,
 })
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   @Attribute(DataTypes.INTEGER)
@@ -80,6 +86,21 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   @NotNull
   @Default("active")
   declare status: string;
+
+  @BelongsToMany(() => OrganizationBasic, {
+    through: OrganizationsUsers,
+    foreignKey: "userId",
+    otherKey: "organizationId",
+    inverse: {
+      as: "Users",
+    },
+    throughAssociations: {
+      fromSource: "UserOrganizations",
+      toSource: "User",
+      toTarget: "Organization",
+    },
+  })
+  declare Organizations: NonAttribute<OrganizationBasic[]>;
 }
 
 export { User };

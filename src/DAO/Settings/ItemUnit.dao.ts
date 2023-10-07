@@ -11,7 +11,7 @@ class ItemUnitDao {
   async getAll({ organization_id }) {
     return await ItemUnit.findAll({
       where: {
-        organization_id,
+        organizationId: organization_id,
       },
       raw: false,
     });
@@ -20,7 +20,7 @@ class ItemUnitDao {
   async getByUnit({ organization_id, unit }) {
     return await ItemUnit.findOne({
       where: {
-        organization_id,
+        organizationId: organization_id,
         unit,
       },
       raw: false,

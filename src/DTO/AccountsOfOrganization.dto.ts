@@ -7,7 +7,7 @@ class AccountsOfOrganizationDTO {
    * @returns {COATypeAsDTO}
    */
   static toAccountOfOrganization(account) {
-    const account_dto = {
+    const account_dto: any = {
       account_id: account.id,
       account_name: account.name,
       account_code: account.code,
@@ -34,7 +34,7 @@ class AccountsOfOrganizationDTO {
     return account_dto;
   }
 
-  static toAccountOfOrganizationCreate(account_creation_payload) {
+  static toAccountOfOrganizationCreate(account_creation_payload): any {
     return {
       name: account_creation_payload.account_name,
       code: account_creation_payload.account_code,

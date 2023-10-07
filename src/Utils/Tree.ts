@@ -5,6 +5,12 @@ class Tree {
     joinTo,
     children_as,
     children_count_as,
+  }: {
+    entries: any[];
+    joinFrom: string;
+    joinTo: string;
+    children_as: string;
+    children_count_as?: string;
   }) => {
     const hashTable = Object.create(null);
     // create a map

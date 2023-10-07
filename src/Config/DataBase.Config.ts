@@ -1,12 +1,17 @@
 import { Sequelize } from "@sequelize/core";
 import {
   AccountGroups,
+  AccountsConfig,
+  AccountsOfOrganization,
+  AccountsOfTemplate,
+  AccountTemplateDetails,
   AccountTypes,
   GeneralPreference,
   ItemPreference,
   ItemUnit,
   OrganizationBasic,
   OrganizationsUsers,
+  RegularItems,
   TaxRates,
   User,
 } from "../Models";
@@ -35,15 +40,20 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     ItemUnit,
     AccountGroups,
     AccountTypes,
+    AccountTemplateDetails,
+    AccountsConfig,
+    AccountsOfTemplate,
+    AccountsOfOrganization,
+    RegularItems,
   ],
 });
 
-sequelize
-  .sync({
-    alter: true,
-  })
-  .catch((error) => {
-    console.log("error :", error);
-  });
+// sequelize
+//   .sync({
+//     alter: true,
+//   })
+//   .catch((error) => {
+//     console.log("error :", error);
+//   });
 
 export default sequelize;

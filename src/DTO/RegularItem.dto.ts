@@ -2,8 +2,8 @@ import { AccountsOfOrganizationDTO, ItemUnitDTO, TaxRateDTO } from "./index";
 import { convertNullValueToString } from "../Utils/MathLib/NumberParser";
 
 class RegularItemDTO {
-  static toItem(item_details) {
-    const basicItemDetails = {
+  static toItem(item_details: any) {
+    const basicItemDetails: any = {
       item_id: item_details.id,
       name: item_details.name,
       product_type: item_details.productType,
