@@ -13,41 +13,11 @@ import {
   Table,
 } from "@sequelize/core/decorators-legacy";
 
-// class AccountGroups extends Model {}
-//
-// AccountGroups.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       primaryKey: true,
-//       columnName: "id",
-//       allowNull: false,
-//     },
-//     name: {
-//       unique: true,
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "name",
-//     },
-//     code: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "code",
-//     },
-//     nameFormatted: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "name_formatted",
-//     },
-//   },
-//   {
-//     sequelize,
-//   },
-// );
 @Table({
   underscored: true,
   tableName: "AccountGroups",
+  createdAt: false,
+  updatedAt: false,
 })
 class AccountGroups extends Model<
   InferAttributes<AccountGroups>,

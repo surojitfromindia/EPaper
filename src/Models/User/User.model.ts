@@ -19,45 +19,6 @@ import {
 import { OrganizationBasic } from "../Organization/Organization.model";
 import { OrganizationsUsers } from "../OrganizationsUsers.model";
 
-// class User extends Model {}
-//
-// User.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       primaryKey: true,
-//       columnName: "id",
-//       allowNull: false,
-//     },
-//     name: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "name",
-//     },
-//     email: {
-//       type: DataTypes.STRING,
-//       columnName: "email",
-//     },
-//     status: {
-//       type: DataTypes.ENUM("active", "deactive"),
-//       allowNull: false,
-//       defaultValue: "active",
-//       columnName: "status",
-//     },
-//     // this is a key coming from auth table
-//     clientId: {
-//       type: DataTypes.STRING,
-//       columnName: "client_id",
-//       allowNull: false,
-//       unique: true,
-//     },
-//   },
-//   {
-//     sequelize,
-//   },
-// );
-
 @Table({
   underscored: true,
   tableName: "Users",

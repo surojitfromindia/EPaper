@@ -13,46 +13,17 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
+  Default,
   NotNull,
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
 
-// class AccountsConfig extends Model {}
-//
-// AccountsConfig.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       primaryKey: true,
-//       columnName: "id",
-//       allowNull: false,
-//     },
-//     status: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "status",
-//       defaultValue: "active",
-//     },
-//   },
-//   {
-//     sequelize,
-//   },
-// );
-//
-// AccountsConfig.belongsTo(AccountTemplateDetails, {
-//   foreignKey: {
-//     allowNull: false,
-//     columnName: "account_template_id",
-//     name: "accountTemplateId",
-//   },
-//   as: "AccountTemplate",
-// });
-
 @Table({
   underscored: true,
   tableName: "AccountsConfig",
+  createdAt: false,
+  updatedAt: false,
 })
 class AccountsConfig extends Model<
   InferAttributes<AccountsConfig>,
@@ -69,6 +40,7 @@ class AccountsConfig extends Model<
 
   @Attribute(DataTypes.ENUM("active", "deactive"))
   @NotNull
+  @Default("active")
   declare status: "active" | "deactive";
 
   @Attribute(DataTypes.INTEGER)

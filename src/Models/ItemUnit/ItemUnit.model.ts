@@ -12,66 +12,11 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
+  Default,
   NotNull,
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
-
-// class ItemUnit extends Model {}
-//
-// ItemUnit.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       primaryKey: true,
-//       columnName: "id",
-//       allowNull: false,
-//     },
-//     name: {
-//       type: DataTypes.STRING,
-//       allowNull: true,
-//       columnName: "name",
-//     },
-//     unit: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "unit",
-//     },
-//     status: {
-//       type: DataTypes.ENUM("active", "deleted"),
-//       allowNull: false,
-//       columnName: "status",
-//       defaultValue: "active",
-//     },
-//   },
-//   {
-//     sequelize,
-//     indexes: [
-//       {
-//         type: "unique",
-//         fields: ["organization_id", "unit"],
-//       },
-//     ],
-//   },
-// );
-//
-// ItemUnit.belongsTo(User, {
-//   foreignKey: {
-//     allowNull: false,
-//     columnName: "created_by",
-//     name: "createdBy",
-//   },
-//   as: "createdByUser",
-// });
-// ItemUnit.belongsTo(OrganizationBasic, {
-//   foreignKey: {
-//     allowNull: false,
-//     columnName: "organization_id",
-//     name: "organizationId",
-//   },
-//   as: "organization",
-// });
 
 @Table({
   underscored: true,
@@ -95,15 +40,15 @@ class ItemUnit extends Model<
   declare unit: string;
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
+  @Default("active")
   @NotNull
   declare status: "active" | "deleted";
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
-  declare userId: number;
-
-  @BelongsTo(() => User, "userId")
-  declare User?: NonAttribute<User>;
+  declare createdBy: number;
+  @BelongsTo(() => User, "createdBy")
+  declare CreatedBy?: NonAttribute<User>;
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

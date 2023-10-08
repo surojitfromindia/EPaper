@@ -16,45 +16,11 @@ import {
   Table,
 } from "@sequelize/core/decorators-legacy";
 
-// class ItemPreference extends Model {}
-//
-// ItemPreference.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       primaryKey: true,
-//       columnName: "id",
-//       allowNull: false,
-//     },
-//     quantityPrecision: {
-//       type: DataTypes.TINYINT,
-//       allowNull: false,
-//       columnName: "quantity_precision",
-//     },
-//     isItemNameDuplicationEnabled: {
-//       type: DataTypes.BOOLEAN,
-//       allowNull: false,
-//       columnName: "is_item_name_duplication_enabled",
-//     },
-//   },
-//   {
-//     sequelize,
-//   },
-// );
-
-// ItemPreference.belongsTo(OrganizationBasic, {
-//   foreignKey: {
-//     allowNull: false,
-//     columnName: "organization_id",
-//     name: "organizationId",
-//   },
-//   as: "organization",
-// });
-
 @Table({
   underscored: true,
   tableName: "ItemPreferences",
+  createdAt: false,
+  updatedAt: false,
 })
 class ItemPreference extends Model<
   InferAttributes<ItemPreference>,

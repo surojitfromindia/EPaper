@@ -11,107 +11,17 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
+  Default,
   NotNull,
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
 
-// class TaxRates extends Model {}
-//
-// TaxRates.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       autoIncrement: true,
-//       primaryKey: true,
-//       columnName: "id",
-//       allowNull: false,
-//     },
-//     name: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "name",
-//     },
-//     description: {
-//       type: DataTypes.STRING,
-//       allowNull: true,
-//       columnName: "description",
-//     },
-//     rate: {
-//       type: DataTypes.DECIMAL,
-//       allowNull: false,
-//       columnName: "rate",
-//       get() {
-//         return MathLib.getWithPrecision(
-//           MAXIMUM_NUMERIC_PRECISION,
-//           this.getDataValue("rate"),
-//         );
-//       },
-//     },
-//     rateFormatted: {
-//       type: DataTypes.VIRTUAL,
-//       get() {
-//         return this.getDataValue("rate");
-//       },
-//     },
-//     countryCode: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "country_code",
-//     },
-//     taxType: {
-//       type: DataTypes.ENUM(["direct_tax", "tax"]),
-//       allowNull: false,
-//       columnName: "tax_type",
-//     },
-//     status: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//       columnName: "status",
-//       defaultValue: "active",
-//     },
-//     isEditable: {
-//       type: DataTypes.BOOLEAN,
-//       allowNull: false,
-//       columnName: "is_editable",
-//     },
-//     isDeletable: {
-//       type: DataTypes.BOOLEAN,
-//       allowNull: false,
-//       columnName: "is_deletable",
-//     },
-//   },
-//   {
-//     sequelize,
-//     indexes: [
-//       {
-//         type: "unique",
-//         fields: ["organization_id", "rate"],
-//       },
-//     ],
-//   },
-// );
-//
-// TaxRates.belongsTo(User, {
-//   foreignKey: {
-//     allowNull: false,
-//     columnName: "created_by",
-//     name: "createdBy",
-//   },
-//   as: "createdByUser",
-// });
-// TaxRates.belongsTo(OrganizationBasic, {
-//   foreignKey: {
-//     allowNull: false,
-//     columnName: "organization_id",
-//     name: "organizationId",
-//   },
-//   as: "organization",
-// });
-
 @Table({
   underscored: true,
   tableName: "TaxRates",
+  createdAt: false,
+  updatedAt: false,
 })
 class TaxRates extends Model<
   InferAttributes<TaxRates>,
@@ -144,14 +54,17 @@ class TaxRates extends Model<
   @Attribute(DataTypes.BOOLEAN)
   @NotNull
   declare isDeletable: boolean;
+  @Default("active")
   @Attribute(DataTypes.ENUM("active", "deactive"))
   @NotNull
   declare status: string;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
-  declare userId: number;
-  @BelongsTo(() => User, "userId")
-  declare User: NonAttribute<User>;
+  declare createdBy: number;
+  @BelongsTo(() => User, "createdBy")
+  declare CreatedBy?: NonAttribute<User>;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare organizationId: number;
