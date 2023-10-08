@@ -20,8 +20,6 @@ import {
 @Table({
   underscored: true,
   tableName: "TaxRates",
-  createdAt: false,
-  updatedAt: false,
 })
 class TaxRates extends Model<
   InferAttributes<TaxRates>,

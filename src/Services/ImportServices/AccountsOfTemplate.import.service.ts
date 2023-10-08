@@ -29,7 +29,7 @@ class AccountsOfTemplateImportService {
         sector: "IT",
         createdBy,
         organizationId,
-        isDefaultTemplate: true,
+        isDefault: true,
       };
       const newAccountTemplate = await AccountsTemplateDetailsDao.create(
         { template_details: templateDetails },

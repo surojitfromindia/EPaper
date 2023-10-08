@@ -19,8 +19,6 @@ import {
 @Table({
   underscored: true,
   tableName: "ItemPreferences",
-  createdAt: false,
-  updatedAt: false,
 })
 class ItemPreference extends Model<
   InferAttributes<ItemPreference>,

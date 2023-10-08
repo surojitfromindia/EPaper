@@ -11,7 +11,7 @@ class ItemPreferenceService {
     };
     await ItemPreferenceDao.create(
       {
-        preference_details: itemPreference,
+        preference_details: newItemPreference,
       },
       { transaction },
     );

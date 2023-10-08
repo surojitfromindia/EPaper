@@ -33,7 +33,7 @@ class AccountTemplateDetailsDao {
     return await AccountTemplateDetails.findOne({
       where: {
         organizationId: PRIME_ORGANIZATION_ID,
-        isDefaultTemplate: true,
+        isDefault: true,
       },
     });
   }

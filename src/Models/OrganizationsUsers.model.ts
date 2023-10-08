@@ -22,8 +22,6 @@ import {
 @Table({
   underscored: true,
   tableName: "OrganizationsUsers",
-  createdAt: false,
-  updatedAt: false,
 })
 class OrganizationsUsers extends Model<
   InferAttributes<OrganizationsUsers>,
@@ -64,6 +62,7 @@ class OrganizationsUsers extends Model<
 
   @Attribute(DataTypes.BOOLEAN)
   @NotNull
+  @Default(false)
   declare isDefaultOrganization: string;
 
   @Attribute(DataTypes.INTEGER)

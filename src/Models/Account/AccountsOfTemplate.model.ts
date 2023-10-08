@@ -6,7 +6,7 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { AccountTemplateDetails, OrganizationBasic, User } from "../index";
+import { AccountTemplateDetails } from "../index";
 import { AccountGroups } from "./AccountGroups.model";
 import { AccountTypes } from "./AccountTypes.model";
 import {
@@ -21,7 +21,7 @@ import {
 
 @Table({
   underscored: true,
-  tableName: "AccountsOfTemplate",
+  tableName: "AccountsOfTemplates",
   createdAt: false,
   updatedAt: false,
 })
@@ -56,12 +56,6 @@ class AccountsOfTemplate extends Model<
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
-  declare organizationId: number;
-  @BelongsTo(() => OrganizationBasic, "organizationId")
-  declare Organization?: NonAttribute<OrganizationBasic>;
-
-  @Attribute(DataTypes.INTEGER)
-  @NotNull
   declare accountParentId: number;
   @BelongsTo(() => AccountsOfTemplate, "accountParentId")
   declare AccountParent?: NonAttribute<AccountsOfTemplate>;
@@ -77,12 +71,6 @@ class AccountsOfTemplate extends Model<
   declare accountTypeId: number;
   @BelongsTo(() => AccountTypes, "accountTypeId")
   declare AccountType?: NonAttribute<AccountTypes>;
-
-  @Attribute(DataTypes.INTEGER)
-  @NotNull
-  declare userId: number;
-  @BelongsTo(() => User, "userId")
-  declare User?: NonAttribute<User>;
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

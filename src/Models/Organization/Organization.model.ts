@@ -21,8 +21,6 @@ import {
 @Table({
   underscored: true,
   tableName: "OrganizationBasics",
-  createdAt: false,
-  updatedAt: false,
 })
 class OrganizationBasic extends Model<
   InferAttributes<OrganizationBasic>,

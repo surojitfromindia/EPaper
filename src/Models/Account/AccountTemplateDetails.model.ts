@@ -21,8 +21,6 @@ import {
 @Table({
   underscored: true,
   tableName: "AccountTemplateDetails",
-  createdAt: false,
-  updatedAt: false,
 })
 class AccountTemplateDetails extends Model<
   InferAttributes<AccountTemplateDetails>,
@@ -46,7 +44,7 @@ class AccountTemplateDetails extends Model<
 
   @Attribute(DataTypes.BOOLEAN)
   @NotNull
-  declare isDefaultTemplate: boolean;
+  declare isDefault: boolean;
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
@@ -61,9 +59,9 @@ class AccountTemplateDetails extends Model<
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
-  declare userId: number;
-  @BelongsTo(() => User, "userId")
-  declare User?: NonAttribute<User>;
+  declare createdBy: number;
+  @BelongsTo(() => User, "createdBy")
+  declare CreatedBy?: NonAttribute<User>;
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

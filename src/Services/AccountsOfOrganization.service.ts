@@ -262,6 +262,7 @@ class AccountsOfOrganizationService {
           name: `Account template for organization ${organization_id}`,
           createdBy: userId,
           originTemplateId: templateId,
+          isDefault: false,
         },
       },
       { transaction },

@@ -40,7 +40,7 @@ class OrganizationService {
         userId: createdBy,
         roleId: "admin",
         organizationId: organizationBasic.get("id"),
-        isDefaultOrganization: isFirstOrganization ? true : null, // we are saving this fields as a three-column composite key
+        isDefaultOrganization: isFirstOrganization, // we are saving this fields as a three-column composite key
       };
       await OrganizationsUsersDao.create(
         {

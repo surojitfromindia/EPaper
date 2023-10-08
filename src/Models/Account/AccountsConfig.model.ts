@@ -22,8 +22,6 @@ import {
 @Table({
   underscored: true,
   tableName: "AccountsConfig",
-  createdAt: false,
-  updatedAt: false,
 })
 class AccountsConfig extends Model<
   InferAttributes<AccountsConfig>,
