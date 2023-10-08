@@ -54,19 +54,22 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
   ],
 });
 
-function syncModel() {
+async function syncModel() {
   const alter = true;
   const force = true;
-  Invoice.sync({
+  // await Invoice.sync({
+  //   alter,
+  //   force,
+  // });
+  // await InvoiceLineItem.sync({
+  //   alter,
+  //   force,
+  // });
+  await Contacts.sync({
     alter,
-    force,
-  }).catch((err) => console.log(err));
-  InvoiceLineItem.sync({
-    alter,
-    force,
-  }).catch((err) => console.log(err));
+  });
 }
 
-syncModel();
+// syncModel().catch((err) => console.log(err));
 
 export default sequelize;

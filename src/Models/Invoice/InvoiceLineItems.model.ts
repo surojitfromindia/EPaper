@@ -1,4 +1,5 @@
 import {
+  CreationAttributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -50,31 +51,37 @@ class InvoiceLineItem extends Model<
   @NotNull
   @Default("active")
   declare status: "active" | "deleted";
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare organizationId: number;
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization?: NonAttribute<OrganizationBasic>;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare invoiceId: number;
   @BelongsTo(() => Invoice, "invoiceId")
   declare Invoice?: NonAttribute<Invoice>;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare itemId: number;
   @BelongsTo(() => RegularItems, "itemId")
   declare Item?: NonAttribute<RegularItems>;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare accountId: number;
   @BelongsTo(() => AccountsOfOrganization, "accountId")
   declare Account?: NonAttribute<AccountsOfOrganization>;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare taxId: number;
   @BelongsTo(() => TaxRates, "taxId")
   declare Tax?: NonAttribute<TaxRates>;
+
   @Attribute(DataTypes.INTEGER)
   declare unitId: number;
   @BelongsTo(() => ItemUnit, "unitId")
@@ -160,4 +167,8 @@ class InvoiceLineItem extends Model<
     return value;
   }
 }
+
+type InvoiceLineItemCreatable = CreationAttributes<InvoiceLineItem>;
+type InvoiceLineItemIdType = number;
 export { InvoiceLineItem };
+export type { InvoiceLineItemCreatable, InvoiceLineItemIdType };

@@ -1,4 +1,5 @@
 import {
+  CreationAttributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -6,7 +7,13 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { Contacts, OrganizationBasic, User } from "../index";
+import {
+  Contacts,
+  InvoiceLineItem,
+  OrganizationBasic,
+  RegularItems,
+  User,
+} from "../index";
 import { MathLib } from "../../Utils/MathLib/mathLib";
 import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
 import {
@@ -14,6 +21,7 @@ import {
   AutoIncrement,
   BelongsTo,
   Default,
+  HasMany,
   NotNull,
   PrimaryKey,
   Table,
@@ -22,6 +30,13 @@ import {
 @Table({
   underscored: true,
   tableName: "Invoices",
+  indexes: [
+    {
+      type: "unique",
+      name: "organization_invoice_number_unique",
+      fields: ["organization_id", "invoice_number"],
+    },
+  ],
 })
 class Invoice extends Model<
   InferAttributes<Invoice>,
@@ -110,5 +125,13 @@ class Invoice extends Model<
     }
     return value;
   }
+
+  @HasMany(() => InvoiceLineItem, "invoiceId")
+  declare LineItems: NonAttribute<RegularItems[]>;
 }
+
+type InvoiceCreatable = CreationAttributes<Invoice>;
+type InvoiceIdType = number;
+
 export { Invoice };
+export type { InvoiceIdType, InvoiceCreatable };

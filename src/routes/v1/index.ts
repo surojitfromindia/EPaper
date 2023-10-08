@@ -11,6 +11,7 @@ import settingsRouter from "./Settings/index";
 import itemRouter from "./Item.route";
 import accountsOfOrganizationRoute from "./AccountsOfOrganization.route";
 import appStateRoute from "./AppState.route";
+import invoiceRoute from "./Invoice.route";
 
 const v1Router = Router();
 v1Router.use(authorizeClient); // check the validity of user/client
@@ -23,5 +24,6 @@ v1Router.use("/items", itemRouter);
 v1Router.use("/settings", settingsRouter);
 v1Router.use("/accounts", accountsOfOrganizationRoute);
 v1Router.use("/accounts_of_templates", accountsOfTemplateRoute);
+v1Router.use("/invoices", invoiceRoute);
 
 export default v1Router;

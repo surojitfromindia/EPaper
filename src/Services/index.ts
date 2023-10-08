@@ -14,6 +14,7 @@ import AppStateService from "./AppState.service";
 import PreferenceService, {
   ItemPreferenceService,
 } from "./PreferenceServices/Preference.service";
+import InvoiceService from "./Invoice/Invoice.service";
 
 export {
   UserService,
@@ -29,4 +30,5 @@ export {
   SettingService,
   ItemUnitService,
   AccountsOfItem,
+  InvoiceService,
 };
