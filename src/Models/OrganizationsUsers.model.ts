@@ -39,7 +39,7 @@ class OrganizationsUsers extends Model<
   @Default("working")
   declare jobStatus: string;
 
-  @Attribute(DataTypes.ENUM("active", "deactive", "invited"))
+  @Attribute(DataTypes.ENUM("active", "deleted", "invited"))
   @NotNull
   declare status: string;
 

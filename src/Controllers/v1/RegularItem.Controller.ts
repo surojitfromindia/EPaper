@@ -27,7 +27,7 @@ let getAllItems = async (req: Request) => {
   });
   return { items: items.map((item) => RegularItemDto.toItem(item)) };
 };
-const getAllItemsController = SuccessErrorWrapper(getAllItems, "done", 200);
+const getAllItemController = SuccessErrorWrapper(getAllItems, "done", 200);
 
 let getAnItem = async (req: Request) => {
   const clientInfo = req.clientInfo;
@@ -77,7 +77,7 @@ const getItemEditPageController = SuccessErrorWrapper(
 
 export {
   createItemController,
-  getAllItemsController,
+  getAllItemController,
   getAnItemController,
   updateAnItemController,
   getItemEditPageController,

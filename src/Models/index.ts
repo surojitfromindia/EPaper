@@ -13,6 +13,8 @@ import { AccountsOfTemplate } from "./Account/AccountsOfTemplate.model";
 import { AccountsOfOrganization } from "./Account/AccountsOfOrganization.model";
 import { RegularItems } from "./Item/RegularItems.model";
 import { Contacts } from "./Contact/Contacts.model";
+import { Invoice } from "./Invoice/Invoices.model";
+import { InvoiceLineItem } from "./Invoice/InvoiceLineItems.model";
 
 export {
   User,
@@ -30,4 +32,6 @@ export {
   AccountsOfOrganization,
   RegularItems,
   Contacts,
+  Invoice,
+  InvoiceLineItem,
 };

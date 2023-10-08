@@ -1,4 +1,5 @@
 import {
+  CreationAttributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -43,7 +44,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   @AllowNull
   declare clientId: string;
 
-  @Attribute(DataTypes.ENUM("active", "deactive"))
+  @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
   @Default("active")
   declare status: string;
@@ -64,4 +65,8 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare Organizations: NonAttribute<OrganizationBasic[]>;
 }
 
+type UserCreatable = CreationAttributes<User>;
+type UserIdType = number;
+
 export { User };
+export type { UserCreatable, UserIdType };

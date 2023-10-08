@@ -67,7 +67,7 @@ const authorizeClient = async (
       client_id: basicClientInfo.clientId,
       include_organization_details: true,
     });
-    const userOrganizations = userDetails.organization_working_details ?? [];
+    const userOrganizations = userDetails.user_organizations ?? [];
     clientInfo.userOrganizations = userOrganizations;
 
     // find default organization
@@ -82,7 +82,7 @@ const authorizeClient = async (
 
     req.clientInfo = clientInfo;
     return next();
-  } catch (error) {
+  } catch (error: any) {
     handleAuthorizationError(next, error);
   }
 };

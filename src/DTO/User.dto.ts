@@ -11,11 +11,11 @@ class UserDTO {
       name: user.name,
       user_id: user.id,
       email: user.email,
-      organization_working_details: [],
+      user_organizations: [],
     };
 
     if (user.UserOrganizations?.length > 0) {
-      basicUser.organization_working_details = user.UserOrganizations.map(
+      basicUser.user_organizations = user.UserOrganizations.map(
         organizationsUsersDto.toOrganizationsUsers,
       );
     }
@@ -23,7 +23,7 @@ class UserDTO {
   }
 
   // transform a request to a user like entity
-  static toUserCreate(client_info) {
+  static toUserCreate(client_info: any) {
     return {
       name: client_info.clientName,
       email: client_info.clientEmail,

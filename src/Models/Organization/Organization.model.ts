@@ -1,4 +1,5 @@
 import {
+  CreationAttributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -52,7 +53,7 @@ class OrganizationBasic extends Model<
   @NotNull
   declare currencyCode: string;
 
-  @Attribute(DataTypes.ENUM("active", "deactive"))
+  @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
   @Default("active")
   declare status: string;
@@ -65,4 +66,8 @@ class OrganizationBasic extends Model<
   declare createdByUser?: NonAttribute<User>;
 }
 
+type OrganizationBasicCreatable = CreationAttributes<OrganizationBasic>;
+type OrganizationBasicIdType = number;
+
 export { OrganizationBasic };
+export type { OrganizationBasicIdType, OrganizationBasicCreatable };

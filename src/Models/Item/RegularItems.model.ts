@@ -80,10 +80,10 @@ class RegularItems extends Model<
   @BelongsTo(() => ItemUnit, "unitId")
   declare Unit?: NonAttribute<ItemUnit>;
 
-  @Attribute(DataTypes.ENUM("active", "deactive"))
+  @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
   @Default("active")
-  declare status: "active" | "deactive";
+  declare status: "active" | "deleted";
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

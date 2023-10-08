@@ -1,133 +1,114 @@
-import { DataTypes, Model } from "@sequelize/core";
-import sequelize from "../../Config/DataBase.Config";
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  NonAttribute,
+} from "@sequelize/core";
 import { Contacts, OrganizationBasic, User } from "../index";
 import { MathLib } from "../../Utils/MathLib/mathLib";
 import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
+import {
+  Attribute,
+  AutoIncrement,
+  BelongsTo,
+  Default,
+  NotNull,
+  PrimaryKey,
+  Table,
+} from "@sequelize/core/decorators-legacy";
 
-class Invoice extends Model {}
+@Table({
+  underscored: true,
+  tableName: "Invoices",
+})
+class Invoice extends Model<
+  InferAttributes<Invoice>,
+  InferCreationAttributes<Invoice>
+> {
+  @Attribute(DataTypes.INTEGER)
+  @PrimaryKey
+  @AutoIncrement
+  declare id: CreationOptional<number>;
 
-Invoice.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      columnName: "id",
-      allowNull: false,
-    },
-    invoiceNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      columnName: "invoice_number",
-    },
-    referenceNumber: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      columnName: "reference_number",
-    },
-    orderNumber: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      columnName: "order_number",
-    },
-    terms: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      columnName: "terms",
-    },
-    notes: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      columnName: "notes",
-    },
-    status: {
-      type: DataTypes.ENUM("active"),
-      allowNull: false,
-      columnName: "status",
-      defaultValue: "active",
-    },
-    discountTotal: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      columnName: "discount_total",
-      get() {
-        const value = this.getDataValue("discountTotal");
-        if (value) {
-          return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
-        }
-        return value;
-      },
-    },
-    taxTotal: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      columnName: "tax_total",
-      get() {
-        const value = this.getDataValue("taxTotal");
-        if (value) {
-          return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
-        }
-        return value;
-      },
-    },
-    subTotal: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      columnName: "sub_total",
-      get() {
-        const value = this.getDataValue("subTotal");
-        if (value) {
-          return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
-        }
-        return value;
-      },
-    },
-    total: {
-      type: DataTypes.DECIMAL,
-      allowNull: false,
-      columnName: "total",
-      get() {
-        const value = this.getDataValue("total");
-        if (value) {
-          return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
-        }
-        return value;
-      },
-    },
-    isInclusiveTax: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      columnName: "is_inclusive_tax",
-    },
-  },
-  {
-    sequelize,
-  },
-);
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare contactId: number;
+  @BelongsTo(() => Contacts, "contactId")
+  declare Contact?: NonAttribute<Contacts>;
 
-Invoice.belongsTo(User, {
-  foreignKey: {
-    allowNull: false,
-    columnName: "created_by",
-    name: "createdBy",
-  },
-  as: "CreatedByUser",
-});
-Invoice.belongsTo(OrganizationBasic, {
-  foreignKey: {
-    allowNull: false,
-    columnName: "organization_id",
-    name: "organizationId",
-  },
-  as: "Organization",
-});
-Invoice.belongsTo(Contacts, {
-  foreignKey: {
-    allowNull: false,
-    columnName: "customer_id",
-    name: "customerId",
-  },
-  as: "Customer",
-});
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  declare invoiceNumber: string;
 
+  @Attribute(DataTypes.STRING)
+  declare referenceNumber: string;
+
+  @Attribute(DataTypes.STRING)
+  declare orderNumber: string;
+
+  @Attribute(DataTypes.STRING)
+  declare terms: string;
+
+  @Attribute(DataTypes.STRING)
+  declare notes: string;
+  @Attribute(DataTypes.BOOLEAN)
+  @NotNull
+  declare isInclusiveTax: boolean;
+  @Attribute(DataTypes.ENUM("active", "deleted"))
+  @NotNull
+  @Default("active")
+  declare status: "active" | "deleted";
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare organizationId: number;
+  @BelongsTo(() => OrganizationBasic, "organizationId")
+  declare Organization?: NonAttribute<OrganizationBasic>;
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare createdBy: number;
+  @BelongsTo(() => User, "createdBy")
+  declare CreatedBy?: NonAttribute<User>;
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get discountTotal(): number {
+    const value = this.getDataValue("discountTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get taxTotal(): number {
+    const value = this.getDataValue("taxTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get subTotal(): number {
+    const value = this.getDataValue("subTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get total(): number {
+    const value = this.getDataValue("total");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+}
 export { Invoice };

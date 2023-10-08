@@ -48,10 +48,10 @@ class AccountTemplateDetails extends Model<
   @NotNull
   declare isDefaultTemplate: boolean;
 
-  @Attribute(DataTypes.ENUM("active", "deactive"))
+  @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
   @Default("active")
-  declare status: "active" | "deactive";
+  declare status: "active" | "deleted";
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

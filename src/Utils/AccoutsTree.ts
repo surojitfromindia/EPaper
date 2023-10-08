@@ -3,9 +3,9 @@ import AccountsOfOrganizationDto from "../DTO/AccountsOfOrganization.dto";
 import ld from "lodash";
 
 class AccountsTree {
-  #treeArray;
+  readonly #treeArray: any[];
 
-  constructor(treeArray) {
+  constructor(treeArray: any[]) {
     this.#treeArray = treeArray;
   }
 

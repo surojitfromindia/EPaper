@@ -55,7 +55,7 @@ class TaxRates extends Model<
   @NotNull
   declare isDeletable: boolean;
   @Default("active")
-  @Attribute(DataTypes.ENUM("active", "deactive"))
+  @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
   declare status: string;
 

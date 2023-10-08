@@ -7,6 +7,6 @@ itemRouter
   .post("/", RegularItemController.createItemController)
   .get("/edit_page", RegularItemController.getItemEditPageController)
   .get("/:item_id", RegularItemController.getAnItemController)
-  .get("/", RegularItemController.getAllItemsController)
+  .get("/", RegularItemController.getAllItemController)
   .put("/:item_id", RegularItemController.updateAnItemController);
 export default itemRouter;

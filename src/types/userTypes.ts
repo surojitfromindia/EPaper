@@ -4,7 +4,7 @@
  * @property {number} user_id
  * @property {string} name name of the user
  * @property {string|null} email email of the user
- * @property {("active"|"deactive")} status
+ * @property {("active"|"deleted")} status
  * @property {string} client_id
  * @property {Array<OrganizationDetailsTypeAsDTO>} organization
  */
@@ -15,7 +15,7 @@
  * @property {number} id table id of user
  * @property {string} name name of the user
  * @property {string|null} email email of the user
- * @property {("active"|"deactive")} status status of user
+ * @property {("active"|"deleted")} status status of user
  * @property {string} clientId client id of user
  * @property {Array.<OrganizationDetailsType>} organizationsBasic
  */

@@ -6,7 +6,10 @@ import {
   AccountsOfTemplate,
   AccountTemplateDetails,
   AccountTypes,
+  Contacts,
   GeneralPreference,
+  Invoice,
+  InvoiceLineItem,
   ItemPreference,
   ItemUnit,
   OrganizationBasic,
@@ -45,15 +48,25 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     AccountsOfTemplate,
     AccountsOfOrganization,
     RegularItems,
+    Contacts,
+    Invoice,
+    InvoiceLineItem,
   ],
 });
 
-// sequelize
-//   .sync({
-//     alter: true,
-//   })
-//   .catch((error) => {
-//     console.log("error :", error);
-//   });
+function syncModel() {
+  const alter = true;
+  const force = true;
+  Invoice.sync({
+    alter,
+    force,
+  }).catch((err) => console.log(err));
+  InvoiceLineItem.sync({
+    alter,
+    force,
+  }).catch((err) => console.log(err));
+}
+
+syncModel();
 
 export default sequelize;

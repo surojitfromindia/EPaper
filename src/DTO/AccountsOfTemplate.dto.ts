@@ -15,7 +15,7 @@ class AccountsTemplateDTO {
         );
     }
     if (account.accountGroupId) {
-      account_dto.account_group_id = account.accountGroupIdId;
+      account_dto.account_group_id = account.accountGroupId;
       if (account.AccountGroup)
         account_dto.account_group = this.toAccountsOfTemplate(
           account.AccountGroup,
