@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -20,9 +21,9 @@ import {
   underscored: true,
   tableName: "GeneralPreferences",
 })
-class GeneralPreference extends Model<
-  InferAttributes<GeneralPreference>,
-  InferCreationAttributes<GeneralPreference>
+class GeneralPreferenceModel extends Model<
+  InferAttributes<GeneralPreferenceModel>,
+  InferCreationAttributes<GeneralPreferenceModel>
 > {
   @Attribute(DataTypes.INTEGER)
   @PrimaryKey
@@ -52,4 +53,7 @@ class GeneralPreference extends Model<
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization: NonAttribute<OrganizationBasic>;
 }
-export { GeneralPreference };
+
+type GenerelaPrefernce = Attributes<GeneralPreferenceModel>;
+export { GeneralPreferenceModel };
+export type { GenerelaPrefernce };

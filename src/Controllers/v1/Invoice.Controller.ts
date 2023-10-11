@@ -19,7 +19,7 @@ const createInvoiceController = SuccessErrorWrapper(
 
 const getAnInvoice = async (req: Request) => {
   const clientInfo = req.clientInfo;
-  const invoiceId = req.params.invoice_id;
+  const invoiceId = Number(req.params.invoice_id);
   const invoice = await InvoiceService.getAnInvoice({
     invoice_id: invoiceId,
     client_info: clientInfo,

@@ -1,14 +1,14 @@
-import { GeneralPreference } from "../../Models";
+import { GeneralPreferenceModel } from "../../Models";
 
 class GeneralPreferenceDao {
   async create({ preference_details }, { transaction }) {
-    return await GeneralPreference.create(preference_details, {
+    return await GeneralPreferenceModel.create(preference_details, {
       transaction,
     });
   }
 
   async get({ organization_id }) {
-    return await GeneralPreference.findOne({
+    return await GeneralPreferenceModel.findOne({
       where: {
         organizationId: organization_id,
       },

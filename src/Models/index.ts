@@ -2,7 +2,7 @@ import { User } from "./User/User.model";
 import { OrganizationBasic } from "./Organization/Organization.model";
 import { OrganizationsUsers } from "./OrganizationsUsers.model";
 import { TaxRates } from "./Tax/TaxRates.model";
-import { GeneralPreference } from "./Preference/GeneralPreference/GeneralPreference.model";
+import { GeneralPreferenceModel } from "./Preference/GeneralPreference/GeneralPreference.model";
 import { ItemPreference } from "./Preference/ItemPreference.model";
 import { ItemUnit } from "./ItemUnit/ItemUnit.model";
 import { AccountGroups } from "./Account/AccountGroups.model";
@@ -21,7 +21,7 @@ export {
   OrganizationBasic,
   OrganizationsUsers,
   TaxRates,
-  GeneralPreference,
+  GeneralPreferenceModel,
   ItemPreference,
   ItemUnit,
   AccountGroups,

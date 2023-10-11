@@ -11,7 +11,7 @@ const GENERAL_PREFERENCE = {
   salesTaxType: "entity_level",
   taxRoundingType: "item_level",
   discountType: "no_discount",
-  isDiscountBeforeTax: false,
+  isDiscountBeforeTax: true,
 };
 
 const PREFERENCE_DEFAULTS = {
