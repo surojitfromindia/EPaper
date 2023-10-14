@@ -4,6 +4,7 @@ import { GenerelaPrefernce } from "../../Models/Preference/GeneralPreference/Gen
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { GeneralPreferenceService } from "../PreferenceServices/Preference.service";
 import { MathLib } from "../../Utils/MathLib/mathLib";
+import { LineItemCalculation } from "./LineItemCalculation";
 
 type InvoiceCalculateReturn = {
   invoice: InvoiceCreatable;
@@ -60,8 +61,6 @@ class InvoiceCalculation {
 
   calculate(): InvoiceCalculateReturn {
     const mathLib = new MathLib({});
-    // run through each entry of line item.
-    // 1. if the discount type is entity level or no_discount, ignore discount fields in Items
     let invoiceDiscountTotal = 0;
     let invoiceTaxTotal = 0;
     let invoiceSubTotal = 0;
@@ -70,31 +69,30 @@ class InvoiceCalculation {
     // now time to loop over each line item.
     const updatedLineItems = [];
     for (const lineItem of this.lineItems) {
-      // todo: work on discount
-      const lineItemDiscountAmount = 0;
-      const itemPrimaryTotal = mathLib.getWithPrecision(
-        lineItem.quantity * lineItem.rate,
-      );
-      const lineItemTaxPercentageAsDecimal = mathLib.getDecimalFromPercentage(
-        lineItem.taxPercentage,
-      );
+      const ln = new LineItemCalculation({
+        line_item: lineItem,
+        mathLib,
+      });
+      ln.applyDiscountPercentage({
+        discount_percentage: lineItem.discountPercentage,
+      }).applyTaxPercentage({ tax_percentage: lineItem.taxPercentage });
 
-      const lineItemTaxAmount = mathLib.getWithPrecision(
-        itemPrimaryTotal * lineItemTaxPercentageAsDecimal,
-      );
-      const lineItemTotal = itemPrimaryTotal;
-      const LineItemTotalTaxIncluded = mathLib.getWithPrecision(
-        itemPrimaryTotal + lineItemTaxAmount,
-      );
+      const itemPrimaryTotal = ln.getPrimaryTotal();
+      const lineItemDiscountAmount = ln.getDiscountAmount();
+      const lineItemTaxAmount = ln.getTaxAmount();
+      const lineItemTotal = itemPrimaryTotal - lineItemDiscountAmount;
+      const lineItemTotalTaxIncluded = lineItemTotal + lineItemTaxAmount;
 
       const newLineItem: InvoiceLineItemCreatable = {
         ...lineItem,
         discountAmount: lineItemDiscountAmount,
         taxAmount: lineItemTaxAmount,
         itemTotal: lineItemTotal,
-        itemTotalTaxIncluded: LineItemTotalTaxIncluded,
+        itemTotalTaxIncluded: lineItemTotalTaxIncluded,
       };
       updatedLineItems.push(newLineItem);
+
+      // update the global values
       invoiceTaxTotal = mathLib.getWithPrecision(
         invoiceTaxTotal + lineItemTaxAmount,
       );
