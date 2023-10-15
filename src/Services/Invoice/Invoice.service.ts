@@ -28,8 +28,8 @@ class InvoiceService {
       contactId: invoice_details.contact_id,
       referenceNumber: invoice_details.reference_number,
       orderNumber: invoice_details.order_number,
-      notes: invoice_details.notes,
-      terms: invoice_details.terms,
+      notes: invoice_details.notes ?? "",
+      terms: invoice_details.terms ?? "",
       isInclusiveTax: invoice_details.is_inclusive_tax,
       status: "active",
     };

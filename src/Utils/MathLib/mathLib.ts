@@ -9,7 +9,11 @@ class MathLib {
   }
 
   static getWithPrecision(precision: number, number: number) {
-    return MathJs.number(MathJs.format(MathJs.number(number), { precision }));
+    const fixedValue = MathJs.format(MathJs.number(number), {
+      precision,
+      notation: "fixed",
+    });
+    return MathJs.number(fixedValue);
   }
 
   static getDecimalFromPercentage(precision: number, percentage_value: number) {

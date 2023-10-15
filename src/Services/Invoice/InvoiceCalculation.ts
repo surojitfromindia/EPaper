@@ -72,35 +72,31 @@ class InvoiceCalculation {
       const ln = new LineItemCalculation({
         line_item: lineItem,
         mathLib,
+        is_tax_inclusive: this.isTaxInclusive,
       });
-      ln.applyDiscountPercentage({
-        discount_percentage: lineItem.discountPercentage,
-      }).applyTaxPercentage({ tax_percentage: lineItem.taxPercentage });
-
-      const itemPrimaryTotal = ln.getPrimaryTotal();
-      const lineItemDiscountAmount = ln.getDiscountAmount();
-      const lineItemTaxAmount = ln.getTaxAmount();
-      const lineItemTotal = itemPrimaryTotal - lineItemDiscountAmount;
-      const lineItemTotalTaxIncluded = lineItemTotal + lineItemTaxAmount;
+      const { itemTotalTaxIncluded, taxAmount, itemTotal, discountAmount } = ln
+        .applyDiscountPercentage({
+          discount_percentage: lineItem.discountPercentage,
+        })
+        .applyTaxPercentage({ tax_percentage: lineItem.taxPercentage })
+        .getAmounts();
 
       const newLineItem: InvoiceLineItemCreatable = {
         ...lineItem,
-        discountAmount: lineItemDiscountAmount,
-        taxAmount: lineItemTaxAmount,
-        itemTotal: lineItemTotal,
-        itemTotalTaxIncluded: lineItemTotalTaxIncluded,
+        discountAmount,
+        taxAmount,
+        itemTotal,
+        itemTotalTaxIncluded,
       };
       updatedLineItems.push(newLineItem);
 
       // update the global values
-      invoiceTaxTotal = mathLib.getWithPrecision(
-        invoiceTaxTotal + lineItemTaxAmount,
+      invoiceTaxTotal = mathLib.getWithPrecision(invoiceTaxTotal + taxAmount);
+      invoiceDiscountTotal = mathLib.getWithPrecision(
+        invoiceDiscountTotal + discountAmount,
       );
-      invoiceSubTotal = mathLib.getWithPrecision(
-        invoiceSubTotal + lineItemTotal,
-      );
+      invoiceSubTotal = mathLib.getWithPrecision(invoiceSubTotal + itemTotal);
     }
-
     invoiceTotal = mathLib.getWithPrecision(invoiceTaxTotal + invoiceSubTotal);
 
     const updateInvoice = {
