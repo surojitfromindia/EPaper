@@ -9,7 +9,6 @@ type LineItemConstructorProps = {
 
 export class LineItemCalculation {
   readonly lineItem: InvoiceLineItemCreatable;
-  readonly #publishedTotal: number;
   #discountAmount: number;
   #subTotal: number; // sub total does not include tax
   #taxAmount: number;
@@ -33,7 +32,6 @@ export class LineItemCalculation {
     this.#taxAbleAmount = is_tax_inclusive
       ? publishedTotal / (1 + lineItemTaxPercentageAsDecimal)
       : publishedTotal;
-    this.#publishedTotal = publishedTotal;
   }
 
   /**

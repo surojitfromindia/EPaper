@@ -4,7 +4,7 @@ import { GenerelaPrefernce } from "../../Models/Preference/GeneralPreference/Gen
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { GeneralPreferenceService } from "../PreferenceServices/Preference.service";
 import { MathLib } from "../../Utils/MathLib/mathLib";
-import { LineItemCalculation } from "./LineItemCalculation";
+import { LineItemCalculation } from "../helpers/LineItemCalculation";
 
 type InvoiceCalculateReturn = {
   invoice: InvoiceCreatable;
