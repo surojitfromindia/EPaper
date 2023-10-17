@@ -24,7 +24,6 @@ class AccountsOfOrganizationService {
 
     const newAccountDetails =
       AccountsOfOrganizationDTO.toAccountOfOrganizationCreate(account_details);
-    // let accountTemplateId = newAccountDetails.accountTemplateId;
     newAccountDetails.createdBy = createdBy;
     newAccountDetails.organizationId = organizationId;
 
@@ -359,11 +358,20 @@ class AccountsOfOrganizationService {
 
   /**
    * get accounts related to item
-   * @param client_info
-   * @return {AccountsOfItem}
    */
-  ofItem({ client_info }) {
+  ofItem({ client_info }: { client_info: ClientInfo }): AccountsOfItem {
     return new AccountsOfItem({ client_info });
+  }
+
+  /**
+   * get account related to invoice line item
+   **/
+  ofInvoiceLineItem({
+    client_info,
+  }: {
+    client_info: ClientInfo;
+  }): AccountsOfInvoiceLineItem {
+    return new AccountsOfInvoiceLineItem({ client_info });
   }
 }
 
@@ -436,4 +444,34 @@ class AccountsOfItem {
   }
 }
 
-export { AccountsOfItem };
+class AccountsOfInvoiceLineItem {
+  client_info: ClientInfo;
+
+  constructor({ client_info }) {
+    this.client_info = client_info;
+  }
+
+  async getAccountsForInvoiceLineItem() {
+    const organizationId = this.client_info.organizationId;
+    const fetchAccountTypes = [
+      "other_current_asset",
+      "fixed_asset",
+      "other_current_liability",
+      "income",
+      "expense",
+      "cost_of_goods_sold",
+      "other_expenses",
+    ];
+    const line_item_accounts_list = [];
+    const accounts = await AccountsOfOrganizationDao.getAccountsByAccountTypes({
+      organization_id: organizationId,
+      account_types: fetchAccountTypes,
+    });
+    line_item_accounts_list.push(...accounts);
+    return {
+      line_item_accounts_list,
+    };
+  }
+}
+
+export { AccountsOfItem, AccountsOfInvoiceLineItem };

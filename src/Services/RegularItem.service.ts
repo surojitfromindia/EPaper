@@ -8,6 +8,7 @@ import {
 } from "./index";
 import { AccountsTree } from "../Utils/AccoutsTree";
 import { AccountIntegrity } from "../IntegrityValidationServices/index";
+import { ClientInfo } from "../Middlewares/Authorization/Authorization.middleware";
 
 class RegularItemService {
   async create({ item_details, client_info }) {
@@ -109,10 +110,16 @@ class RegularItemService {
    * @param {ClientInfoType} param0.client_info
    * @param {number=} param0.item_id provided an item id if fetching for edit.
    */
-  async getEditPage({ client_info, item_id }) {
+  async getEditPage({
+    client_info,
+    item_id,
+  }: {
+    client_info: ClientInfo;
+    item_id?: number | undefined;
+  }) {
     let itemDetails = null;
-    let taxes;
-    let itemUnits;
+    let taxes: any[];
+    let itemUnits: any[];
     if (item_id) {
       itemDetails = await this.getAnItem({
         item_id,
