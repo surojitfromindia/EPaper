@@ -31,7 +31,13 @@ class UserService {
     throw new DataNotFoundError();
   }
 
-  async getUserByClientId({ client_id, include_organization_details = false }) {
+  async getUserByClientId({
+    client_id,
+    include_organization_details = false,
+  }: {
+    client_id: string;
+    include_organization_details: boolean;
+  }) {
     let user;
     if (include_organization_details) {
       user = await UserDao.getUserByClientIdWithOrganization({ client_id });

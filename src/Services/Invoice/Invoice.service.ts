@@ -14,9 +14,10 @@ import {
 } from "../SettingServices/Setting.service";
 import { AccountsOfOrganizationService } from "../index";
 import { AccountsTree } from "../../Utils/AccoutsTree";
+import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
 
 type InvoiceCreateProps = {
-  invoice_details: any;
+  invoice_details: ToInvoiceCreateType;
   client_info: ClientInfo;
 };
 
@@ -35,29 +36,13 @@ class InvoiceService {
     const invoiceBody: InvoiceCreatable = {
       organizationId: client_info.organizationId,
       createdBy: client_info.userId,
-      invoiceNumber: invoice_details.invoice_number,
-      contactId: invoice_details.contact_id,
-      referenceNumber: invoice_details.reference_number,
-      orderNumber: invoice_details.order_number,
-      notes: invoice_details.notes ?? "",
-      terms: invoice_details.terms ?? "",
-      isInclusiveTax: invoice_details.is_inclusive_tax,
-      status: "active",
+      ...invoice_details,
     };
-    const lineItems = invoice_details.line_items;
+    const lineItems = invoice_details.lineItems;
     const lineItemsBody: InvoiceLineItemCreatable[] = lineItems.map(
-      (lineItem: any): InvoiceLineItemCreatable => ({
+      (lineItem) => ({
         organizationId: client_info.organizationId,
-        itemId: lineItem.item_id,
-        name: lineItem.name,
-        unit: lineItem.unit,
-        unitId: lineItem.unit_id,
-        taxId: lineItem.tax_id,
-        accountId: lineItem.account_id,
-        rate: lineItem.rate,
-        quantity: lineItem.quantity,
-        discountPercentage: lineItem.discount_percentage,
-        taxPercentage: lineItem.tax_percentage,
+        ...lineItem,
       }),
     );
     return await sequelize.transaction(async (t1) => {
@@ -66,7 +51,7 @@ class InvoiceService {
         client_info,
         line_items: lineItemsBody,
       });
-      let { invoice: newInvoice, line_items: newLineItems } =
+      const { invoice: newInvoice, line_items: newLineItems } =
         invoiceCalculation.calculate();
 
       const createdInvoice = await InvoiceDao.create(
@@ -78,12 +63,12 @@ class InvoiceService {
         },
       );
       const invoiceId = createdInvoice.id;
-      newLineItems = newLineItems.map((lineItem) =>
+      const newLineItemsWithInvoiceId = newLineItems.map((lineItem) =>
         Object.assign(lineItem, { invoiceId }),
       );
       await InvoiceLineItemDao.bulkCreate(
         {
-          invoice_line_items: newLineItems,
+          invoice_line_items: newLineItemsWithInvoiceId,
         },
         {
           transaction: t1,

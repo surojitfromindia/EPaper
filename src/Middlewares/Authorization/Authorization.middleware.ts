@@ -3,8 +3,8 @@ import { UserService } from "../../Services/index";
 import { NextFunction, Request, Response } from "express";
 
 interface ClientInfo {
-  userId: number;
-  organizationId: number;
+  userId: number | null;
+  organizationId?: number | null;
   userOrganizations: any[];
   clientId: string;
   clientName: string;
@@ -27,7 +27,7 @@ const authorizeClient = async (
       );
       return;
     }
-    let authToken: string;
+    let authToken: string = "";
     if (authHeader) {
       const [Schema, Token] = authHeader.split(" ");
       if (Schema !== "Bearer") {
@@ -54,9 +54,6 @@ const authorizeClient = async (
       clientName: introspectionResult.clientName,
     };
     // try to find user information
-    /**
-     * @type ClientInfoType
-     * */
     const clientInfo: ClientInfo = {
       ...basicClientInfo,
       userId: null,

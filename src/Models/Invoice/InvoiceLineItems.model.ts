@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreationAttributes,
   CreationOptional,
   DataTypes,
@@ -169,6 +170,24 @@ class InvoiceLineItem extends Model<
 }
 
 type InvoiceLineItemCreatable = CreationAttributes<InvoiceLineItem>;
+type InvoiceLineItemCreatableBasic = Omit<
+  InvoiceLineItemCreatable,
+  | "discountTotal"
+  | "taxAmount"
+  | "discountAmount"
+  | "itemTotal"
+  | "itemTotalTaxIncluded"
+  | "createdBy"
+  | "organizationId"
+  | "status"
+  | "invoiceId"
+>;
+type InvoiceLineItemType = Attributes<InvoiceLineItem>;
 type InvoiceLineItemIdType = number;
 export { InvoiceLineItem };
-export type { InvoiceLineItemCreatable, InvoiceLineItemIdType };
+export type {
+  InvoiceLineItemCreatable,
+  InvoiceLineItemCreatableBasic,
+  InvoiceLineItemIdType,
+  InvoiceLineItemType,
+};

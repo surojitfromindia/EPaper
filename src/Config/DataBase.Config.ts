@@ -56,7 +56,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
 
 async function syncModel() {
   const alter = true;
-  const force = true;
+  const force = false;
   // await Invoice.sync({
   //   alter,
   //   force,
@@ -65,9 +65,9 @@ async function syncModel() {
   //   alter,
   //   force,
   // });
-  await Contacts.sync({
-    alter,
-  });
+  // await Contacts.sync({
+  //   alter,
+  // });
 }
 
 // syncModel().catch((err) => console.log(err));

@@ -1,16 +1,16 @@
 import { Request } from "express";
 import { InvoiceService } from "../../Services";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
-import InvoiceDTO from "../../DTO/Invoice.dto";
+import { InvoiceDTO } from "../../DTO";
 
-let createInvoice = async (req: Request) => {
+const createInvoice = async (req: Request) => {
   const clientInfo = req.clientInfo;
   const body = req.body;
   const cratedInvoice = await InvoiceService.create({
-    invoice_details: body,
+    invoice_details: InvoiceDTO.toInvoiceCreate(body),
     client_info: clientInfo,
   });
-  return { invoice: cratedInvoice };
+  return { invoice: InvoiceDTO.toInvoice(cratedInvoice) };
 };
 const createInvoiceController = SuccessErrorWrapper(
   createInvoice,
@@ -25,11 +25,11 @@ const getAnInvoice = async (req: Request) => {
     invoice_id: invoiceId,
     client_info: clientInfo,
   });
-  return { invoice };
+  return { invoice: InvoiceDTO.toInvoice(invoice) };
 };
 const getAnInvoiceController = SuccessErrorWrapper(getAnInvoice, "done", 200);
 
-let getInvoiceEditPage = async (req: Request) => {
+const getInvoiceEditPage = async (req: Request) => {
   const req_query = req?.query;
   const clientInfo = req.clientInfo;
   const invoiceId = req_query.invoice_id && Number(req_query.invoice_id);

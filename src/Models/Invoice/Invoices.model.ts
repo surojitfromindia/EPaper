@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreationAttributes,
   CreationOptional,
   DataTypes,
@@ -7,13 +8,7 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import {
-  Contacts,
-  InvoiceLineItem,
-  OrganizationBasic,
-  RegularItems,
-  User,
-} from "../index";
+import { Contacts, InvoiceLineItem, OrganizationBasic, User } from "../index";
 import { MathLib } from "../../Utils/MathLib/mathLib";
 import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
 import {
@@ -127,11 +122,29 @@ class Invoice extends Model<
   }
 
   @HasMany(() => InvoiceLineItem, "invoiceId")
-  declare LineItems: NonAttribute<RegularItems[]>;
+  declare LineItems: NonAttribute<InvoiceLineItem[]>;
 }
 
 type InvoiceCreatable = CreationAttributes<Invoice>;
+type InvoiceCreatableBasic = Omit<
+  InvoiceCreatable,
+  | "organizationId"
+  | "createdBy"
+  | "total"
+  | "subTotal"
+  | "discountTotal"
+  | "taxTotal"
+  | "status"
+>;
+type InvoiceType = Attributes<Invoice> & {
+  LineItems?: InvoiceLineItem[];
+};
 type InvoiceIdType = number;
 
 export { Invoice };
-export type { InvoiceIdType, InvoiceCreatable };
+export type {
+  InvoiceIdType,
+  InvoiceCreatable,
+  InvoiceType,
+  InvoiceCreatableBasic,
+};

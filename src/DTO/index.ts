@@ -7,6 +7,8 @@ import RegularItemDto from "./RegularItem.dto";
 import AccountsOfOrganizationDTO from "./AccountsOfOrganization.dto";
 import AccountTypesDTO from "./AccountTypes.dto";
 import ItemUnitDTO from "./ItemUnit.dto";
+import { InvoiceLineItemDTO } from "./InvoiceLineItem.dto";
+import { InvoiceDTO } from "./Invoice.dto";
 
 export {
   UserDTO,
@@ -18,4 +20,6 @@ export {
   AccountsOfOrganizationDTO,
   AccountTypesDTO,
   ItemUnitDTO,
+  InvoiceLineItemDTO,
+  InvoiceDTO,
 };
