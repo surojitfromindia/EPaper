@@ -46,8 +46,26 @@ const getInvoiceEditPageController = SuccessErrorWrapper(
   200,
 );
 
+const updateInvoice = async (req: Request) => {
+  const clientInfo = req.clientInfo;
+  const invoiceId = Number(req.params.invoice_id);
+  const body = req.body;
+  const updatedInvoice = await InvoiceService.update({
+    invoice_details: InvoiceDTO.toInvoiceUpdate(body),
+    client_info: clientInfo,
+    invoice_id: invoiceId,
+  });
+  return { invoice: InvoiceDTO.toInvoice(updatedInvoice) };
+};
+const updateInvoiceController = SuccessErrorWrapper(
+  updateInvoice,
+  "invoice updated",
+  201,
+);
+
 export {
   createInvoiceController,
   getAnInvoiceController,
   getInvoiceEditPageController,
+  updateInvoiceController,
 };

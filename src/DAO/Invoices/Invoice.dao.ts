@@ -5,6 +5,7 @@ import {
   InvoiceIdType,
 } from "../../Models/Invoice/Invoices.model";
 import { AllowArray } from "@sequelize/core/_non-semver-use-at-your-own-risk_/utils/types.d.ts";
+import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 
 const INVOICE_CONTACT_DEFAULT_ATTRIBUTES = ["contactName"];
 const INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES = [
@@ -37,6 +38,12 @@ type GetByIdOptions = Pick<
   "invoice_id" | "organization_id" | "include_branch"
 >;
 
+type InvoiceUpdateProps = {
+  invoice_id: InvoiceIdType;
+  organization_id: OrganizationBasicIdType;
+  invoice_details: InvoiceCreatable;
+};
+
 class InvoiceDao {
   async create(
     {
@@ -53,6 +60,25 @@ class InvoiceDao {
     return await Invoice.create(invoice_details, {
       transaction,
     });
+  }
+
+  async update(
+    { invoice_id, organization_id, invoice_details }: InvoiceUpdateProps,
+    {
+      transaction,
+    }: {
+      transaction: Transaction;
+    },
+  ) {
+    await Invoice.update(invoice_details, {
+      where: {
+        id: invoice_id,
+        organizationId: organization_id,
+        status: "active",
+      },
+      transaction,
+    });
+    return this.getByIdWithLineItems({ invoice_id, organization_id });
   }
 
   async getById({

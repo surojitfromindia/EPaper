@@ -51,6 +51,23 @@ class InvoiceDTO {
       ),
     };
   }
+
+  static toInvoiceUpdate(
+    invoice: any,
+  ): InvoiceCreatableBasic & { lineItems: InvoiceLineItemCreatableBasic[] } {
+    return {
+      contactId: invoice.contact_id,
+      invoiceNumber: invoice.invoice_number,
+      referenceNumber: invoice.referenceNumber,
+      orderNumber: invoice.orderNumber,
+      terms: invoice.terms,
+      notes: invoice.notes,
+      isInclusiveTax: invoice.is_inclusive_tax,
+      lineItems: invoice.line_items.map(
+        InvoiceLineItemDTO.toInvoiceLineItemUpdate,
+      ),
+    };
+  }
 }
 
 type ToInvoiceDTOType = ReturnType<typeof InvoiceDTO.toInvoice>;
