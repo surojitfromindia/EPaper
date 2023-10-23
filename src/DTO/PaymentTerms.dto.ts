@@ -14,7 +14,7 @@ class PaymentTermsDTO {
   static toPaymentTermCreate(payment_term_body: any) {
     return {
       name: payment_term_body.name,
-      paymentTerms: payment_term_body.payment_term,
+      paymentTerm: payment_term_body.payment_term,
       isDefault: payment_term_body.is_default,
       interval: payment_term_body.interval,
     };
@@ -23,7 +23,7 @@ class PaymentTermsDTO {
   static toPaymentTermUpdate(payment_term_body: any) {
     return {
       name: payment_term_body.name,
-      paymentTerms: payment_term_body.payment_term,
+      paymentTerm: payment_term_body.payment_term,
       isDefault: payment_term_body.is_default,
       interval: payment_term_body.interval,
     };

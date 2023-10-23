@@ -31,4 +31,4 @@ class TaxRateDTO {
   }
 }
 
-export default TaxRateDTO;
+export { TaxRateDTO };

@@ -1,6 +1,7 @@
 import sequelize from "../../Config/DataBase.Config";
 import { PaymentTermDao } from "../../DAO/index";
 import { PAYMENT_TERMS } from "../../Constants/PaymentTerms.Constant";
+import { DataNotFoundError } from "../../Errors/APIErrors";
 
 class PaymentTermService {
   async create({ payment_term_details, client_info }) {
@@ -11,11 +12,34 @@ class PaymentTermService {
         organizationId: client_info.organizationId,
         createdBy: client_info.userId,
       };
+      // check if this payment term is marked as default (isDefault = true)
+      if (paymentTermDetails.isDefault) {
+        await PaymentTermDao.unsetTheCurrentDefault(
+          {
+            organization_id: client_info.organizationId,
+          },
+          {
+            transaction: t1,
+          },
+        );
+      }
       return await PaymentTermDao.create(
         { payment_term_details: paymentTermDetails },
         { transaction: t1 },
       );
     });
+  }
+
+  async getAPaymentTerm({ payment_term_id, client_info }) {
+    const organizationId = client_info.organizationId;
+    const paymentTerm = await PaymentTermDao.get({
+      payment_term_id,
+      organization_id: organizationId,
+    });
+    if (paymentTerm) {
+      return paymentTerm;
+    }
+    throw new DataNotFoundError();
   }
 
   async getAllPaymentTerms({ client_info }) {
@@ -43,6 +67,41 @@ class PaymentTermService {
       },
       { transaction },
     );
+  }
+
+  async updateAPaymentTerm({
+    payment_term_id,
+    payment_term_details,
+    client_info,
+  }) {
+    const paymentTermDetailsFromPayload = payment_term_details;
+    const updatedPaymentTerm = await sequelize.transaction(async (t1) => {
+      if (paymentTermDetailsFromPayload.isDefault) {
+        // check if this payment term is marked as default (isDefault = true)
+        await PaymentTermDao.unsetTheCurrentDefault(
+          {
+            organization_id: client_info.organizationId,
+          },
+          {
+            transaction: t1,
+          },
+        );
+      }
+
+      return await PaymentTermDao.updatePaymentTerm(
+        {
+          payment_term_details: paymentTermDetailsFromPayload,
+          payment_term_id,
+          organization_id: client_info.organizationId,
+        },
+        { transaction: t1 },
+      );
+    });
+
+    if (updatedPaymentTerm) {
+      return updatedPaymentTerm;
+    }
+    throw new DataNotFoundError();
   }
 }
 

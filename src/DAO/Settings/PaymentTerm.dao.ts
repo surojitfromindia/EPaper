@@ -45,6 +45,21 @@ class PaymentTermDao {
       transaction,
     });
   }
+
+  async unsetTheCurrentDefault({ organization_id }, { transaction }) {
+    return await PaymentTerms.update(
+      {
+        isDefault: false,
+      },
+      {
+        where: {
+          organizationId: organization_id,
+          isDefault: true,
+        },
+        transaction,
+      },
+    );
+  }
 }
 
 export default Object.freeze(new PaymentTermDao());

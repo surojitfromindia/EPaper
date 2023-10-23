@@ -4,6 +4,7 @@ import AccountsTemplateService from "./AccountsOfTemplate.service";
 import AccountsTemplateImportService from "./ImportServices/AccountsOfTemplate.import.service";
 import SettingService, {
   ItemUnitService,
+  PaymentTermService,
   TaxRateService,
 } from "./SettingServices/Setting.service";
 import RegularItemService from "./RegularItem.service";
@@ -31,4 +32,5 @@ export {
   ItemUnitService,
   AccountsOfItem,
   InvoiceService,
+  PaymentTermService,
 };

@@ -1,7 +1,6 @@
 import { TaxRateService } from "../../../Services/index";
 import { SuccessErrorWrapper } from "../../../Utils/SuccessErrorWrapper";
-import { TaxRateDTO } from "../../../DTO/index";
-import TaxRateDto from "../../../DTO/TaxRate.dto";
+import { TaxRateDTO } from "../../../DTO";
 import { Request } from "express";
 
 let create = async (req: Request) => {
@@ -40,7 +39,7 @@ let getATaxRate = async (req: Request) => {
     tax_rate_id: taxRateId,
     client_info: clientInfo,
   });
-  return { tax_rate: TaxRateDto.toTaxRate(taxRate) };
+  return { tax_rate: TaxRateDTO.toTaxRate(taxRate) };
 };
 const getATaxRateController = SuccessErrorWrapper(getATaxRate, "done", 200);
 
@@ -54,12 +53,12 @@ let updateATaxRate = async (req: Request) => {
     tax_rate_id: taxRateId,
     client_info: clientInfo,
   });
-  return { tax_rate: TaxRateDto.toTaxRate(updatedTaxRate) };
+  return { tax_rate: TaxRateDTO.toTaxRate(updatedTaxRate) };
 };
 const updateATaxRateController = SuccessErrorWrapper(
   updateATaxRate,
   "tax rate update",
-  204,
+  200,
 );
 
 export {

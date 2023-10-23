@@ -55,7 +55,7 @@ let updateAnItem = async (req: Request) => {
 const updateAnItemController = SuccessErrorWrapper(
   updateAnItem,
   "item updated",
-  204,
+  200,
 );
 
 let getItemEditPage = async (req: Request) => {

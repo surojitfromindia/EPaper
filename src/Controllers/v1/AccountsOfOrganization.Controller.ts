@@ -63,7 +63,7 @@ const deleteAccounts = async (req: Request) => {
 const deleteAccountsController = SuccessErrorWrapper(
   deleteAccounts,
   "selected accounts has been deleted",
-  204,
+  200,
 );
 
 const deleteAccount = async (req: Request) => {
@@ -79,7 +79,7 @@ const deleteAccount = async (req: Request) => {
 const deleteAccountController = SuccessErrorWrapper(
   deleteAccount,
   "selected account has been deleted",
-  204,
+  200,
 );
 
 const getAccount = async (req: Request) => {
