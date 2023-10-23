@@ -14,6 +14,7 @@ import {
   ItemUnit,
   OrganizationBasic,
   OrganizationsUsers,
+  PaymentTerms,
   RegularItems,
   TaxRates,
   User,
@@ -51,6 +52,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     Contacts,
     Invoice,
     InvoiceLineItem,
+    PaymentTerms,
   ],
 });
 
@@ -68,6 +70,9 @@ async function syncModel() {
   // await Contacts.sync({
   //   alter,
   // });
+  await PaymentTerms.sync({
+    alter,
+  });
 }
 
 // syncModel().catch((err) => console.log(err));

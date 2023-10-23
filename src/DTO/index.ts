@@ -9,6 +9,7 @@ import AccountTypesDTO from "./AccountTypes.dto";
 import ItemUnitDTO from "./ItemUnit.dto";
 import { InvoiceLineItemDTO } from "./InvoiceLineItem.dto";
 import { InvoiceDTO } from "./Invoice.dto";
+import { PaymentTermsDTO } from "./PaymentTerms.dto";
 
 export {
   UserDTO,
@@ -22,4 +23,5 @@ export {
   ItemUnitDTO,
   InvoiceLineItemDTO,
   InvoiceDTO,
+  PaymentTermsDTO,
 };

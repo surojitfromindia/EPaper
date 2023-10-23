@@ -1,4 +1,9 @@
-import { InvoiceLineItemDTO, ItemUnitDTO, TaxRateDTO } from "./index";
+import {
+  InvoiceLineItemDTO,
+  ItemUnitDTO,
+  PaymentTermsDTO,
+  TaxRateDTO,
+} from "./index";
 import {
   InvoiceCreatableBasic,
   InvoiceType,
@@ -6,10 +11,16 @@ import {
 import { InvoiceLineItemCreatableBasic } from "../Models/Invoice/InvoiceLineItems.model";
 
 class InvoiceDTO {
-  static toInvoiceEditPage({ taxes, units, line_item_accounts_list }) {
+  static toInvoiceEditPage({
+    taxes,
+    units,
+    payment_terms,
+    line_item_accounts_list,
+  }) {
     return {
       taxes: taxes.map(TaxRateDTO.toTaxRate),
       units: units.map(ItemUnitDTO.toItemUnit),
+      payment_terms: payment_terms.map(PaymentTermsDTO.toPaymentTerm),
       line_item_accounts_list,
     };
   }

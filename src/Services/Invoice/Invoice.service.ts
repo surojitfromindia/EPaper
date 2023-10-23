@@ -11,6 +11,7 @@ import { DataNotFoundError } from "../../Errors/APIErrors";
 import { InvoiceCalculation } from "./InvoiceCalculation";
 import {
   ItemUnitService,
+  PaymentTermService,
   TaxRateService,
 } from "../SettingServices/Setting.service";
 import { AccountsOfOrganizationService } from "../index";
@@ -100,6 +101,9 @@ class InvoiceService {
   async getEditPage({ client_info, invoice_id }: InvoiceGetEdiPageProps) {
     const taxes = await TaxRateService.getAllTaxRates({ client_info });
     const itemUnits = await ItemUnitService.getAllItemUnits({ client_info });
+    const paymentTerms = await PaymentTermService.getAllPaymentTerms({
+      client_info,
+    });
     const { line_item_accounts_list } =
       await AccountsOfOrganizationService.ofInvoiceLineItem({
         client_info,
@@ -107,6 +111,7 @@ class InvoiceService {
     return {
       taxes,
       units: itemUnits,
+      payment_terms: paymentTerms,
       line_item_accounts_list:
         AccountsTree.createTreeOfOrganizationAccountsAsDTO({
           accounts: line_item_accounts_list,

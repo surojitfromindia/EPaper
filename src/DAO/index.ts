@@ -15,6 +15,7 @@ import ItemUnitDao from "./Settings/ItemUnit.dao";
 import GeneralPreferenceDao from "./Preference/GeneralPreference.dao";
 import InvoiceDao from "./Invoices/Invoice.dao";
 import InvoiceLineItemDao from "./Invoices/InvoiceLineItem.dao";
+import PaymentTermDao from "./Settings/PaymentTerm.dao";
 
 export {
   UserDao,
@@ -34,4 +35,5 @@ export {
   GeneralPreferenceDao,
   InvoiceDao,
   InvoiceLineItemDao,
+  PaymentTermDao,
 };
