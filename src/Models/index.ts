@@ -16,6 +16,7 @@ import { Contacts } from "./Contact/Contacts.model";
 import { Invoice } from "./Invoice/Invoices.model";
 import { InvoiceLineItem } from "./Invoice/InvoiceLineItems.model";
 import { PaymentTerms } from "./PaymentTerm/PaymentTerms.model";
+import { InvoicePaymentTerm } from "./Invoice/InvoicePaymentTerms.model";
 
 export {
   User,
@@ -36,4 +37,5 @@ export {
   Invoice,
   InvoiceLineItem,
   PaymentTerms,
+  InvoicePaymentTerm,
 };

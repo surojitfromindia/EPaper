@@ -8,10 +8,17 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { Contacts, InvoiceLineItem, OrganizationBasic, User } from "../index";
+import {
+  Contacts,
+  InvoiceLineItem,
+  InvoicePaymentTerm,
+  OrganizationBasic,
+  User,
+} from "../index";
 import { MathLib } from "../../Utils/MathLib/mathLib";
 import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
 import {
+  AllowNull,
   Attribute,
   AutoIncrement,
   BelongsTo,
@@ -123,6 +130,12 @@ class Invoice extends Model<
 
   @HasMany(() => InvoiceLineItem, "invoiceId")
   declare LineItems: NonAttribute<InvoiceLineItem[]>;
+
+  @Attribute(DataTypes.INTEGER)
+  @AllowNull
+  declare invoicePaymentTermId: number;
+  @BelongsTo(() => InvoicePaymentTerm, "invoicePaymentTermId")
+  declare InvoicePaymentTerm?: NonAttribute<InvoicePaymentTerm>;
 }
 
 type InvoiceCreatable = CreationAttributes<Invoice>;

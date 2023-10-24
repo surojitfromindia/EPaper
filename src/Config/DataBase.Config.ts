@@ -10,6 +10,7 @@ import {
   GeneralPreferenceModel,
   Invoice,
   InvoiceLineItem,
+  InvoicePaymentTerm,
   ItemPreference,
   ItemUnit,
   OrganizationBasic,
@@ -53,26 +54,13 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     Invoice,
     InvoiceLineItem,
     PaymentTerms,
+    InvoicePaymentTerm,
   ],
 });
 
 async function syncModel() {
   const alter = true;
   const force = false;
-  // await Invoice.sync({
-  //   alter,
-  //   force,
-  // });
-  // await InvoiceLineItem.sync({
-  //   alter,
-  //   force,
-  // });
-  // await Contacts.sync({
-  //   alter,
-  // });
-  await PaymentTerms.sync({
-    alter,
-  });
 }
 
 // syncModel().catch((err) => console.log(err));
