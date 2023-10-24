@@ -37,9 +37,9 @@ class InvoicePaymentTerm extends Model<
 
   @Attribute(DataTypes.INTEGER)
   @AllowNull // allow null cause payment term can be custom.
-  declare paymentTermId: number;
-  @BelongsTo(() => PaymentTerms, "paymentTermId")
-  declare PaymentTermDetails?: NonAttribute<PaymentTerms>;
+  declare originPaymentTermId: number;
+  @BelongsTo(() => PaymentTerms, "originPaymentTermId")
+  declare OriginPaymentTermDetails?: NonAttribute<PaymentTerms>;
 
   @Attribute(DataTypes.INTEGER)
   @AllowNull

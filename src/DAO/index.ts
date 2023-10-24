@@ -16,6 +16,7 @@ import GeneralPreferenceDao from "./Preference/GeneralPreference.dao";
 import InvoiceDao from "./Invoices/Invoice.dao";
 import InvoiceLineItemDao from "./Invoices/InvoiceLineItem.dao";
 import PaymentTermDao from "./Settings/PaymentTerm.dao";
+import InvoicePaymentTermDao from "./Invoices/InvoicePaymentTerm.dao";
 
 export {
   UserDao,
@@ -36,4 +37,5 @@ export {
   InvoiceDao,
   InvoiceLineItemDao,
   PaymentTermDao,
+  InvoicePaymentTermDao,
 };

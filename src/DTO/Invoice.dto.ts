@@ -26,8 +26,10 @@ class InvoiceDTO {
   }
 
   static toInvoice(invoice: InvoiceType) {
-    return {
+    const basic = {
       invoice_id: invoice.id,
+      issue_date: invoice.issueDate,
+      due_date: invoice.dueDate,
       contact_id: invoice.contactId,
       invoice_number: invoice.invoiceNumber,
       reference_number: invoice.referenceNumber,
@@ -40,35 +42,52 @@ class InvoiceDTO {
       tax_total: invoice.taxTotal,
       sub_total: invoice.subTotal,
       total: invoice.total,
-      line_items: (invoice.LineItems ?? []).map(
-        InvoiceLineItemDTO.toInvoiceLineItem,
-      ),
     };
+    if (invoice.InvoicePaymentTerm) {
+      const invoicePaymentTerm = invoice.InvoicePaymentTerm;
+      basic["payment_term_name"] = invoicePaymentTerm.name;
+      basic["payment_term"] = invoicePaymentTerm.paymentTerm;
+      basic["payment_term_interval"] = invoicePaymentTerm.interval;
+    }
+    if (invoice.LineItems) {
+      basic["line_items"] = (invoice.LineItems ?? []).map(
+        InvoiceLineItemDTO.toInvoiceLineItem,
+      );
+    }
+    return basic;
   }
 
-  static toInvoiceCreate(
-    invoice: any,
-  ): InvoiceCreatableBasic & { lineItems: InvoiceLineItemCreatableBasic[] } {
+  static toInvoiceCreate(invoice: any): InvoiceCreatableBasic & {
+    lineItems: InvoiceLineItemCreatableBasic[];
+    paymentTermId?: number;
+  } {
     return {
       contactId: invoice.contact_id,
       invoiceNumber: invoice.invoice_number,
+      issueDate: invoice.issue_date,
+      dueDate: invoice.due_date,
       referenceNumber: invoice.referenceNumber,
       orderNumber: invoice.orderNumber,
       terms: invoice.terms,
       notes: invoice.notes,
       isInclusiveTax: invoice.is_inclusive_tax,
+      // these fields will not be stored in invoice table
       lineItems: invoice.line_items.map(
         InvoiceLineItemDTO.toInvoiceLineItemCreate,
       ),
+      paymentTermId: invoice.payment_term_id,
     };
   }
 
-  static toInvoiceUpdate(
-    invoice: any,
-  ): InvoiceCreatableBasic & { lineItems: InvoiceLineItemCreatableBasic[] } {
+  static toInvoiceUpdate(invoice: any): InvoiceCreatableBasic & {
+    lineItems: InvoiceLineItemCreatableBasic[];
+    paymentTermId?: number;
+  } {
     return {
       contactId: invoice.contact_id,
       invoiceNumber: invoice.invoice_number,
+      issueDate: invoice.issue_date,
+      dueDate: invoice.due_date,
       referenceNumber: invoice.referenceNumber,
       orderNumber: invoice.orderNumber,
       terms: invoice.terms,
@@ -77,11 +96,10 @@ class InvoiceDTO {
       lineItems: invoice.line_items.map(
         InvoiceLineItemDTO.toInvoiceLineItemUpdate,
       ),
+      paymentTermId: invoice.payment_term_id,
     };
   }
 }
-
-type ToInvoiceDTOType = ReturnType<typeof InvoiceDTO.toInvoice>;
 type ToInvoiceCreateType = ReturnType<typeof InvoiceDTO.toInvoiceCreate>;
 export { InvoiceDTO };
-export type { ToInvoiceCreateType, ToInvoiceDTOType };
+export type { ToInvoiceCreateType };

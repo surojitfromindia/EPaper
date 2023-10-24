@@ -6,7 +6,12 @@ import {
 } from "../../Models/Invoice/Invoices.model";
 import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.model";
 import sequelize from "../../Config/DataBase.Config";
-import { InvoiceDao, InvoiceLineItemDao, PaymentTermDao } from "../../DAO";
+import {
+  InvoiceDao,
+  InvoiceLineItemDao,
+  InvoicePaymentTermDao,
+  PaymentTermDao,
+} from "../../DAO";
 import { DataNotFoundError } from "../../Errors/APIErrors";
 import { InvoiceCalculation } from "./InvoiceCalculation";
 import {
@@ -18,7 +23,8 @@ import { AccountsOfOrganizationService } from "../index";
 import { AccountsTree } from "../../Utils/AccoutsTree";
 import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
-import { DateUtil } from "../../Utils/DateFormatter";
+import { DateUtil } from "../../Utils/DateUtil";
+import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
 
 type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -40,30 +46,63 @@ type InvoiceGetEdiPageProps = {
   client_info: ClientInfo;
 };
 
+type CalculateDueDateProps = {
+  issue_date: Date;
+  payment_term_id: number;
+  organization_id: number;
+};
+
 class InvoiceService {
   async create({ client_info, invoice_details }: InvoiceCreateProps) {
-    const invoiceBody: InvoiceCreatable = {
-      organizationId: client_info.organizationId,
-      createdBy: client_info.userId,
-      ...invoice_details,
-    };
+    const organizationId = client_info.organizationId;
+    const userId = client_info.userId;
 
-    const lineItems = invoice_details.lineItems;
-    const lineItemsBody: InvoiceLineItemCreatable[] = lineItems.map(
-      (lineItem) => ({
-        organizationId: client_info.organizationId,
-        ...lineItem,
-      }),
-    );
+    // invoice and line items
+    const invoiceBody = {
+      ...invoice_details,
+      organizationId,
+      createdBy: userId,
+    };
+    const paymentTermId = invoice_details.paymentTermId;
+
+    // line items
+    const lineItemsBody: InvoiceLineItemCreatable[] = invoice_details.lineItems;
+
     return await sequelize.transaction(async (t1) => {
       const invoiceCalculation = await InvoiceCalculation.init({
-        invoice: invoiceBody,
         client_info,
+        invoice: invoiceBody,
         line_items: lineItemsBody,
       });
       const { invoice: newInvoice, line_items: newLineItems } =
         invoiceCalculation.calculate();
 
+      // calculate due date
+      if (paymentTermId) {
+        const { due_date: dueDate, payment_term_details: paymentTermDetails } =
+          await InvoiceUtil.calculateDueDate({
+            issue_date: DateUtil.parseFromStr(newInvoice.issueDate),
+            payment_term_id: paymentTermId,
+            organization_id: organizationId,
+          });
+
+        // create the invoicePaymentTerm if paymentTermId is present
+        const createdInvoicePaymentTerm =
+          await InvoiceUtil.createInvoicePaymentTerm(
+            {
+              payment_term_details: paymentTermDetails,
+            },
+            {
+              transaction: t1,
+            },
+          );
+
+        // update the due date and create a new invoicePaymentTerm
+        newInvoice.dueDate = DateUtil.Formatter(dueDate).format(DATE_FORMAT_DB);
+        newInvoice.invoicePaymentTermId = createdInvoicePaymentTerm.id;
+      }
+
+      // create the invoice
       const createdInvoice = await InvoiceDao.create(
         {
           invoice_details: newInvoice,
@@ -73,8 +112,13 @@ class InvoiceService {
         },
       );
       const invoiceId = createdInvoice.id;
+
+      // create the line items with invoice id
       const newLineItemsWithInvoiceId = newLineItems.map((lineItem) =>
-        Object.assign(lineItem, { invoiceId }),
+        Object.assign(lineItem, {
+          invoiceId,
+          organizationId,
+        }),
       );
       await InvoiceLineItemDao.bulkCreate(
         {
@@ -136,6 +180,7 @@ class InvoiceService {
       organizationId: organizationId,
       createdBy: client_info.userId,
     };
+    const paymentTermId = invoice_details.paymentTermId;
 
     // all line items.
     const allLineItems = invoice_details.lineItems;
@@ -163,6 +208,32 @@ class InvoiceService {
       });
       const { invoice: updateInvoice, line_items } =
         invoiceCalculation.calculate();
+
+      // calculate due date
+      if (paymentTermId) {
+        const { due_date: dueDate, payment_term_details: paymentTermDetails } =
+          await InvoiceUtil.calculateDueDate({
+            issue_date: DateUtil.parseFromStr(updateInvoice.issueDate),
+            payment_term_id: paymentTermId,
+            organization_id: organizationId,
+          });
+
+        // create the invoicePaymentTerm if paymentTermId is present
+        const createdInvoicePaymentTerm =
+          await InvoiceUtil.createInvoicePaymentTerm(
+            {
+              payment_term_details: paymentTermDetails,
+            },
+            {
+              transaction: t1,
+            },
+          );
+
+        // update the due date and create a new invoicePaymentTerm
+        updateInvoice.dueDate =
+          DateUtil.Formatter(dueDate).format(DATE_FORMAT_DB);
+        updateInvoice.invoicePaymentTermId = createdInvoicePaymentTerm.id;
+      }
 
       // only a few line items will be updated, we separate them by identifying a key "id."
       // if id is present, then it is an update, otherwise it will be created.
@@ -231,18 +302,21 @@ class InvoiceService {
       );
     });
   }
+}
 
-  private async calculateDueDate({
+export default Object.freeze(new InvoiceService());
+
+class InvoiceUtil {
+  static async calculateDueDate({
     issue_date,
-    time_zone,
     payment_term_id,
     organization_id,
-  }) {
+  }: CalculateDueDateProps) {
     const paymentTerm = await PaymentTermDao.get({
       payment_term_id,
       organization_id,
     });
-    // depending to "interval" type if regular just use regulat calculation
+    // depending to "interval" type if regular just use regular calculation
     const interval = paymentTerm.interval;
     const pt = paymentTerm.paymentTerm;
     const dateCalculator = DateUtil.Calculator(issue_date);
@@ -257,12 +331,29 @@ class InvoiceService {
         break;
       }
       case "end_of_day": {
-        date = dateCalculator.endOfFewWeeks(pt).getDate();
+        date = dateCalculator.endOfCurrentDay().getDate();
         break;
       }
     }
-    return date;
+    return { due_date: date, payment_term_details: paymentTerm };
+  }
+
+  static async createInvoicePaymentTerm(
+    { payment_term_details },
+    { transaction },
+  ) {
+    return await InvoicePaymentTermDao.create(
+      {
+        term_details: {
+          originPaymentTermId: payment_term_details.id,
+          name: payment_term_details.name,
+          interval: payment_term_details.interval,
+          paymentTerm: payment_term_details.paymentTerm,
+        },
+      },
+      {
+        transaction,
+      },
+    );
   }
 }
-
-export default Object.freeze(new InvoiceService());

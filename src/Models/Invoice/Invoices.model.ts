@@ -49,6 +49,14 @@ class Invoice extends Model<
   @AutoIncrement
   declare id: CreationOptional<number>;
 
+  @Attribute(DataTypes.DATEONLY)
+  @NotNull
+  declare issueDate: string;
+
+  @Attribute(DataTypes.DATEONLY)
+  @NotNull
+  declare dueDate: string;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare contactId: number;
@@ -151,6 +159,7 @@ type InvoiceCreatableBasic = Omit<
 >;
 type InvoiceType = Attributes<Invoice> & {
   LineItems?: InvoiceLineItem[];
+  InvoicePaymentTerm?: InvoicePaymentTerm;
 };
 type InvoiceIdType = number;
 

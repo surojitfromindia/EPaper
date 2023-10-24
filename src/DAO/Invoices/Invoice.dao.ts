@@ -1,5 +1,10 @@
 import { Includeable, Transaction } from "@sequelize/core";
-import { Contacts, Invoice, InvoiceLineItem } from "../../Models";
+import {
+  Contacts,
+  Invoice,
+  InvoiceLineItem,
+  InvoicePaymentTerm,
+} from "../../Models";
 import {
   InvoiceCreatable,
   InvoiceIdType,
@@ -117,6 +122,10 @@ class InvoiceDao {
         model: Contacts,
         as: "Contact",
         attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
+      },
+      {
+        model: InvoicePaymentTerm,
+        as: "InvoicePaymentTerm",
       },
     ];
     if (include_line_items) {

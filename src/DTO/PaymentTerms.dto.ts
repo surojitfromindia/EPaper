@@ -11,6 +11,14 @@ class PaymentTermsDTO {
     };
   }
 
+  static toInvoicePaymentTerm(payment_term: any) {
+    return {
+      name: payment_term.name,
+      payment_term: payment_term.paymentTerm,
+      interval: payment_term.interval,
+    };
+  }
+
   static toPaymentTermCreate(payment_term_body: any) {
     return {
       name: payment_term_body.name,

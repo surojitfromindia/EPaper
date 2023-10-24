@@ -1,5 +1,9 @@
 // list of pre-defined date formats
 // array of luxon date formats with locales
+
+// db date format postgres
+
+const DATE_FORMAT_DB = "yyyy-MM-dd";
 const DATE_FORMATS_OBJECT = [
   {
     formats: [
@@ -43,4 +47,4 @@ const DATE_FORMATS_OBJECT = [
   },
 ];
 const DATE_FORMATS = DATE_FORMATS_OBJECT.map((obj) => obj.formats).flat();
-export { DATE_FORMATS, DATE_FORMATS_OBJECT };
+export { DATE_FORMATS, DATE_FORMATS_OBJECT, DATE_FORMAT_DB };
