@@ -6,7 +6,7 @@ import {
 } from "../../Models/Invoice/Invoices.model";
 import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.model";
 import sequelize from "../../Config/DataBase.Config";
-import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
+import { InvoiceDao, InvoiceLineItemDao, PaymentTermDao } from "../../DAO";
 import { DataNotFoundError } from "../../Errors/APIErrors";
 import { InvoiceCalculation } from "./InvoiceCalculation";
 import {
@@ -18,6 +18,7 @@ import { AccountsOfOrganizationService } from "../index";
 import { AccountsTree } from "../../Utils/AccoutsTree";
 import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
+import { DateUtil } from "../../Utils/DateFormatter";
 
 type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -46,6 +47,7 @@ class InvoiceService {
       createdBy: client_info.userId,
       ...invoice_details,
     };
+
     const lineItems = invoice_details.lineItems;
     const lineItemsBody: InvoiceLineItemCreatable[] = lineItems.map(
       (lineItem) => ({
@@ -119,7 +121,6 @@ class InvoiceService {
     };
   }
 
-  // similar to create we update invoice
   async update({
     client_info,
     invoice_details,
@@ -229,6 +230,38 @@ class InvoiceService {
         },
       );
     });
+  }
+
+  private async calculateDueDate({
+    issue_date,
+    time_zone,
+    payment_term_id,
+    organization_id,
+  }) {
+    const paymentTerm = await PaymentTermDao.get({
+      payment_term_id,
+      organization_id,
+    });
+    // depending to "interval" type if regular just use regulat calculation
+    const interval = paymentTerm.interval;
+    const pt = paymentTerm.paymentTerm;
+    const dateCalculator = DateUtil.Calculator(issue_date);
+    let date: Date;
+    switch (interval) {
+      case "regular": {
+        date = dateCalculator.addDays(pt).getDate();
+        break;
+      }
+      case "end_of_month": {
+        date = dateCalculator.endOfFewMonths(pt).getDate();
+        break;
+      }
+      case "end_of_day": {
+        date = dateCalculator.endOfFewWeeks(pt).getDate();
+        break;
+      }
+    }
+    return date;
   }
 }
 

@@ -46,7 +46,7 @@ class PaymentTerms extends Model<
 
   @Attribute(DataTypes.ENUM("regular", "end_of_month", "end_of_day"))
   @NotNull
-  interval: string;
+  interval: "regular" | "end_of_month" | "end_of_day";
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @Default("active")
