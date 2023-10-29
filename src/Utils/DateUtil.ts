@@ -1,7 +1,7 @@
 import { DateTime, FixedOffsetZone, Zone } from "luxon";
 
 class DateUtil {
-  static Formatter(date: Date): DateFormatter {
+  static Formatter(date: Date | string): DateFormatter {
     return new DateFormatter(date);
   }
 

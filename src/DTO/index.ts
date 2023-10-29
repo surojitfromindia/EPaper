@@ -10,6 +10,7 @@ import { InvoiceLineItemDTO } from "./InvoiceLineItem.dto";
 import { InvoiceDTO } from "./Invoice.dto";
 import { PaymentTermsDTO } from "./PaymentTerms.dto";
 import { TaxRateDTO } from "./TaxRate.dto";
+import { ContactDTO } from "./Contact.dto";
 
 export {
   UserDTO,
@@ -24,4 +25,5 @@ export {
   InvoiceLineItemDTO,
   InvoiceDTO,
   PaymentTermsDTO,
+  ContactDTO,
 };

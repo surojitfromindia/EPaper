@@ -4,6 +4,7 @@
 // db date format postgres
 
 const DATE_FORMAT_DB = "yyyy-MM-dd";
+const DEFAULT_DATE_FORMAT = "dd MMM yyyy";
 const DATE_FORMATS_OBJECT = [
   {
     formats: [
@@ -47,4 +48,9 @@ const DATE_FORMATS_OBJECT = [
   },
 ];
 const DATE_FORMATS = DATE_FORMATS_OBJECT.map((obj) => obj.formats).flat();
-export { DATE_FORMATS, DATE_FORMATS_OBJECT, DATE_FORMAT_DB };
+export {
+  DATE_FORMATS,
+  DATE_FORMATS_OBJECT,
+  DATE_FORMAT_DB,
+  DEFAULT_DATE_FORMAT,
+};

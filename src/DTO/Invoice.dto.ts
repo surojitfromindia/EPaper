@@ -1,4 +1,5 @@
 import {
+  ContactDTO,
   InvoiceLineItemDTO,
   ItemUnitDTO,
   PaymentTermsDTO,
@@ -9,6 +10,8 @@ import {
   InvoiceType,
 } from "../Models/Invoice/Invoices.model";
 import { InvoiceLineItemCreatableBasic } from "../Models/Invoice/InvoiceLineItems.model";
+import { DateUtil } from "../Utils/DateUtil";
+import { DEFAULT_DATE_FORMAT } from "../Constants/DateFormat.Constant";
 
 class InvoiceDTO {
   static toInvoiceEditPage({
@@ -25,11 +28,17 @@ class InvoiceDTO {
     };
   }
 
-  static toInvoice(invoice: InvoiceType) {
+  static toInvoice({ invoice }: { invoice: InvoiceType }) {
     const basic = {
       invoice_id: invoice.id,
       issue_date: invoice.issueDate,
+      issue_date_formatted: DateUtil.Formatter(invoice.issueDate).format(
+        DEFAULT_DATE_FORMAT,
+      ),
       due_date: invoice.dueDate,
+      due_date_formatted: DateUtil.Formatter(invoice.dueDate).format(
+        DEFAULT_DATE_FORMAT,
+      ),
       contact_id: invoice.contactId,
       invoice_number: invoice.invoiceNumber,
       reference_number: invoice.referenceNumber,
@@ -53,6 +62,10 @@ class InvoiceDTO {
       basic["line_items"] = (invoice.LineItems ?? []).map(
         InvoiceLineItemDTO.toInvoiceLineItem,
       );
+    }
+    if (invoice.Contact) {
+      const contact = ContactDTO.toTransactionContact(invoice.Contact);
+      basic["contact_name"] = contact.contact_nane;
     }
     return basic;
   }

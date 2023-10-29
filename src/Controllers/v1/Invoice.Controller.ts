@@ -10,7 +10,7 @@ const createInvoice = async (req: Request) => {
     invoice_details: InvoiceDTO.toInvoiceCreate(body),
     client_info: clientInfo,
   });
-  return { invoice: InvoiceDTO.toInvoice(cratedInvoice) };
+  return { invoice: InvoiceDTO.toInvoice({ invoice: cratedInvoice }) };
 };
 const createInvoiceController = SuccessErrorWrapper(
   createInvoice,
@@ -25,7 +25,7 @@ const getAnInvoice = async (req: Request) => {
     invoice_id: invoiceId,
     client_info: clientInfo,
   });
-  return { invoice: InvoiceDTO.toInvoice(invoice) };
+  return { invoice: InvoiceDTO.toInvoice({ invoice }) };
 };
 const getAnInvoiceController = SuccessErrorWrapper(getAnInvoice, "done", 200);
 
@@ -55,7 +55,7 @@ const updateInvoice = async (req: Request) => {
     client_info: clientInfo,
     invoice_id: invoiceId,
   });
-  return { invoice: InvoiceDTO.toInvoice(updatedInvoice) };
+  return { invoice: InvoiceDTO.toInvoice({ invoice: updatedInvoice }) };
 };
 const updateInvoiceController = SuccessErrorWrapper(
   updateInvoice,
@@ -63,9 +63,21 @@ const updateInvoiceController = SuccessErrorWrapper(
   201,
 );
 
+const getAllInvoice = async (req: Request) => {
+  const clientInfo = req.clientInfo;
+  const invoices = await InvoiceService.getAllInvoice({
+    client_info: clientInfo,
+  });
+  return {
+    invoices: invoices.map((invoice) => InvoiceDTO.toInvoice({ invoice })),
+  };
+};
+const getAllInvoiceController = SuccessErrorWrapper(getAllInvoice, "done", 200);
+
 export {
   createInvoiceController,
   getAnInvoiceController,
   getInvoiceEditPageController,
   updateInvoiceController,
+  getAllInvoiceController,
 };

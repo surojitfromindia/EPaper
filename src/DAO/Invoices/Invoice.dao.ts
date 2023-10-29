@@ -49,13 +49,17 @@ type InvoiceUpdateProps = {
   invoice_details: InvoiceCreatable;
 };
 
+type InvoiceCreateProps = {
+  invoice_details: InvoiceCreatable;
+};
+
+type InvoiceListProps = {
+  organization_id: OrganizationBasicIdType;
+};
+
 class InvoiceDao {
   async create(
-    {
-      invoice_details,
-    }: {
-      invoice_details: InvoiceCreatable;
-    },
+    { invoice_details }: InvoiceCreateProps,
     {
       transaction,
     }: {
@@ -64,6 +68,26 @@ class InvoiceDao {
   ) {
     return await Invoice.create(invoice_details, {
       transaction,
+    });
+  }
+
+  async getAll({ organization_id }: InvoiceListProps) {
+    return await Invoice.findAll({
+      where: {
+        organizationId: organization_id,
+        status: "active",
+      },
+      include: [
+        {
+          model: Contacts,
+          as: "Contact",
+          attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
+        },
+        {
+          model: InvoicePaymentTerm,
+          as: "InvoicePaymentTerm",
+        },
+      ],
     });
   }
 

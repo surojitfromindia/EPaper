@@ -160,6 +160,7 @@ type InvoiceCreatableBasic = Omit<
 type InvoiceType = Attributes<Invoice> & {
   LineItems?: InvoiceLineItem[];
   InvoicePaymentTerm?: InvoicePaymentTerm;
+  Contact?: Contacts;
 };
 type InvoiceIdType = number;
 

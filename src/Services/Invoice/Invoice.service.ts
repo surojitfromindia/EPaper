@@ -302,6 +302,13 @@ class InvoiceService {
       );
     });
   }
+
+  getAllInvoice({ client_info }: { client_info: ClientInfo }) {
+    const organizationId = client_info.organizationId;
+    return InvoiceDao.getAll({
+      organization_id: organizationId,
+    });
+  }
 }
 
 export default Object.freeze(new InvoiceService());
