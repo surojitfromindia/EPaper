@@ -75,7 +75,7 @@ class InvoiceCalculation {
         is_tax_inclusive: this.isTaxInclusive,
       });
       const { itemTotalTaxIncluded, taxAmount, itemTotal, discountAmount } = ln
-        .applyDiscountPercentage({
+        .applyDiscount({
           discount_percentage: lineItem.discountPercentage,
         })
         .applyTaxPercentage({ tax_percentage: lineItem.taxPercentage })

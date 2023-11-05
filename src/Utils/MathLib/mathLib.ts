@@ -9,10 +9,7 @@ class MathLib {
   }
 
   static getWithPrecision(precision: number, number: number) {
-    const fixedValue = MathJs.format(MathJs.number(number), {
-      precision,
-      notation: "fixed",
-    });
+    const fixedValue = MathJs.round(MathJs.number(number), precision);
     return MathJs.number(fixedValue);
   }
 
