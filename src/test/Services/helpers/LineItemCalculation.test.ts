@@ -1,12 +1,12 @@
-import { MathLib } from "../../../src/Utils/MathLib/mathLib";
-import { LineItemCalculation } from "../../../src/Services/helpers/LineItemCalculation";
+import { MathLib } from "../../../../src/Utils/MathLib/mathLib";
+import { LineItemCalculation } from "../../../../src/Services/helpers/LineItemCalculation";
 
 describe("LineItemCalculation", () => {
   const mathLib = new MathLib({
     precision: 2,
   });
 
-  // a list of test and their expected results
+  // a list of src.test and their expected results
   const cases = [
     {
       lineItem: {

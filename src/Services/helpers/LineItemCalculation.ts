@@ -2,9 +2,7 @@ import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.
 import { MathLib } from "../../Utils/MathLib/mathLib";
 
 type LineItemConstructorProps = {
-  line_item: Required<
-    Pick<InvoiceLineItemCreatable, "quantity" | "rate" | "taxPercentage">
-  >;
+  line_item: InvoiceLineItemCreatable;
   mathLib: MathLib;
   is_tax_inclusive: boolean;
 };

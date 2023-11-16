@@ -1,5 +1,5 @@
-// test DateUtil.ts
-import { DateUtil } from "../../src/Utils/DateUtil";
+// src.test DateUtil.ts
+import { DateUtil } from "../../../src/Utils/DateUtil";
 
 describe("DateFormatter", () => {
   // a indian time zone date

@@ -1,5 +1,5 @@
 // @ts-ignore
-const { lineItemCalculation } = require("../../js_play/TaxCalculation");
+const { lineItemCalculation } = require("../../../js_play/TaxCalculation");
 describe("TaxCalculation", () => {
   const cases = [
     {

@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -61,3 +62,6 @@ class Contacts extends Model<
 }
 
 export { Contacts };
+type ContactType = Attributes<Contacts>;
+
+export type { ContactType };
