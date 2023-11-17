@@ -1,6 +1,8 @@
-import ContactService from "./Contact.service";
+import ContactService, {
+  ContactAutoCompleteType,
+} from "./Contact/Contact.service";
 
-export class AutoCompleteFactory {
+class AutoCompleteFactory {
   private readonly organization_id: number;
   private readonly limit: number;
   private readonly offset: number;
@@ -12,7 +14,10 @@ export class AutoCompleteFactory {
   }
 
   forContact() {
-    return new AutoCompleteService({
+    return new AutoCompleteService<
+      ContactAutoCompleteType,
+      IAutoCompleteAble<ContactAutoCompleteType>
+    >({
       organization_id: this.organization_id,
       limit: this.limit,
       offset: this.offset,
@@ -22,12 +27,13 @@ export class AutoCompleteFactory {
 }
 
 class AutoCompleteService<T, S extends IAutoCompleteAble<T>> {
-  search_text: string;
-  results: Array<T & AutoCompleteReturnType> = [];
+  private search_text: string;
+  private results: Array<T & AutoCompleteReturnType> = [];
   private organization_id: number;
   private readonly limit: number;
   private offset: number;
   private service: S;
+  private search_option: any;
 
   constructor({
     organization_id,
@@ -51,6 +57,11 @@ class AutoCompleteService<T, S extends IAutoCompleteAble<T>> {
     return this;
   }
 
+  setSearchOption(search_option: any) {
+    this.search_option = search_option;
+    return this;
+  }
+
   countAll() {}
 
   async next() {
@@ -61,6 +72,7 @@ class AutoCompleteService<T, S extends IAutoCompleteAble<T>> {
       search_text: "",
       limit: this.limit,
       offset: this.offset,
+      search_option: this.search_option,
     });
     this.results = [...this.results, ...results];
     return this;
@@ -79,6 +91,7 @@ interface IAutoCompleteAble<T> {
     offset: number;
     limit: number;
     search_text: string;
+    search_option?: any;
   }): Promise<Array<T & AutoCompleteReturnType>>;
 }
 
@@ -87,4 +100,5 @@ type AutoCompleteReturnType = {
   text: string;
 };
 
+export { AutoCompleteFactory };
 export type { IAutoCompleteAble, AutoCompleteReturnType };
