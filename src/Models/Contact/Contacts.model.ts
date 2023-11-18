@@ -34,7 +34,7 @@ class Contacts extends Model<
   @AutoIncrement
   declare id: CreationOptional<number>;
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.CITEXT)
   @AllowNull
   declare contactName?: string;
 

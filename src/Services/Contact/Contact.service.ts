@@ -1,21 +1,22 @@
-import { ContactType } from "../../Models/Contact/Contacts.model";
 import {
-  AutoCompleteReturnType,
+  AutoCompleteBasicType,
   IAutoCompleteAble,
-} from "../AutoCompleteService";
+} from "../AutoComplete.service";
 import { ContactDao } from "../../DAO";
 
-interface ContactAutoCompleteType extends Pick<ContactType, "contactName"> {}
-
+type ContactAutoCompleteType = AutoCompleteBasicType & {
+  contactName: string;
+};
 class ContactService implements IAutoCompleteAble<ContactAutoCompleteType> {
   async fetchEntries({
+    organization_id,
     search_text,
-    limit,
-    offset,
     search_option,
-  }): Promise<Array<ContactAutoCompleteType & AutoCompleteReturnType>> {
+    limit_and_offset,
+  }): Promise<Array<ContactAutoCompleteType>> {
+    const { limit, offset } = limit_and_offset;
     const options: any = {
-      organization_id: 1,
+      organization_id: organization_id,
       skip: offset,
       next: limit,
       contactName: search_text,
@@ -30,8 +31,8 @@ class ContactService implements IAutoCompleteAble<ContactAutoCompleteType> {
     const contacts = await ContactDao.getContactsAutoComplete(options);
 
     return contacts.map((contact) => ({
-      id: contact.id,
-      text: contact.contactName,
+      id: contact.id as number,
+      text: contact.contactName as string,
       contactName: contact.contactName,
     }));
   }

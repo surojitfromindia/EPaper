@@ -1,1 +1,1 @@
--- prefix invoice number with INV-
+CREATE EXTENSION IF NOT EXISTS citext;

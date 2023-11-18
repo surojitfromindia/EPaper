@@ -1,4 +1,5 @@
 import { Contacts } from "../../Models";
+import { Op } from "@sequelize/core";
 
 type GetContactsAutoCompleteParamsType = {
   organization_id: number;
@@ -24,6 +25,10 @@ class ContactDao {
       where: {
         organizationId: organization_id,
         status: "active",
+        // contactName starts with and is case-insensitive
+        contactName: {
+          [Op.like]: contactName + "%",
+        },
         ...extra_condition,
       },
       attributes: ["id", "contactName"],
