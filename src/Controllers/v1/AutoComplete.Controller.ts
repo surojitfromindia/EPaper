@@ -22,8 +22,10 @@ const fetchContacts = async (req: Request) => {
     .setSearchOption({ contactType: contactType });
   await contactsAuthCompleteService.next();
   const contacts = contactsAuthCompleteService.consume();
-  const contactsDto = contacts.results.map(ContactDTO.toAutoCompleteContact);
-  return { results: contactsDto };
+  const contacts_mapped = contacts.results.map(
+    ContactDTO.toAutoCompleteContact,
+  );
+  return { results: contacts_mapped };
 };
 
 const getContactAutoCompleteController = SuccessErrorWrapper(

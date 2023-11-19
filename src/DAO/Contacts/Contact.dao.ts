@@ -32,6 +32,7 @@ class ContactDao {
         ...extra_condition,
       },
       attributes: ["id", "contactName"],
+      order: [["contactName", "ASC"]],
       limit: next,
       offset: skip,
     });
