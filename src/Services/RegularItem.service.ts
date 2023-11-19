@@ -9,8 +9,18 @@ import {
 import { AccountsTree } from "../Utils/AccoutsTree";
 import { AccountIntegrity } from "../IntegrityValidationServices/index";
 import { ClientInfo } from "../Middlewares/Authorization/Authorization.middleware";
+import {
+  AutoCompleteBasicType,
+  IAutoCompleteAble,
+} from "./AutoComplete.service";
 
-class RegularItemService {
+type ItemAutoCompleteType = AutoCompleteBasicType & {
+  name: string;
+  sellingPrice: number;
+  purchasePrice: number;
+};
+
+class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
   async create({ item_details, client_info }) {
     const organizationId = client_info.organizationId;
     const createdBy = client_info.userId;
@@ -199,6 +209,33 @@ class RegularItemService {
     );
     return createdItemUnit.id;
   }
+
+  async fetchEntries({
+    organization_id,
+    search_text,
+    search_option,
+    limit_and_offset,
+  }): Promise<Array<ItemAutoCompleteType>> {
+    const { limit, offset } = limit_and_offset;
+    const options: any = {
+      organization_id: organization_id,
+      skip: offset,
+      next: limit,
+      item_name: search_text,
+      item_for: search_option.item_for,
+    };
+
+    const items = await RegularItemDao.getItemsAutoComplete(options);
+
+    return items.map((item) => ({
+      id: item.id as number,
+      text: item.name as string,
+      name: item.name,
+      purchasePrice: item.purchasePrice,
+      sellingPrice: item.sellingPrice,
+    }));
+  }
 }
 
 export default Object.freeze(new RegularItemService());
+export type { ItemAutoCompleteType };

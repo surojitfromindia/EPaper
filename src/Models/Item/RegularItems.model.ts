@@ -18,6 +18,8 @@ import {
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
+import { MathLib } from "../../Utils/MathLib/mathLib";
+import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
 
 @Table({
   underscored: true,
@@ -32,7 +34,7 @@ class RegularItems extends Model<
   @AutoIncrement
   declare id: CreationOptional<number>;
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.CITEXT)
   @NotNull
   declare name: string;
 
@@ -47,9 +49,15 @@ class RegularItems extends Model<
   @Attribute(DataTypes.STRING)
   declare sellingDescription: string;
 
-  @Attribute(DataTypes.INTEGER)
+  @Attribute(DataTypes.DECIMAL)
   @NotNull
-  declare sellingPrice: number;
+  get sellingPrice(): number {
+    const value = this.getDataValue("sellingPrice");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
 
   @Attribute(DataTypes.INTEGER)
   declare salesAccountId: number;
@@ -59,9 +67,15 @@ class RegularItems extends Model<
   @Attribute(DataTypes.STRING)
   declare purchaseDescription: string;
 
-  @Attribute(DataTypes.INTEGER)
+  @Attribute(DataTypes.DECIMAL)
   @NotNull
-  declare purchasePrice: number;
+  get purchasePrice(): number {
+    const value = this.getDataValue("purchasePrice");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
 
   @Attribute(DataTypes.INTEGER)
   declare purchaseAccountId: number;

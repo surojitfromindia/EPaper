@@ -1,5 +1,6 @@
 import { AccountsOfOrganizationDTO, ItemUnitDTO, TaxRateDTO } from "./index";
 import { convertNullValueToString } from "../Utils/MathLib/NumberParser";
+import { ItemAutoCompleteType } from "../Services/RegularItem.service";
 
 class RegularItemDTO {
   static toItem(item_details: any) {
@@ -108,6 +109,17 @@ class RegularItemDTO {
     }
     return basic_data;
   }
+
+  static toAutoCompleteItem(auto_complete_details: ItemAutoCompleteType) {
+    return {
+      name: auto_complete_details.name,
+      purchase_price: auto_complete_details.purchasePrice,
+      selling_price: auto_complete_details.sellingPrice,
+
+      id: auto_complete_details.id,
+      text: auto_complete_details.text,
+    };
+  }
 }
 
 export default RegularItemDTO;
@@ -116,7 +128,7 @@ export default RegularItemDTO;
  *
  * @param {("goods"|"service")} product_type
  */
-const productTypeFormat = (product_type) => {
+const productTypeFormat = (product_type: "goods" | "service") => {
   switch (product_type) {
     case "goods":
       return "Goods";
