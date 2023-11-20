@@ -3,7 +3,7 @@
     "target": "ES2020",
     "module": "NodeNext",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "baseUrl": "./src",
     "esModuleInterop": true,
     "allowUnreachableCode": false,
