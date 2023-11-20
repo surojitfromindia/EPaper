@@ -17,6 +17,20 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
+
+--
 -- Name: enum_AccountTemplateDetails_status; Type: TYPE; Schema: public; Owner: surojit
 --
 
@@ -155,6 +169,19 @@ CREATE TYPE public."enum_InvoiceLineItems_status" AS ENUM (
 ALTER TYPE public."enum_InvoiceLineItems_status" OWNER TO surojit;
 
 --
+-- Name: enum_InvoicePaymentTerms_interval; Type: TYPE; Schema: public; Owner: surojit
+--
+
+CREATE TYPE public."enum_InvoicePaymentTerms_interval" AS ENUM (
+    'regular',
+    'end_of_month',
+    'end_of_day'
+    );
+
+
+ALTER TYPE public."enum_InvoicePaymentTerms_interval" OWNER TO surojit;
+
+--
 -- Name: enum_Invoices_status; Type: TYPE; Schema: public; Owner: surojit
 --
 
@@ -215,6 +242,31 @@ CREATE TYPE public."enum_OrganizationsUsers_status" AS ENUM (
 
 
 ALTER TYPE public."enum_OrganizationsUsers_status" OWNER TO surojit;
+
+--
+-- Name: enum_PaymentTerms_interval; Type: TYPE; Schema: public; Owner: surojit
+--
+
+CREATE TYPE public."enum_PaymentTerms_interval" AS ENUM (
+    'regular',
+    'end_of_month',
+    'end_of_day'
+    );
+
+
+ALTER TYPE public."enum_PaymentTerms_interval" OWNER TO surojit;
+
+--
+-- Name: enum_PaymentTerms_status; Type: TYPE; Schema: public; Owner: surojit
+--
+
+CREATE TYPE public."enum_PaymentTerms_status" AS ENUM (
+    'active',
+    'deleted'
+    );
+
+
+ALTER TYPE public."enum_PaymentTerms_status" OWNER TO surojit;
 
 --
 -- Name: enum_RegularItems_item_for; Type: TYPE; Schema: public; Owner: surojit
@@ -316,17 +368,17 @@ ALTER SEQUENCE public."AccountGroups_id_seq" OWNED BY public."AccountGroups".id;
 
 CREATE TABLE public."AccountTemplateDetails"
 (
-    id                 integer                                                                                                   NOT NULL,
-    name               character varying(255)                                                                                    NOT NULL,
-    country_code       character varying(255)                                                                                    NOT NULL,
-    sector             character varying(255),
-    status             public."enum_AccountTemplateDetails_status" DEFAULT 'active'::public."enum_AccountTemplateDetails_status" NOT NULL,
-    is_default         boolean,
-    created_at         timestamp(6) with time zone                                                                               NOT NULL,
-    updated_at         timestamp(6) with time zone                                                                               NOT NULL,
+    id              integer                                                                                                   NOT NULL,
+    name            character varying(255)                                                                                    NOT NULL,
+    country_code    character varying(255)                                                                                    NOT NULL,
+    sector          character varying(255),
+    status          public."enum_AccountTemplateDetails_status" DEFAULT 'active'::public."enum_AccountTemplateDetails_status" NOT NULL,
+    is_default      boolean,
+    created_at      timestamp(6) with time zone                                                                               NOT NULL,
+    updated_at      timestamp(6) with time zone                                                                               NOT NULL,
     origin_template_id integer,
-    created_by         integer                                                                                                   NOT NULL,
-    organization_id    integer                                                                                                   NOT NULL
+    created_by      integer                                                                                                   NOT NULL,
+    organization_id integer                                                                                                   NOT NULL
 );
 
 
@@ -444,23 +496,23 @@ ALTER SEQUENCE public."AccountsConfigs_id_seq" OWNED BY public."AccountsConfigs"
 
 CREATE TABLE public."AccountsOfOrganizations"
 (
-    id                       integer                                                                                                     NOT NULL,
-    name                     character varying(255)                                                                                      NOT NULL,
-    code                     character varying(255)                                                                                      NOT NULL,
-    parent_code              character varying(255),
-    depth                    smallint,
-    created_at               timestamp(6) with time zone                                                                                 NOT NULL,
-    updated_at               timestamp(6) with time zone                                                                                 NOT NULL,
-    account_parent_id        integer,
-    account_group_id         integer                                                                                                     NOT NULL,
-    account_type_id          integer,
-    account_template_id      integer                                                                                                     NOT NULL,
-    created_by               integer                                                                                                     NOT NULL,
-    organization_id          integer                                                                                                     NOT NULL,
-    origin_account_id        integer,
+    id                  integer                                                                                                     NOT NULL,
+    name                character varying(255)                                                                                      NOT NULL,
+    code                character varying(255)                                                                                      NOT NULL,
+    parent_code         character varying(255),
+    depth               smallint,
+    created_at          timestamp(6) with time zone                                                                                 NOT NULL,
+    updated_at          timestamp(6) with time zone                                                                                 NOT NULL,
+    account_parent_id   integer,
+    account_group_id    integer                                                                                                     NOT NULL,
+    account_type_id     integer,
+    account_template_id integer                                                                                                     NOT NULL,
+    created_by          integer                                                                                                     NOT NULL,
+    organization_id     integer                                                                                                     NOT NULL,
+    origin_account_id   integer,
     origin_account_parent_id integer,
-    description              character varying(255),
-    status                   public."enum_AccountsOfOrganizations_status" DEFAULT 'active'::public."enum_AccountsOfOrganizations_status" NOT NULL
+    description         character varying(255),
+    status              public."enum_AccountsOfOrganizations_status" DEFAULT 'active'::public."enum_AccountsOfOrganizations_status" NOT NULL
 );
 
 
@@ -545,7 +597,7 @@ ALTER SEQUENCE public."AccountsOfTemplates_id_seq" OWNED BY public."AccountsOfTe
 CREATE TABLE public."Contacts"
 (
     id              integer                                                                       NOT NULL,
-    contact_name    character varying(255)                                                        NOT NULL,
+    contact_name    public.citext                                                                 NOT NULL,
     contact_type    public."enum_Contacts_contact_type"                                           NOT NULL,
     created_at      timestamp(6) with time zone                                                   NOT NULL,
     updated_at      timestamp(6) with time zone                                                   NOT NULL,
@@ -587,14 +639,14 @@ ALTER SEQUENCE public."Contacts_id_seq" OWNED BY public."Contacts".id;
 
 CREATE TABLE public."GeneralPreferences"
 (
-    id                     integer                                            NOT NULL,
-    sales_tax_type         public."enum_GeneralPreferences_sales_tax_type"    NOT NULL,
-    tax_rounding_type      public."enum_GeneralPreferences_tax_rounding_type" NOT NULL,
-    discount_type          public."enum_GeneralPreferences_discountType"      NOT NULL,
+    id                integer                                            NOT NULL,
+    sales_tax_type    public."enum_GeneralPreferences_sales_tax_type"    NOT NULL,
+    tax_rounding_type public."enum_GeneralPreferences_tax_rounding_type" NOT NULL,
+    discount_type     public."enum_GeneralPreferences_discountType"      NOT NULL,
     is_discount_before_tax boolean,
-    created_at             timestamp(6) with time zone                        NOT NULL,
-    updated_at             timestamp(6) with time zone                        NOT NULL,
-    organization_id        integer                                            NOT NULL
+    created_at        timestamp(6) with time zone                        NOT NULL,
+    updated_at        timestamp(6) with time zone                        NOT NULL,
+    organization_id   integer                                            NOT NULL
 );
 
 
@@ -681,28 +733,73 @@ ALTER SEQUENCE public."InvoiceLineItems_id_seq" OWNED BY public."InvoiceLineItem
 
 
 --
+-- Name: InvoicePaymentTerms; Type: TABLE; Schema: public; Owner: surojit
+--
+
+CREATE TABLE public."InvoicePaymentTerms"
+(
+    id                     integer                                    NOT NULL,
+    name                   character varying(255)                     NOT NULL,
+    origin_payment_term_id integer,
+    payment_term           integer,
+    "interval"             public."enum_InvoicePaymentTerms_interval" NOT NULL,
+    created_at             timestamp(6) with time zone                NOT NULL,
+    updated_at             timestamp(6) with time zone                NOT NULL
+);
+
+
+ALTER TABLE public."InvoicePaymentTerms"
+    OWNER TO surojit;
+
+--
+-- Name: InvoicePaymentTerms_id_seq; Type: SEQUENCE; Schema: public; Owner: surojit
+--
+
+CREATE SEQUENCE public."InvoicePaymentTerms_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."InvoicePaymentTerms_id_seq"
+    OWNER TO surojit;
+
+--
+-- Name: InvoicePaymentTerms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: surojit
+--
+
+ALTER SEQUENCE public."InvoicePaymentTerms_id_seq" OWNED BY public."InvoicePaymentTerms".id;
+
+
+--
 -- Name: Invoices; Type: TABLE; Schema: public; Owner: surojit
 --
 
 CREATE TABLE public."Invoices"
 (
-    id               integer                                                                       NOT NULL,
-    contact_id       integer                                                                       NOT NULL,
-    invoice_number   character varying(255)                                                        NOT NULL,
+    id                      integer                                                                       NOT NULL,
+    contact_id              integer                                                                       NOT NULL,
+    invoice_number          character varying(255)                                                        NOT NULL,
     reference_number character varying(255),
-    order_number     character varying(255),
-    terms            character varying(255),
-    notes            character varying(255),
-    is_inclusive_tax boolean                                                                       NOT NULL,
-    status           public."enum_Invoices_status" DEFAULT 'active'::public."enum_Invoices_status" NOT NULL,
-    organization_id  integer                                                                       NOT NULL,
-    created_by       integer                                                                       NOT NULL,
-    discount_total   numeric                                                                       NOT NULL,
-    tax_total        numeric                                                                       NOT NULL,
-    sub_total        numeric                                                                       NOT NULL,
-    total            numeric                                                                       NOT NULL,
-    created_at       timestamp(6) with time zone                                                   NOT NULL,
-    updated_at       timestamp(6) with time zone                                                   NOT NULL
+    order_number            character varying(255),
+    terms                   character varying(255),
+    notes                   character varying(255),
+    is_inclusive_tax        boolean                                                                       NOT NULL,
+    status                  public."enum_Invoices_status" DEFAULT 'active'::public."enum_Invoices_status" NOT NULL,
+    organization_id         integer                                                                       NOT NULL,
+    created_by              integer                                                                       NOT NULL,
+    discount_total          numeric                                                                       NOT NULL,
+    tax_total               numeric                                                                       NOT NULL,
+    sub_total               numeric                                                                       NOT NULL,
+    total                   numeric                                                                       NOT NULL,
+    created_at              timestamp(6) with time zone                                                   NOT NULL,
+    updated_at              timestamp(6) with time zone                                                   NOT NULL,
+    invoice_payment_term_id integer,
+    issue_date              date                          DEFAULT CURRENT_DATE                            NOT NULL,
+    due_date                date                          DEFAULT CURRENT_DATE
 );
 
 
@@ -867,18 +964,18 @@ ALTER SEQUENCE public."OrganizationBasics_id_seq" OWNED BY public."OrganizationB
 
 CREATE TABLE public."OrganizationsUsers"
 (
-    id                      integer                                  NOT NULL,
-    job_status              public."enum_OrganizationsUsers_job_status",
-    status                  public."enum_OrganizationsUsers_status"  NOT NULL,
-    role_id                 public."enum_OrganizationsUsers_role_id" NOT NULL,
-    invited_by              integer,
-    invited_on              timestamp with time zone,
-    accepted_on             timestamp with time zone,
+    id              integer                                  NOT NULL,
+    job_status      public."enum_OrganizationsUsers_job_status",
+    status          public."enum_OrganizationsUsers_status"  NOT NULL,
+    role_id         public."enum_OrganizationsUsers_role_id" NOT NULL,
+    invited_by      integer,
+    invited_on      timestamp with time zone,
+    accepted_on     timestamp with time zone,
     is_default_organization boolean,
-    created_at              timestamp(6) with time zone              NOT NULL,
-    updated_at              timestamp(6) with time zone              NOT NULL,
-    user_id                 integer                                  NOT NULL,
-    organization_id         integer                                  NOT NULL
+    created_at      timestamp(6) with time zone              NOT NULL,
+    updated_at      timestamp(6) with time zone              NOT NULL,
+    user_id         integer                                  NOT NULL,
+    organization_id integer                                  NOT NULL
 );
 
 
@@ -909,28 +1006,73 @@ ALTER SEQUENCE public."OrganizationsUsers_id_seq" OWNED BY public."Organizations
 
 
 --
+-- Name: PaymentTerms; Type: TABLE; Schema: public; Owner: surojit
+--
+
+CREATE TABLE public."PaymentTerms"
+(
+    id              integer                                                                               NOT NULL,
+    name            character varying(255)                                                                NOT NULL,
+    payment_term    integer                                                                               NOT NULL,
+    is_default      boolean                                                                               NOT NULL,
+    "interval"      public."enum_PaymentTerms_interval"                                                   NOT NULL,
+    status          public."enum_PaymentTerms_status" DEFAULT 'active'::public."enum_PaymentTerms_status" NOT NULL,
+    created_by      integer                                                                               NOT NULL,
+    organization_id integer                                                                               NOT NULL,
+    created_at      timestamp(6) with time zone                                                           NOT NULL,
+    updated_at      timestamp(6) with time zone                                                           NOT NULL
+);
+
+
+ALTER TABLE public."PaymentTerms"
+    OWNER TO surojit;
+
+--
+-- Name: PaymentTerms_id_seq; Type: SEQUENCE; Schema: public; Owner: surojit
+--
+
+CREATE SEQUENCE public."PaymentTerms_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."PaymentTerms_id_seq"
+    OWNER TO surojit;
+
+--
+-- Name: PaymentTerms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: surojit
+--
+
+ALTER SEQUENCE public."PaymentTerms_id_seq" OWNED BY public."PaymentTerms".id;
+
+
+--
 -- Name: RegularItems; Type: TABLE; Schema: public; Owner: surojit
 --
 
 CREATE TABLE public."RegularItems"
 (
-    id                   integer                                                    NOT NULL,
-    name                 character varying(255)                                     NOT NULL,
-    product_type         public."enum_RegularItems_product_type"                    NOT NULL,
-    selling_price        numeric,
-    selling_description  character varying(255),
-    purchase_price       numeric,
+    id                  integer                                                    NOT NULL,
+    name                public.citext                                              NOT NULL,
+    product_type        public."enum_RegularItems_product_type"                    NOT NULL,
+    selling_price       numeric,
+    selling_description character varying(255),
+    purchase_price      numeric,
     purchase_description character varying(255),
-    item_for             public."enum_RegularItems_item_for"                        NOT NULL,
-    status               character varying(255) DEFAULT 'active'::character varying NOT NULL,
-    created_at           timestamp(6) with time zone                                NOT NULL,
-    updated_at           timestamp(6) with time zone                                NOT NULL,
-    created_by           integer                                                    NOT NULL,
-    organization_id      integer                                                    NOT NULL,
-    sales_account_id     integer,
-    purchase_account_id  integer,
-    tax_id               integer,
-    unit_id              integer
+    item_for            public."enum_RegularItems_item_for"                        NOT NULL,
+    status              character varying(255) DEFAULT 'active'::character varying NOT NULL,
+    created_at          timestamp(6) with time zone                                NOT NULL,
+    updated_at          timestamp(6) with time zone                                NOT NULL,
+    created_by          integer                                                    NOT NULL,
+    organization_id     integer                                                    NOT NULL,
+    sales_account_id    integer,
+    purchase_account_id integer,
+    tax_id              integer,
+    unit_id             integer
 );
 
 
@@ -1123,6 +1265,14 @@ ALTER TABLE ONLY public."InvoiceLineItems"
 
 
 --
+-- Name: InvoicePaymentTerms id; Type: DEFAULT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."InvoicePaymentTerms"
+    ALTER COLUMN id SET DEFAULT nextval('public."InvoicePaymentTerms_id_seq"'::regclass);
+
+
+--
 -- Name: Invoices id; Type: DEFAULT; Schema: public; Owner: surojit
 --
 
@@ -1160,6 +1310,14 @@ ALTER TABLE ONLY public."OrganizationBasics"
 
 ALTER TABLE ONLY public."OrganizationsUsers"
     ALTER COLUMN id SET DEFAULT nextval('public."OrganizationsUsers_id_seq"'::regclass);
+
+
+--
+-- Name: PaymentTerms id; Type: DEFAULT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."PaymentTerms"
+    ALTER COLUMN id SET DEFAULT nextval('public."PaymentTerms_id_seq"'::regclass);
 
 
 --
@@ -1212,7 +1370,8 @@ COPY public."AccountTemplateDetails" (id, name, country_code, sector, status, is
 7	Account template for organization 75	IN	Others	active	\N	2023-09-21 22:31:54.183+05:30	2023-09-21 22:31:54.183+05:30	1	1	75
 8	Account template for organization 76	IN	Others	active	\N	2023-09-23 13:55:12.765+05:30	2023-09-23 13:55:12.765+05:30	1	1	76
 9	Account template for organization 77	IN	Others	active	\N	2023-10-04 16:15:06.144+05:30	2023-10-04 16:15:06.144+05:30	1	1	77
-16	Account template for organization 104	IN	Others	active	f	2023-10-08 21:10:06.922+05:30	2023-10-08 21:10:06.922+05:30	1	1	104
+16	Account template for organization 104	IN	Others	active	\N	2023-10-08 21:10:06.922+05:30	2023-10-08 21:10:06.922+05:30	1	1	104
+20	Account template for organization 110	IN	Others	active	f	2023-10-23 21:03:30.555+05:30	2023-10-23 21:03:30.555+05:30	1	1	110
 \.
 
 
@@ -1666,6 +1825,22 @@ COPY public."AccountsOfOrganizations" (id, name, code, parent_code, depth, creat
 412	Bad Debt	519	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	39	\N	\N	active
 413	Printing and Stationery	520	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	40	\N	\N	active
 414	Salaries and Employee Wages	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	41	\N	\N	active
+997	Cost of Goods Sold	521	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	59	\N	\N	active
+998	Labor	522	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	60	\N	\N	active
+999	Materials	523	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	61	\N	\N	active
+1000	Subcontractor	524	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	62	\N	\N	active
+1001	Job Costing	525	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	63	\N	\N	active
+1002	Exchange Gain or Loss	526	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	21	20	1	110	64	\N	\N	active
+1003	Employee Advance	111	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	1	\N	\N	active
+1004	Prepaid Expenses	112	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	2	\N	\N	active
+1005	TDS Receivable	113	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	3	\N	\N	active
+1006	Advance Tax	114	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	4	\N	\N	active
+1007	Undeposited Funds	121	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	3	20	1	110	5	\N	\N	active
+1008	Petty Cash	122	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	3	20	1	110	6	\N	\N	active
+1009	Furniture and Equipment	141	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	5	20	1	110	7	\N	\N	active
+1010	Inventory Asset	151	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	7	20	1	110	8	\N	\N	active
+1011	Employee Reimbursements	211	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	9	\N	\N	active
+1012	Opening Balance Adjustments	212	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	10	\N	\N	active
 868	Cost of Goods Sold	521	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	59	\N	\N	active
 869	Labor	522	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	60	\N	\N	active
 870	Materials	523	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	61	\N	\N	active
@@ -1728,8 +1903,56 @@ COPY public."AccountsOfOrganizations" (id, name, code, parent_code, depth, creat
 927	Janitorial Expense	517	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	37	\N	\N	active
 928	Postage	518	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	38	\N	\N	active
 929	Bad Debt	519	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	39	\N	\N	active
+1013	Unearned Revenue	213	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	11	\N	\N	active
+1014	TDS Payable	214	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	12	\N	\N	active
+1015	Tax Payable	215	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	13	\N	\N	active
+1016	Mortgages	231	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	12	20	1	110	14	\N	\N	active
+1017	Meals and Entertainment	522	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	42	\N	\N	active
+1018	Depreciation Expense	523	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	43	\N	\N	active
+1019	Consultant Expense	524	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	44	\N	\N	active
 930	Printing and Stationery	520	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	40	\N	\N	active
 931	Salaries and Employee Wages	521	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	41	\N	\N	active
+1020	Repairs and Maintenance	525	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	45	\N	\N	active
+1021	Other Expenses	526	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	46	\N	\N	active
+1022	Lodging	527	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	47	\N	\N	active
+1023	Uncategorized	528	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	48	\N	\N	active
+1024	Raw Materials And Consumables	529	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	49	\N	\N	active
+1025	Merchandise	530	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	50	\N	\N	active
+1026	Transportation Expense	531	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	51	\N	\N	active
+1027	Depreciation And Amortisation	532	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	52	\N	\N	active
+1028	Construction Loans	232	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	12	20	1	110	15	\N	\N	active
+1029	Dimension Adjustments	241	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	13	20	1	110	16	\N	\N	active
+1030	Drawings	311	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	17	\N	\N	active
+1031	Investments	312	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	18	\N	\N	active
+1032	Distributions	313	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	19	\N	\N	active
+1033	Retained Earnings	314	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	20	\N	\N	active
+1034	Owner's Equity	315	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	21	\N	\N	active
+1035	Opening Balance Offset	316	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	22	\N	\N	active
+1036	Capital Stock	317	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	23	\N	\N	active
+1037	Dividends Paid	318	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	24	\N	\N	active
+1038	Other Charges	411	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	25	\N	\N	active
+1039	Shipping Charge	412	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	26	\N	\N	active
+1040	Sales	413	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	27	\N	\N	active
+1041	General Income	414	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	28	\N	\N	active
+1042	Interest Income	415	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	29	\N	\N	active
+1043	Late Fee Income	416	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	30	\N	\N	active
+1044	Discount	417	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	31	\N	\N	active
+1045	Contract Assets	533	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	53	\N	\N	active
+1046	Office Supplies	534	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	54	\N	\N	active
+1047	Advertising And Marketing	535	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	55	\N	\N	active
+1048	Purchase Discounts	536	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	56	\N	\N	active
+1049	Bank Fees and Charges	537	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	57	\N	\N	active
+1050	Credit Card Charges	538	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	58	\N	\N	active
+1051	Travel Expense	511	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	32	\N	\N	active
+1052	Telephone Expense	512	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	33	\N	\N	active
+1053	Automobile Expense	513	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	34	\N	\N	active
+1054	IT and Internet Expenses	515	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	35	\N	\N	active
+1055	Rent Expense	516	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	36	\N	\N	active
+1056	Janitorial Expense	517	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	37	\N	\N	active
+1057	Postage	518	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	38	\N	\N	active
+1058	Bad Debt	519	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	39	\N	\N	active
+1059	Printing and Stationery	520	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	40	\N	\N	active
+1060	Salaries and Employee Wages	521	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	41	\N	\N	active
 \.
 
 
@@ -1826,6 +2049,7 @@ COPY public."GeneralPreferences" (id, sales_tax_type, tax_rounding_type, discoun
                                   created_at, updated_at, organization_id) FROM stdin;
 1	entity_level	item_level	no_discount	t	2023-10-04 16:15:06.189+05:30	2023-10-04 16:15:06.189+05:30	2
 3	entity_level	item_level	no_discount	t	2023-10-08 21:10:06.962+05:30	2023-10-08 21:10:06.962+05:30	104
+5	entity_level	item_level	no_discount	t	2023-10-23 21:03:30.592+05:30	2023-10-23 21:03:30.592+05:30	110
 \.
 
 
@@ -1856,13 +2080,45 @@ COPY public."InvoiceLineItems" (id, name, description, unit, status, organizatio
 21	Paper Boat	\N	KG	active	2	32	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-15 20:20:39.589+05:30	2023-10-15 20:20:39.589+05:30
 22	Paper Boat	\N	KG	active	2	33	1	1	1	1	400	1	10	34.78	15	46.96	313.05	360.01	2023-10-15 20:21:53.127+05:30	2023-10-15 20:21:53.127+05:30
 23	Paper Boat	\N	KG	active	2	34	1	1	1	1	400	1	10	34.78	15	46.96	313.05	360.01	2023-10-20 22:01:11.021+05:30	2023-10-20 22:01:11.021+05:30
+47	Paper Boat	\N	KG	active	2	44	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-24 20:09:30.323+05:30	2023-10-24 20:09:30.323+05:30
+48	Log Boat	\N	KG	active	2	44	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-24 20:09:30.323+05:30	2023-10-24 20:09:30.323+05:30
+49	Paper Boat	\N	KG	active	2	45	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-24 20:34:56.538+05:30	2023-10-24 20:34:56.538+05:30
 7	Paper Boat	\N	KG	active	2	15	1	1	1	1	400	2	10	80	10	72	720	792	2023-10-15 18:32:55.501+05:30	2023-10-15 18:32:55.501+05:30
 36	Paper Boat	\N	KG	active	2	23	1	1	1	1	400	3	10	120	10	108	1080	1188	2023-10-21 16:40:15.238+05:30	2023-10-21 16:40:15.238+05:30
 37	Paper Boat	\N	KG	active	2	37	1	1	1	1	400	1	10	34.78	15	46.96	313.05	360.01	2023-10-21 16:44:45.051+05:30	2023-10-21 16:44:45.051+05:30
 38	Log Boat	\N	KG	active	2	37	1	1	1	1	500	1	10	43.48	15	58.7	391.3	450	2023-10-21 16:44:45.051+05:30	2023-10-21 16:44:45.051+05:30
-39	Paper Boat	\N	KG	active	2	38	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-21 16:46:36.637+05:30	2023-10-21 16:46:36.637+05:30
-40	Log Boat	\N	KG	active	2	38	1	1	1	1	500	10	0	0	15	652.17	4347.83	5000	2023-10-21 16:46:36.637+05:30	2023-10-21 16:46:36.637+05:30
-42	oppp Boat	\N	KG	active	2	38	1	1	1	1	500	10	0	0	15	652.17	4347.83	5000	2023-10-21 17:07:33.939+05:30	2023-10-21 17:07:33.939+05:30
+50	Log Boat	\N	KG	active	2	45	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-24 20:34:56.538+05:30	2023-10-24 20:34:56.538+05:30
+51	Paper Boat	\N	KG	active	2	46	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-24 20:46:19.387+05:30	2023-10-24 20:46:19.387+05:30
+52	Log Boat	\N	KG	active	2	46	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-24 20:46:19.387+05:30	2023-10-24 20:46:19.387+05:30
+53	Paper Boat	\N	KG	active	2	47	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-24 20:48:32.079+05:30	2023-10-24 20:48:32.079+05:30
+54	Log Boat	\N	KG	active	2	47	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-24 20:48:32.079+05:30	2023-10-24 20:48:32.079+05:30
+55	Paper Boat	\N	KG	active	2	49	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-25 23:24:42.798+05:30	2023-10-25 23:24:42.798+05:30
+56	Log Boat	\N	KG	active	2	49	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-25 23:24:42.798+05:30	2023-10-25 23:24:42.798+05:30
+65	Paper Boat	\N	KG	active	2	38	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-25 23:35:43.172+05:30	2023-10-25 23:35:43.172+05:30
+66	Log Boat	\N	KG	active	2	38	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-25 23:35:43.172+05:30	2023-10-25 23:35:43.172+05:30
+43	Paper Boat	\N	KG	active	2	40	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-24 19:50:14.344+05:30	2023-10-24 19:50:14.344+05:30
+44	Log Boat	\N	KG	active	2	40	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-24 19:50:14.344+05:30	2023-10-24 19:50:14.344+05:30
+45	Paper Boat	\N	KG	active	2	42	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-24 20:03:28.917+05:30	2023-10-24 20:03:28.917+05:30
+46	Log Boat	\N	KG	active	2	42	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-24 20:03:28.917+05:30	2023-10-24 20:03:28.917+05:30
+67	Paper Boat	\N	KG	active	2	51	1	1	1	1	400	1	0	0	15	52.17	347.83	400	2023-10-25 23:36:28.716+05:30	2023-10-25 23:36:28.716+05:30
+68	Log Boat	\N	KG	active	2	51	1	1	1	1	500	1	0	0	15	65.22	434.78	500	2023-10-25 23:36:28.716+05:30	2023-10-25 23:36:28.716+05:30
+\.
+
+
+--
+-- Data for Name: InvoicePaymentTerms; Type: TABLE DATA; Schema: public; Owner: surojit
+--
+
+COPY public."InvoicePaymentTerms" (id, name, origin_payment_term_id, payment_term, "interval", created_at,
+                                   updated_at) FROM stdin;
+1	Due on Receipt	8	\N	end_of_day	2023-10-24 20:34:54.218+05:30	2023-10-24 20:34:54.218+05:30
+2	Due on Receipt	8	\N	end_of_day	2023-10-24 20:46:19.377+05:30	2023-10-24 20:46:19.377+05:30
+3	Due on Receipt	8	0	end_of_day	2023-10-24 20:48:32.069+05:30	2023-10-24 20:48:32.069+05:30
+5	Due on Receipt	8	0	end_of_day	2023-10-25 23:24:42.79+05:30	2023-10-25 23:24:42.79+05:30
+11	Net 60	5	60	regular	2023-10-25 23:35:43.165+05:30	2023-10-25 23:35:43.165+05:30
+12	Due on Receipt	8	0	end_of_day	2023-10-25 23:36:28.706+05:30	2023-10-25 23:36:28.706+05:30
+13	Due on Receipt	8	0	end_of_day	2023-10-25 23:37:24.546+05:30	2023-10-25 23:37:24.546+05:30
+14	NET 365	12	365	regular	2023-10-25 23:38:22.304+05:30	2023-10-25 23:38:22.304+05:30
 \.
 
 
@@ -1872,31 +2128,39 @@ COPY public."InvoiceLineItems" (id, name, description, unit, status, organizatio
 
 COPY public."Invoices" (id, contact_id, invoice_number, reference_number, order_number, terms, notes, is_inclusive_tax,
                         status, organization_id, created_by, discount_total, tax_total, sub_total, total, created_at,
-                        updated_at) FROM stdin;
-1	1	1	\N	\N	\N	\N	f	active	2	1	0	10	100	110	2023-10-08 22:54:54.755+05:30	2023-10-08 22:54:54.755+05:30
-3	1	2	\N	\N	\N	\N	f	active	2	1	0	10	100	110	2023-10-08 22:55:23.192+05:30	2023-10-08 22:55:23.192+05:30
-9	2	3	\N	\N	\N	\N	f	active	2	1	0	0.1	1	1.1	2023-10-12 00:15:49.699+05:30	2023-10-12 00:15:49.699+05:30
-11	2	4	\N	\N	\N	\N	f	active	2	1	0	10	100	110	2023-10-12 00:18:08.24+05:30	2023-10-12 00:18:08.24+05:30
-13	2	5	\N	\N	\N	\N	f	active	2	1	0	10	100	110	2023-10-15 18:30:54.493+05:30	2023-10-15 18:30:54.493+05:30
-15	2	6	\N	\N	\N	\N	f	active	2	1	0	9	90	99	2023-10-15 18:32:55.492+05:30	2023-10-15 18:32:55.492+05:30
-16	2	7	\N	\N	\N	\N	f	active	2	1	10	9	90	99	2023-10-15 18:34:57.342+05:30	2023-10-15 18:34:57.342+05:30
-17	2	8	\N	\N			f	active	2	1	40	36	360	400	2023-10-15 18:56:38.945+05:30	2023-10-15 18:56:38.945+05:30
-18	2	9	\N	\N			f	active	2	1	40	36	360	400	2023-10-15 18:59:50.952+05:30	2023-10-15 18:59:50.952+05:30
-19	2	10	\N	\N			f	active	2	1	40	36	360	400	2023-10-15 19:04:45.083+05:30	2023-10-15 19:04:45.083+05:30
-21	2	11	\N	\N			f	active	2	1	40	36	360	396	2023-10-15 19:08:33.542+05:30	2023-10-15 19:08:33.542+05:30
-24	2	13	\N	\N			f	active	2	1	40	0	360	360	2023-10-15 19:53:02.673+05:30	2023-10-15 19:53:02.673+05:30
-25	2	14	\N	\N			t	active	2	1	40	0	360	360	2023-10-15 19:53:36.73+05:30	2023-10-15 19:53:36.73+05:30
-26	2	15	\N	\N			t	active	2	1	0	36.36	363.64	400	2023-10-15 19:54:39.588+05:30	2023-10-15 19:54:39.588+05:30
-27	2	16	\N	\N			t	active	2	1	0	36.36	363.64	400	2023-10-15 19:56:43.1+05:30	2023-10-15 19:56:43.1+05:30
-28	2	17	\N	\N			t	active	2	1	0	36.36	363.64	400	2023-10-15 20:18:08.842+05:30	2023-10-15 20:18:08.842+05:30
-29	2	18	\N	\N			t	active	2	1	34.78	46.96	313.05	360.01	2023-10-15 20:18:32.729+05:30	2023-10-15 20:18:32.729+05:30
-30	2	19	\N	\N			t	active	2	1	31.3	47.48	316.53	364.01	2023-10-15 20:20:22.52+05:30	2023-10-15 20:20:22.52+05:30
-32	2	20	\N	\N			t	active	2	1	0	52.17	347.83	400	2023-10-15 20:20:39.584+05:30	2023-10-15 20:20:39.584+05:30
-33	2	21	\N	\N			t	active	2	1	34.78	46.96	313.05	360.01	2023-10-15 20:21:53.12+05:30	2023-10-15 20:21:53.12+05:30
-34	2	22	\N	\N	\N	\N	t	active	2	1	34.78	46.96	313.05	360.01	2023-10-20 22:01:11.009+05:30	2023-10-20 22:01:11.009+05:30
-23	2	12	\N	\N			f	active	2	1	120	108	1080	1188	2023-10-15 19:51:41.545+05:30	2023-10-21 16:40:15.249+05:30
-37	2	24	\N	\N	\N	\N	t	active	2	1	78.26	105.66	704.35	810.01	2023-10-21 16:44:45.048+05:30	2023-10-21 16:44:45.048+05:30
-38	2	25	\N	\N	\N	\N	t	active	2	1	0	1356.51	9043.49	10400	2023-10-21 16:46:36.632+05:30	2023-10-21 17:07:33.941+05:30
+                        updated_at, invoice_payment_term_id, issue_date, due_date) FROM stdin;
+9	2	INV-3	\N	\N	\N	\N	f	active	2	1	0	0.1	1	1.1	2023-10-12 00:15:49.699+05:30	2023-10-12 00:15:49.699+05:30	\N	2023-10-24	2023-10-24
+11	2	INV-4	\N	\N	\N	\N	f	active	2	1	0	10	100	110	2023-10-12 00:18:08.24+05:30	2023-10-12 00:18:08.24+05:30	\N	2023-10-24	2023-10-24
+13	2	INV-5	\N	\N	\N	\N	f	active	2	1	0	10	100	110	2023-10-15 18:30:54.493+05:30	2023-10-15 18:30:54.493+05:30	\N	2023-10-24	2023-10-24
+16	2	INV-7	\N	\N	\N	\N	f	active	2	1	10	9	90	99	2023-10-15 18:34:57.342+05:30	2023-10-15 18:34:57.342+05:30	\N	2023-10-24	2023-10-24
+18	2	INV-9	\N	\N			f	active	2	1	40	36	360	400	2023-10-15 18:59:50.952+05:30	2023-10-15 18:59:50.952+05:30	\N	2023-10-24	2023-10-24
+24	2	INV-13	\N	\N			f	active	2	1	40	0	360	360	2023-10-15 19:53:02.673+05:30	2023-10-15 19:53:02.673+05:30	\N	2023-10-24	2023-10-24
+25	2	INV-14	\N	\N			t	active	2	1	40	0	360	360	2023-10-15 19:53:36.73+05:30	2023-10-15 19:53:36.73+05:30	\N	2023-10-24	2023-10-24
+26	2	INV-15	\N	\N			t	active	2	1	0	36.36	363.64	400	2023-10-15 19:54:39.588+05:30	2023-10-15 19:54:39.588+05:30	\N	2023-10-24	2023-10-24
+27	2	INV-16	\N	\N			t	active	2	1	0	36.36	363.64	400	2023-10-15 19:56:43.1+05:30	2023-10-15 19:56:43.1+05:30	\N	2023-10-24	2023-10-24
+28	2	INV-17	\N	\N			t	active	2	1	0	36.36	363.64	400	2023-10-15 20:18:08.842+05:30	2023-10-15 20:18:08.842+05:30	\N	2023-10-24	2023-10-24
+30	2	INV-19	\N	\N			t	active	2	1	31.3	47.48	316.53	364.01	2023-10-15 20:20:22.52+05:30	2023-10-15 20:20:22.52+05:30	\N	2023-10-24	2023-10-24
+33	2	INV-21	\N	\N			t	active	2	1	34.78	46.96	313.05	360.01	2023-10-15 20:21:53.12+05:30	2023-10-15 20:21:53.12+05:30	\N	2023-10-24	2023-10-24
+34	2	INV-22	\N	\N	\N	\N	t	active	2	1	34.78	46.96	313.05	360.01	2023-10-20 22:01:11.009+05:30	2023-10-20 22:01:11.009+05:30	\N	2023-10-24	2023-10-24
+49	2	INV-32	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-25 23:24:42.794+05:30	2023-10-25 23:24:42.794+05:30	5	2023-10-05	2023-10-05
+38	2	INV-25	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-21 16:46:36.632+05:30	2023-10-25 23:35:47.641+05:30	11	2023-10-05	2023-12-04
+51	2	INV-33	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-25 23:36:28.711+05:30	2023-10-25 23:38:22.312+05:30	14	2023-10-05	2024-10-04
+23	2	INV-12	\N	\N			f	active	2	1	120	108	1080	1188	2023-10-15 19:51:41.545+05:30	2023-10-21 16:40:15.249+05:30	\N	2023-10-24	2023-10-24
+37	2	INV-24	\N	\N	\N	\N	t	active	2	1	78.26	105.66	704.35	810.01	2023-10-21 16:44:45.048+05:30	2023-10-21 16:44:45.048+05:30	\N	2023-10-24	2023-10-24
+21	2	INV-11	\N	3			f	active	2	1	40	36	360	396	2023-10-15 19:08:33.542+05:30	2023-10-15 19:08:33.542+05:30	\N	2023-10-24	2023-10-24
+19	2	INV-10	\N	RTY43			f	active	2	1	40	36	360	400	2023-10-15 19:04:45.083+05:30	2023-10-15 19:04:45.083+05:30	\N	2023-10-24	2023-10-24
+17	2	INV-8	\N	TYE			f	active	2	1	40	36	360	400	2023-10-15 18:56:38.945+05:30	2023-10-15 18:56:38.945+05:30	\N	2023-10-24	2023-10-24
+45	2	INV-29	\N	UIU01	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-24 20:34:56.528+05:30	2023-10-24 20:34:56.528+05:30	\N	2023-10-05	2023-10-05
+15	2	INV-6	\N	56	\N	\N	f	active	2	1	0	9	90	99	2023-10-15 18:32:55.492+05:30	2023-10-15 18:32:55.492+05:30	\N	2023-10-24	2023-10-24
+29	2	INV-18	\N	52			t	active	2	1	34.78	46.96	313.05	360.01	2023-10-15 20:18:32.729+05:30	2023-10-15 20:18:32.729+05:30	\N	2023-10-24	2023-10-24
+3	1	INV-2	\N	3	\N	\N	f	active	2	1	0	10	100	110	2023-10-08 22:55:23.192+05:30	2023-10-08 22:55:23.192+05:30	\N	2023-10-24	2023-10-24
+1	1	INV-1	\N	2	\N	\N	f	active	2	1	0	10	100	110	2023-10-08 22:54:54.755+05:30	2023-10-08 22:54:54.755+05:30	\N	2023-10-24	2023-10-24
+32	2	INV-20	\N	ORD3			t	active	2	1	0	52.17	347.83	400	2023-10-15 20:20:39.584+05:30	2023-10-15 20:20:39.584+05:30	\N	2023-10-24	2023-10-24
+40	2	INV-26	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-24 19:50:14.331+05:30	2023-10-24 19:50:14.331+05:30	\N	2023-10-05	2023-10-20
+42	2	INV-27	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-24 20:03:28.912+05:30	2023-10-24 20:03:28.912+05:30	\N	2023-10-05	2023-10-20
+44	2	INV-28	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-24 20:09:30.317+05:30	2023-10-24 20:09:30.317+05:30	\N	2023-10-05	2023-10-05
+46	2	INV-30	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-24 20:46:19.384+05:30	2023-10-24 20:46:19.384+05:30	2	2023-10-05	2023-10-05
+47	2	INV-31	\N	\N	\N	\N	t	active	2	1	0	117.39	782.61	900	2023-10-24 20:48:32.075+05:30	2023-10-24 20:48:32.075+05:30	3	2023-10-05	2023-10-05
 \.
 
 
@@ -1912,6 +2176,7 @@ COPY public."ItemPreferences" (id, quantity_precision, is_item_name_duplication_
 6	2	t	2023-09-23 13:55:12.812+05:30	2023-09-23 13:55:12.812+05:30	76
 7	2	t	2023-10-04 16:15:06.186+05:30	2023-10-04 16:15:06.186+05:30	77
 11	2	t	2023-10-08 21:10:06.96+05:30	2023-10-08 21:10:06.96+05:30	104
+13	2	t	2023-10-23 21:03:30.59+05:30	2023-10-23 21:03:30.59+05:30	110
 \.
 
 
@@ -1933,6 +2198,15 @@ COPY public."ItemUnits" (id, name, unit, status, created_at, updated_at, created
 20	Other	oth	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
 21	Pieces	pcs	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
 22	Dozen	dz	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
+32	BOX	box	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+33	Centimeter	cm	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+34	Meter	m	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+35	Feet	ft	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+36	Gram	g	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+37	Kilogram	kg	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+38	Other	oth	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+39	Pieces	pcs	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+40	Dozen	dz	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
 \.
 
 
@@ -1953,6 +2227,7 @@ COPY public."OrganizationBasics" (id, name, primary_address, country_code, secto
 76	DEN	Kolkata, India	IN	Others	INR	active	2023-09-23 13:55:12.741+05:30	2023-09-23 13:55:12.741+05:30	1
 77	MON	Kolkata, India	IN	Others	INR	active	2023-10-04 16:15:06.121+05:30	2023-10-04 16:15:06.121+05:30	1
 104	COM	Kolkata, India	IN	Others	INR	active	2023-10-08 21:10:06.91+05:30	2023-10-08 21:10:06.91+05:30	1
+110	Pampom	Kolkata, India	IN	Others	INR	active	2023-10-23 21:03:30.537+05:30	2023-10-23 21:03:30.537+05:30	1
 \.
 
 
@@ -1971,8 +2246,26 @@ COPY public."OrganizationsUsers" (id, job_status, status, role_id, invited_by, i
 76	working	active	admin	\N	\N	\N	\N	2023-09-23 13:55:12.757+05:30	2023-09-23 13:55:12.757+05:30	1	76
 77	working	active	admin	\N	\N	\N	\N	2023-10-04 16:15:06.133+05:30	2023-10-04 16:15:06.133+05:30	1	77
 99	working	active	admin	\N	\N	\N	f	2023-10-08 21:10:06.916+05:30	2023-10-08 21:10:06.916+05:30	1	104
+105	working	active	admin	\N	\N	\N	f	2023-10-23 21:03:30.546+05:30	2023-10-23 21:03:30.546+05:30	1	110
 1	working	active	admin	\N	\N	\N	\N	2023-08-26 00:09:34.021+05:30	2023-08-26 00:09:34.021+05:30	1	1
 65	working	active	admin	\N	\N	\N	t	2023-08-26 14:21:45.113+05:30	2023-08-26 14:21:45.113+05:30	1	2
+\.
+
+
+--
+-- Data for Name: PaymentTerms; Type: TABLE DATA; Schema: public; Owner: surojit
+--
+
+COPY public."PaymentTerms" (id, name, payment_term, is_default, "interval", status, created_by, organization_id,
+                            created_at, updated_at) FROM stdin;
+6	End of Month	0	f	end_of_month	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+5	Net 60	60	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+4	Net 45	45	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+7	End of Next Month	1	f	end_of_month	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+3	Net 30	30	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+8	Due on Receipt	0	f	end_of_day	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:53:41.419+05:30
+2	NET 15	15	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+12	NET 365	365	t	regular	active	1	2	2023-10-23 21:53:53.163+05:30	2023-10-23 22:00:01.868+05:30
 \.
 
 
@@ -1983,11 +2276,11 @@ COPY public."OrganizationsUsers" (id, job_status, status, role_id, invited_by, i
 COPY public."RegularItems" (id, name, product_type, selling_price, selling_description, purchase_price,
                             purchase_description, item_for, status, created_at, updated_at, created_by, organization_id,
                             sales_account_id, purchase_account_id, tax_id, unit_id) FROM stdin;
-2	Dark Chocolate	goods	990.5		0		sales	active	2023-10-05 23:05:56.064+05:30	2023-10-05 23:31:34.036+05:30	1	2	27	\N	1	3
-3	Dark Chocolate	goods	233		0		sales	active	2023-10-06 23:37:05.578+05:30	2023-10-06 23:37:05.578+05:30	1	2	25	\N	1	3
 4	Ball	goods	678		900		sales_and_purchase	active	2023-10-06 23:38:52.887+05:30	2023-10-06 23:44:32.336+05:30	1	2	28	481	2	2
 1	Paper Boat	goods	500		0		sales	active	2023-10-05 22:15:05.359+05:30	2023-10-05 23:24:20.668+05:30	1	2	25	\N	2	1
 6	Gumshoo	goods	123		0		sales	active	2023-10-08 12:24:49.114+05:30	2023-10-08 12:33:02.359+05:30	1	2	26	\N	1	4
+2	Dark Chocolate	goods	990.5	A bar of chocolate	0		sales	active	2023-10-05 23:05:56.064+05:30	2023-11-19 23:50:52.874+05:30	1	2	27	\N	1	3
+3	Dark Chocolate	goods	233	A chocolate bar	0		sales	active	2023-10-06 23:37:05.578+05:30	2023-11-19 23:53:48.512+05:30	1	2	25	\N	1	3
 \.
 
 
@@ -2011,6 +2304,10 @@ COPY public."TaxRates" (id, name, description, rate, country_code, tax_type, sta
 16	GST18	GST Of 18%	18	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
 17	GST12	GST Of 12%	12	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
 18	GST05	GST Of 5%	5	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
+23	GST28	GST Of 28%	28	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
+24	GST18	GST Of 18%	18	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
+25	GST12	GST Of 12%	12	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
+26	GST05	GST Of 5%	5	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
 \.
 
 
@@ -2034,7 +2331,7 @@ SELECT pg_catalog.setval('public."AccountGroups_id_seq"', 7, true);
 -- Name: AccountTemplateDetails_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."AccountTemplateDetails_id_seq"', 16, true);
+SELECT pg_catalog.setval('public."AccountTemplateDetails_id_seq"', 20, true);
 
 
 --
@@ -2055,7 +2352,7 @@ SELECT pg_catalog.setval('public."AccountsConfigs_id_seq"', 20, true);
 -- Name: AccountsOfOrganizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."AccountsOfOrganizations_id_seq"', 932, true);
+SELECT pg_catalog.setval('public."AccountsOfOrganizations_id_seq"', 1060, true);
 
 
 --
@@ -2076,49 +2373,63 @@ SELECT pg_catalog.setval('public."Contacts_id_seq"', 2, true);
 -- Name: GeneralPreferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."GeneralPreferences_id_seq"', 3, true);
+SELECT pg_catalog.setval('public."GeneralPreferences_id_seq"', 5, true);
 
 
 --
 -- Name: InvoiceLineItems_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."InvoiceLineItems_id_seq"', 42, true);
+SELECT pg_catalog.setval('public."InvoiceLineItems_id_seq"', 68, true);
+
+
+--
+-- Name: InvoicePaymentTerms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
+--
+
+SELECT pg_catalog.setval('public."InvoicePaymentTerms_id_seq"', 14, true);
 
 
 --
 -- Name: Invoices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."Invoices_id_seq"', 38, true);
+SELECT pg_catalog.setval('public."Invoices_id_seq"', 51, true);
 
 
 --
 -- Name: ItemPreferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."ItemPreferences_id_seq"', 11, true);
+SELECT pg_catalog.setval('public."ItemPreferences_id_seq"', 13, true);
 
 
 --
 -- Name: ItemUnits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."ItemUnits_id_seq"', 22, true);
+SELECT pg_catalog.setval('public."ItemUnits_id_seq"', 40, true);
 
 
 --
 -- Name: OrganizationBasics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."OrganizationBasics_id_seq"', 104, true);
+SELECT pg_catalog.setval('public."OrganizationBasics_id_seq"', 110, true);
 
 
 --
 -- Name: OrganizationsUsers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."OrganizationsUsers_id_seq"', 99, true);
+SELECT pg_catalog.setval('public."OrganizationsUsers_id_seq"', 105, true);
+
+
+--
+-- Name: PaymentTerms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
+--
+
+SELECT pg_catalog.setval('public."PaymentTerms_id_seq"', 12, true);
 
 
 --
@@ -2132,7 +2443,7 @@ SELECT pg_catalog.setval('public."RegularItems_id_seq"', 6, true);
 -- Name: TaxRates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."TaxRates_id_seq"', 18, true);
+SELECT pg_catalog.setval('public."TaxRates_id_seq"', 26, true);
 
 
 --
@@ -2215,6 +2526,14 @@ ALTER TABLE ONLY public."InvoiceLineItems"
 
 
 --
+-- Name: InvoicePaymentTerms InvoicePaymentTerms_pkey; Type: CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."InvoicePaymentTerms"
+    ADD CONSTRAINT "InvoicePaymentTerms_pkey" PRIMARY KEY (id);
+
+
+--
 -- Name: Invoices Invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: surojit
 --
 
@@ -2263,6 +2582,14 @@ ALTER TABLE ONLY public."OrganizationsUsers"
 
 
 --
+-- Name: PaymentTerms PaymentTerms_pkey; Type: CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."PaymentTerms"
+    ADD CONSTRAINT "PaymentTerms_pkey" PRIMARY KEY (id);
+
+
+--
 -- Name: RegularItems RegularItems_pkey; Type: CONSTRAINT; Schema: public; Owner: surojit
 --
 
@@ -2284,14 +2611,6 @@ ALTER TABLE ONLY public."TaxRates"
 
 ALTER TABLE ONLY public."Users"
     ADD CONSTRAINT "Users_pkey" PRIMARY KEY (id);
-
-
---
--- Name: AccountTemplateDetails account_template_details_is_default_unique; Type: CONSTRAINT; Schema: public; Owner: surojit
---
-
-ALTER TABLE ONLY public."AccountTemplateDetails"
-    ADD CONSTRAINT account_template_details_is_default_unique UNIQUE (is_default);
 
 
 --
@@ -2573,6 +2892,14 @@ ALTER TABLE ONLY public."Invoices"
 
 
 --
+-- Name: Invoices Invoices_invoice_payment_term_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Invoices"
+    ADD CONSTRAINT "Invoices_invoice_payment_term_id_fkey" FOREIGN KEY (invoice_payment_term_id) REFERENCES public."InvoicePaymentTerms" (id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
 -- Name: Invoices Invoices_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
 --
 
@@ -2610,6 +2937,22 @@ ALTER TABLE ONLY public."ItemUnits"
 
 ALTER TABLE ONLY public."OrganizationBasics"
     ADD CONSTRAINT "OrganizationBasics_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: PaymentTerms PaymentTerms_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."PaymentTerms"
+    ADD CONSTRAINT "PaymentTerms_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: PaymentTerms PaymentTerms_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."PaymentTerms"
+    ADD CONSTRAINT "PaymentTerms_organization_id_fkey" FOREIGN KEY (organization_id) REFERENCES public."OrganizationBasics" (id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
