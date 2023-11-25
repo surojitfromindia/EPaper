@@ -78,7 +78,6 @@ class InvoiceLineItem extends Model<
   declare Account?: NonAttribute<AccountsOfOrganization>;
 
   @Attribute(DataTypes.INTEGER)
-  @NotNull
   declare taxId: number;
   @BelongsTo(() => TaxRates, "taxId")
   declare Tax?: NonAttribute<TaxRates>;
