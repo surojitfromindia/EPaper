@@ -5,7 +5,6 @@ class TaxRateDTO {
       tax_name: tax_rate.name,
       description: tax_rate.description,
       tax_percentage: tax_rate.rate,
-      tax_percentage_formatted: tax_rate.rateFormatted,
       country_code: tax_rate.countryCode,
       is_editable: tax_rate.isEditable,
       is_deletable: tax_rate.isDeletable,

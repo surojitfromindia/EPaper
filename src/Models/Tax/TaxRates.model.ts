@@ -16,6 +16,8 @@ import {
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
+import { MathLib } from "../../Utils/MathLib/mathLib";
+import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
 
 @Table({
   underscored: true,
@@ -39,7 +41,14 @@ class TaxRates extends Model<
 
   @Attribute(DataTypes.DECIMAL)
   @NotNull
-  declare rate: number;
+  get rate(): number {
+    const value = this.getDataValue("rate");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
   @Attribute(DataTypes.STRING)
   @NotNull
   declare countryCode: string;
@@ -68,9 +77,5 @@ class TaxRates extends Model<
   declare organizationId: number;
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization: NonAttribute<OrganizationBasic>;
-
-  get rateFormatted(): NonAttribute<string> {
-    return this.getDataValue("rate").toString();
-  }
 }
 export { TaxRates };

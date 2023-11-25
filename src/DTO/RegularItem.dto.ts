@@ -49,8 +49,6 @@ class RegularItemDTO {
 
     if (item_details.Tax) {
       const taxDetails = TaxRateDTO.toTaxRate(item_details.Tax);
-      basicItemDetails.tax_percentage_formatted =
-        taxDetails.tax_percentage_formatted;
       basicItemDetails.tax_percentage = taxDetails.tax_percentage;
       basicItemDetails.tax_name = taxDetails.tax_name;
     }
