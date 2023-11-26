@@ -45,9 +45,7 @@ export class LineItemCalculation {
         this.#mathLib.getDecimalFromPercentage(discount_percentage),
     );
 
-    const amountAfterDiscount = this.#mathLib.getWithPrecision(
-      this.#taxAbleAmount - lineItemDiscountAmount,
-    );
+    const amountAfterDiscount = this.#taxAbleAmount - lineItemDiscountAmount;
 
     // after apply discount update the new tax able amount.
     this.#discountAmount = lineItemDiscountAmount;
@@ -60,14 +58,10 @@ export class LineItemCalculation {
    * @param tax_percentage
    */
   applyTaxPercentage({ tax_percentage }) {
-    const lineItemTaxAmount = this.#mathLib.getWithPrecision(
+    this.#taxAmount = this.#mathLib.getWithPrecision(
       this.#taxAbleAmount *
         this.#mathLib.getDecimalFromPercentage(tax_percentage),
     );
-    this.#taxAbleAmount = this.#mathLib.getWithPrecision(
-      this.#taxAbleAmount + lineItemTaxAmount,
-    );
-    this.#taxAmount = lineItemTaxAmount;
     return this;
   }
 
@@ -87,8 +81,9 @@ export class LineItemCalculation {
     return {
       discountAmount: this.#discountAmount,
       taxAmount: this.#taxAmount,
-      itemTotal: this.#taxAbleAmount,
-      itemTotalTaxIncluded,
+      itemTotal: this.#mathLib.getWithPrecision(this.#taxAbleAmount),
+      itemTotalTaxIncluded:
+        this.#mathLib.getWithPrecision(itemTotalTaxIncluded),
     };
   }
 }
