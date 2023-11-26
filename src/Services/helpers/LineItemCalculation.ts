@@ -40,15 +40,16 @@ export class LineItemCalculation {
     this.#discountPercentage = discount_percentage;
 
     // discount will only be applied on tax able amount
-    const lineItemDiscountAmount = this.#mathLib.getWithPrecision(
+    const lineItemDiscountAmount =
       this.#taxAbleAmount *
-        this.#mathLib.getDecimalFromPercentage(discount_percentage),
-    );
+      this.#mathLib.getDecimalFromPercentage(discount_percentage);
 
     const amountAfterDiscount = this.#taxAbleAmount - lineItemDiscountAmount;
 
     // after apply discount update the new tax able amount.
-    this.#discountAmount = lineItemDiscountAmount;
+    this.#discountAmount = this.#mathLib.getWithPrecision(
+      lineItemDiscountAmount,
+    );
     this.#taxAbleAmount = amountAfterDiscount;
     return this;
   }
