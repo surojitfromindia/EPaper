@@ -19,13 +19,20 @@ class InvoiceDTO {
     units,
     payment_terms,
     line_item_accounts_list,
+    invoice_details,
   }) {
-    return {
+    const basic_date = {
       taxes: taxes.map(TaxRateDTO.toTaxRate),
       units: units.map(ItemUnitDTO.toItemUnit),
       payment_terms: payment_terms.map(PaymentTermsDTO.toPaymentTerm),
       line_item_accounts_list,
     };
+    if (invoice_details) {
+      basic_date["invoice"] = InvoiceDTO.toInvoice({
+        invoice: invoice_details,
+      });
+    }
+    return basic_date;
   }
 
   static toInvoice({ invoice }: { invoice: InvoiceType }) {

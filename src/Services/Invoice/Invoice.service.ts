@@ -145,6 +145,7 @@ class InvoiceService {
   }
 
   async getEditPage({ client_info, invoice_id }: InvoiceGetEdiPageProps) {
+    let invoiceDetails = null;
     const taxes = await TaxRateService.getAllTaxRates({ client_info });
     const itemUnits = await ItemUnitService.getAllItemUnits({ client_info });
     const paymentTerms = await PaymentTermService.getAllPaymentTerms({
@@ -154,7 +155,14 @@ class InvoiceService {
       await AccountsOfOrganizationService.ofInvoiceLineItem({
         client_info,
       }).getAccountsForInvoiceLineItem();
+    if (invoice_id) {
+      invoiceDetails = await this.getAnInvoice({
+        invoice_id,
+        client_info,
+      });
+    }
     return {
+      invoice_details: invoiceDetails,
       taxes,
       units: itemUnits,
       payment_terms: paymentTerms,
