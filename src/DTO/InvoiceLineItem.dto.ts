@@ -5,7 +5,8 @@ import {
 
 class InvoiceLineItemDTO {
   static toInvoiceLineItem(line_item: InvoiceLineItemType) {
-    return {
+    const return_data = {};
+    Object.assign(return_data, {
       line_item_id: line_item.id,
       item_id: line_item.itemId,
       name: line_item.name,
@@ -22,7 +23,18 @@ class InvoiceLineItemDTO {
       tax_amount: line_item.taxAmount,
       item_total: line_item.itemTotal,
       item_total_tax_included: line_item.itemTotalTaxIncluded,
-    };
+    });
+    if ("Account" in line_item) {
+      Object.assign(return_data, {
+        account_name: line_item.Account.name,
+      });
+    }
+    if ("Tax" in line_item) {
+      Object.assign(return_data, {
+        tax_name: line_item.Tax.name,
+      });
+    }
+    return return_data;
   }
 
   static toInvoiceLineItemCreate(

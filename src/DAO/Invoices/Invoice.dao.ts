@@ -1,9 +1,11 @@
 import { Includeable, Transaction } from "@sequelize/core";
 import {
+  AccountsOfOrganization,
   Contacts,
   Invoice,
   InvoiceLineItem,
   InvoicePaymentTerm,
+  TaxRates,
 } from "../../Models";
 import {
   InvoiceCreatable,
@@ -138,7 +140,6 @@ class InvoiceDao {
   async #getInvoiceById({
     invoice_id,
     organization_id,
-    include_branch,
     include_line_items,
   }: GetByIdFullOptions) {
     const includeAssociations: AllowArray<Includeable> = [
@@ -157,6 +158,18 @@ class InvoiceDao {
         model: InvoiceLineItem,
         as: "LineItems",
         attributes: INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES,
+        include: [
+          {
+            model: AccountsOfOrganization,
+            as: "Account",
+            attributes: ["name", "code"],
+          },
+          {
+            model: TaxRates,
+            as: "Tax",
+            attributes: ["name", "rate"],
+          },
+        ],
       });
     }
 

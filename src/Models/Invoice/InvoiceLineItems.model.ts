@@ -181,7 +181,12 @@ type InvoiceLineItemCreatableBasic = Omit<
   | "status"
   | "invoiceId"
 >;
-type InvoiceLineItemType = Attributes<InvoiceLineItem>;
+type InvoiceLineItemType = Attributes<InvoiceLineItem> & {
+  Account?: NonAttribute<AccountsOfOrganization>;
+  Item?: NonAttribute<RegularItems>;
+  Tax?: NonAttribute<TaxRates>;
+  Unit?: NonAttribute<ItemUnit>;
+};
 type InvoiceLineItemIdType = number;
 export { InvoiceLineItem };
 export type {

@@ -1,3 +1,5 @@
+import { SortingUtil } from "./SortingUtil";
+
 const SuccessErrorWrapper =
   (expressMiddleware, success_message, success_status_code) =>
   (req, res, next) => {
@@ -6,7 +8,7 @@ const SuccessErrorWrapper =
         return res.status(success_status_code).json({
           message: success_message,
           success: true,
-          data: data,
+          data: SortingUtil.sortObjectKeysRecursively(data),
         });
       })
       .catch((error) => {

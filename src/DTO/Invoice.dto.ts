@@ -36,7 +36,9 @@ class InvoiceDTO {
   }
 
   static toInvoice({ invoice }: { invoice: InvoiceType }) {
-    const basic = {
+    const return_data = {};
+
+    Object.assign(return_data, {
       invoice_id: invoice.id,
       issue_date: invoice.issueDate,
       issue_date_formatted: DateUtil.Formatter(invoice.issueDate).format(
@@ -53,28 +55,32 @@ class InvoiceDTO {
       terms: invoice.terms,
       notes: invoice.notes,
       is_inclusive_tax: invoice.isInclusiveTax,
-
       discount_total: invoice.discountTotal,
       tax_total: invoice.taxTotal,
       sub_total: invoice.subTotal,
       total: invoice.total,
-    };
-    if (invoice.InvoicePaymentTerm) {
-      const invoicePaymentTerm = invoice.InvoicePaymentTerm;
-      basic["payment_term_name"] = invoicePaymentTerm.name;
-      basic["payment_term"] = invoicePaymentTerm.paymentTerm;
-      basic["payment_term_interval"] = invoicePaymentTerm.interval;
-    }
-    if (invoice.LineItems) {
-      basic["line_items"] = (invoice.LineItems ?? []).map(
-        InvoiceLineItemDTO.toInvoiceLineItem,
-      );
-    }
+    });
     if (invoice.Contact) {
       const contact = ContactDTO.toTransactionContact(invoice.Contact);
-      basic["contact_name"] = contact.contact_nane;
+      Object.assign(return_data, {
+        contact_name: contact.contact_name,
+      });
     }
-    return basic;
+    if (invoice.InvoicePaymentTerm) {
+      const invoicePaymentTerm = invoice.InvoicePaymentTerm;
+      Object.assign(return_data, {
+        payment_term_id: invoicePaymentTerm.originPaymentTermId,
+        payment_term_name: invoicePaymentTerm.name,
+        payment_term: invoicePaymentTerm.paymentTerm,
+        payment_term_interval: invoicePaymentTerm.interval,
+      });
+    }
+    if (invoice.LineItems) {
+      Object.assign(return_data, {
+        line_items: invoice.LineItems.map(InvoiceLineItemDTO.toInvoiceLineItem),
+      });
+    }
+    return return_data;
   }
 
   static toInvoiceCreate(invoice: any): InvoiceCreatableBasic & {
@@ -108,15 +114,15 @@ class InvoiceDTO {
       invoiceNumber: invoice.invoice_number,
       issueDate: invoice.issue_date,
       dueDate: invoice.due_date,
-      referenceNumber: invoice.referenceNumber,
-      orderNumber: invoice.orderNumber,
-      terms: invoice.terms,
-      notes: invoice.notes,
+      referenceNumber: invoice.referenceNumber ?? "",
+      orderNumber: invoice.orderNumber ?? "",
+      terms: invoice.terms ?? "",
+      notes: invoice.notes ?? "",
       isInclusiveTax: invoice.is_inclusive_tax,
       lineItems: invoice.line_items.map(
         InvoiceLineItemDTO.toInvoiceLineItemUpdate,
       ),
-      paymentTermId: invoice.payment_term_id,
+      paymentTermId: invoice.payment_term_id ?? "",
     };
   }
 }

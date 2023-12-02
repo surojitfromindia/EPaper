@@ -4,13 +4,13 @@ class ContactDTO {
   static toTransactionContact(contact_details: any) {
     return {
       contact_id: contact_details.id,
-      contact_nane: contact_details.contactName,
+      contact_name: contact_details.contactName,
     };
   }
 
   static toAutoCompleteContact(auto_complete_details: ContactAutoCompleteType) {
     return {
-      contact_nane: auto_complete_details.contactName,
+      contact_name: auto_complete_details.contactName,
       id: auto_complete_details.id,
       text: auto_complete_details.text,
     };

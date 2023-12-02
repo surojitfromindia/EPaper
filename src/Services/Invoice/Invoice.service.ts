@@ -327,6 +327,9 @@ class InvoiceUtil {
     payment_term_id,
     organization_id,
   }: CalculateDueDateProps) {
+    if (payment_term_id === -1) {
+      return { due_date: issue_date, payment_term_details: null };
+    }
     const paymentTerm = await PaymentTermDao.get({
       payment_term_id,
       organization_id,
@@ -357,6 +360,10 @@ class InvoiceUtil {
     { payment_term_details },
     { transaction },
   ) {
+    if (payment_term_details === null)
+      return {
+        id: -1,
+      };
     return await InvoicePaymentTermDao.create(
       {
         term_details: {
