@@ -2,6 +2,7 @@ import {
   InvoiceLineItemCreatableBasic,
   InvoiceLineItemType,
 } from "../Models/Invoice/InvoiceLineItems.model";
+import { ValidityUtil } from "../Utils/ValidityUtil";
 
 class InvoiceLineItemDTO {
   static toInvoiceLineItem(line_item: InvoiceLineItemType) {
@@ -24,12 +25,12 @@ class InvoiceLineItemDTO {
       item_total: line_item.itemTotal,
       item_total_tax_included: line_item.itemTotalTaxIncluded,
     });
-    if ("Account" in line_item) {
+    if (ValidityUtil.isNotEmpty(line_item.Account)) {
       Object.assign(return_data, {
         account_name: line_item.Account.name,
       });
     }
-    if ("Tax" in line_item) {
+    if (ValidityUtil.isNotEmpty(line_item.Tax)) {
       Object.assign(return_data, {
         tax_name: line_item.Tax.name,
       });
