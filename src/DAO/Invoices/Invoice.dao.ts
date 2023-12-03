@@ -90,6 +90,10 @@ class InvoiceDao {
           as: "InvoicePaymentTerm",
         },
       ],
+      order: [
+        ["issue_date", "DESC"],
+        ["id", "DESC"],
+      ],
     });
   }
 
@@ -111,19 +115,6 @@ class InvoiceDao {
     });
     return this.getByIdWithLineItems({ invoice_id, organization_id });
   }
-
-  async getById({
-    invoice_id,
-    include_branch,
-    organization_id,
-  }: GetByIdOptions) {
-    return this.#getInvoiceById({
-      invoice_id,
-      organization_id,
-      include_branch,
-    });
-  }
-
   async getByIdWithLineItems({
     invoice_id,
     include_branch,
@@ -180,6 +171,15 @@ class InvoiceDao {
         status: "active",
       },
       include: includeAssociations,
+      order: [
+        [
+          {
+            model: InvoiceLineItem,
+            as: "LineItems",
+          },
+          "id",
+        ],
+      ],
     });
   }
 }
