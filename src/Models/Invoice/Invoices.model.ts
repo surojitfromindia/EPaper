@@ -10,6 +10,7 @@ import {
 } from "@sequelize/core";
 import {
   Contacts,
+  Currency,
   InvoiceLineItem,
   InvoicePaymentTerm,
   OrganizationBasic,
@@ -62,6 +63,12 @@ class Invoice extends Model<
   declare contactId: number;
   @BelongsTo(() => Contacts, "contactId")
   declare Contact?: NonAttribute<Contacts>;
+
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare currencyId: number;
+  @BelongsTo(() => Currency, "currencyId")
+  declare Currency?: NonAttribute<Currency>;
 
   @Attribute(DataTypes.STRING)
   @NotNull

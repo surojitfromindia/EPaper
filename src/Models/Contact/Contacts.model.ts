@@ -7,7 +7,7 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { OrganizationBasic, User } from "../index";
+import { Currency, OrganizationBasic, User } from "../index";
 import {
   AllowNull,
   Attribute,
@@ -55,8 +55,13 @@ class Contacts extends Model<
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
-  declare organizationId: number;
+  declare currencyId: number;
+  @BelongsTo(() => Currency, "currencyId")
+  declare Currency?: NonAttribute<Currency>;
 
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare organizationId: number;
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization?: NonAttribute<OrganizationBasic>;
 }
