@@ -18,6 +18,7 @@ import InvoiceLineItemDao from "./Invoices/InvoiceLineItem.dao";
 import PaymentTermDao from "./Settings/PaymentTerm.dao";
 import InvoicePaymentTermDao from "./Invoices/InvoicePaymentTerm.dao";
 import ContactDao from "./Contacts/Contact.dao";
+import CurrencyDAO from "./Settings/Currecy.dao";
 
 export {
   UserDao,
@@ -40,4 +41,5 @@ export {
   PaymentTermDao,
   InvoicePaymentTermDao,
   ContactDao,
+  CurrencyDAO,
 };
