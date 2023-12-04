@@ -1,6 +1,7 @@
 import ItemUnitService from "./ItemUnit.service";
 import TaxRateService from "./TaxRate.service";
 import PaymentTermService from "./PaymentTerm.service";
+import CurrencyService from "./Currency.service";
 
 class SettingService {
   async initAllDefaultSettings(
@@ -17,6 +18,14 @@ class SettingService {
     );
     await PaymentTermService.initDefaultPaymentTerms(
       { organization_id, client_info },
+      { transaction },
+    );
+
+    await CurrencyService.initDefaultCurrencies(
+      {
+        organization_id,
+        client_info,
+      },
       { transaction },
     );
     return true;
