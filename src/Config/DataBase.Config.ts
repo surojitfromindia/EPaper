@@ -61,13 +61,14 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     CurrencyExchangeRate,
   ],
 });
-//
-// async function syncModel() {
-//   const alter = true;
-//   const force = false;
-//   await Currency.sync({ alter, force });
-//   await CurrencyExchangeRate.sync({ alter, force });
-// }
+
+async function syncModel() {
+  const alter = true;
+  const force = false;
+  // await Currency.sync({ alter, force });
+  // await CurrencyExchangeRate.sync({ alter, force });
+  // await Invoice.sync({ alter, force });
+}
 
 // syncModel().catch((err) => console.log(err));
 

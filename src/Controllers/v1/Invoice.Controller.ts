@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { InvoiceService } from "../../Services";
+import { InvoiceService, InvoiceUpdateService } from "../../Services";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import { InvoiceDTO } from "../../DTO";
 
@@ -50,7 +50,7 @@ const updateInvoice = async (req: Request) => {
   const clientInfo = req.clientInfo;
   const invoiceId = Number(req.params.invoice_id);
   const body = req.body;
-  const updatedInvoice = await InvoiceService.update({
+  const updatedInvoice = await InvoiceUpdateService.update({
     invoice_details: InvoiceDTO.toInvoiceUpdate(body),
     client_info: clientInfo,
     invoice_id: invoiceId,

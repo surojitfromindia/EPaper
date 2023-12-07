@@ -49,6 +49,7 @@ class InvoiceDTO {
         DEFAULT_DATE_FORMAT,
       ),
       contact_id: invoice.contactId,
+      transaction_status: invoice.transactionStatus,
       invoice_number: invoice.invoiceNumber,
       reference_number: invoice.referenceNumber,
       order_number: invoice.orderNumber,
@@ -83,7 +84,9 @@ class InvoiceDTO {
     return return_data;
   }
 
-  static toInvoiceCreate(invoice: any): InvoiceCreatableBasic & {
+  static toInvoiceCreate(invoice: {
+    [key: string]: any;
+  }): InvoiceCreatableBasic & {
     lineItems: InvoiceLineItemCreatableBasic[];
     paymentTermId?: number;
   } {
@@ -97,15 +100,18 @@ class InvoiceDTO {
       terms: invoice.terms,
       notes: invoice.notes,
       isInclusiveTax: invoice.is_inclusive_tax,
+      paymentTermId: invoice.payment_term_id,
+      transactionStatus: invoice.transaction_status,
       // these fields will not be stored in invoice table
       lineItems: invoice.line_items.map(
         InvoiceLineItemDTO.toInvoiceLineItemCreate,
       ),
-      paymentTermId: invoice.payment_term_id,
     };
   }
 
-  static toInvoiceUpdate(invoice: any): InvoiceCreatableBasic & {
+  static toInvoiceUpdate(invoice: {
+    [key: string]: any;
+  }): InvoiceCreatableBasic & {
     lineItems: InvoiceLineItemCreatableBasic[];
     paymentTermId?: number;
   } {
@@ -119,6 +125,7 @@ class InvoiceDTO {
       terms: invoice.terms ?? "",
       notes: invoice.notes ?? "",
       isInclusiveTax: invoice.is_inclusive_tax,
+      transactionStatus: invoice.transaction_status,
       lineItems: invoice.line_items.map(
         InvoiceLineItemDTO.toInvoiceLineItemUpdate,
       ),

@@ -85,18 +85,26 @@ class Invoice extends Model<
 
   @Attribute(DataTypes.STRING)
   declare notes: string;
+
   @Attribute(DataTypes.BOOLEAN)
   @NotNull
   declare isInclusiveTax: boolean;
+
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
   @Default("active")
   declare status: "active" | "deleted";
+
+  @Attribute(DataTypes.ENUM("sent", "draft"))
+  @NotNull
+  declare transactionStatus: "sent" | "draft";
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare organizationId: number;
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization?: NonAttribute<OrganizationBasic>;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare createdBy: number;
