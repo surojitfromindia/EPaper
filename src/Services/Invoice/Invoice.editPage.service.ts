@@ -3,11 +3,15 @@ import {
   PaymentTermService,
   TaxRateService,
 } from "../SettingServices/Setting.service";
-import { AccountsOfOrganizationService } from "../index";
+import {
+  AccountsOfOrganizationService,
+  ContactService,
+  InvoiceService,
+} from "../index";
 import { AccountsTree } from "../../Utils/AccoutsTree";
 import { InvoiceIdType } from "../../Models/Invoice/Invoices.model";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
-import invoiceService from "./Invoice.service";
+import { ContactIdType } from "../../Models/Contact/Contacts.model";
 
 type InvoiceGetEdiPageProps = {
   invoice_id: InvoiceIdType;
@@ -37,7 +41,7 @@ class InvoiceEditPageService {
         client_info,
       }).getAccountsForInvoiceLineItem();
     if (invoice_id) {
-      invoiceDetails = await invoiceService.getAnInvoice({
+      invoiceDetails = await InvoiceService.getAnInvoice({
         invoice_id,
         client_info,
       });
@@ -51,6 +55,15 @@ class InvoiceEditPageService {
         AccountsTree.createTreeOfOrganizationAccountsAsDTO({
           accounts: line_item_accounts_list,
         }).flatArrayFromTreeAsDTO(),
+    };
+  }
+
+  async getEditPageFromContact({ contact_id }: { contact_id: ContactIdType }) {
+    const client_info = this.clientInfo;
+    const contactService = new ContactService({ client_info });
+    const contact = await contactService.getContactById({ contact_id });
+    return {
+      contact,
     };
   }
 }

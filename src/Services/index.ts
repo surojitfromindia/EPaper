@@ -19,6 +19,8 @@ import InvoiceService from "./Invoice/Invoice.service";
 import { AutoCompleteService } from "./AutoComplete.service";
 import InvoiceUpdateService from "./Invoice/InvoiceUpdate.service";
 import { InvoiceEditPageService } from "./Invoice/Invoice.editPage.service";
+import { ContactAutoCompleteService } from "./Contact/Contact.AutoComplete.service";
+import { ContactService } from "./Contact/Contact.service";
 
 export {
   UserService,
@@ -39,4 +41,6 @@ export {
   AutoCompleteService,
   InvoiceUpdateService,
   InvoiceEditPageService,
+  ContactAutoCompleteService,
+  ContactService,
 };

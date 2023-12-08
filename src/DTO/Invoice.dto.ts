@@ -35,6 +35,12 @@ class InvoiceDTO {
     return basic_date;
   }
 
+  static toInvoiceEditPageFromContact({ contact }) {
+    return {
+      contact: ContactDTO.toContact(contact),
+    };
+  }
+
   static toInvoice({ invoice }: { invoice: InvoiceType }) {
     const return_data = {};
 

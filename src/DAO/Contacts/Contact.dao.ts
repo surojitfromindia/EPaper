@@ -64,7 +64,7 @@ class ContactDao {
         {
           model: Currency,
           as: "Currency",
-          attributes: ["id", "currencyName", "currencySymbol"],
+          attributes: ["id", "currencyName", "currencySymbol", "currencyCode"],
         },
       ],
       attributes: ["id", "contactName", "currencyId"],

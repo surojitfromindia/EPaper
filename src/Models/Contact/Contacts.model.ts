@@ -67,6 +67,9 @@ class Contacts extends Model<
 }
 
 export { Contacts };
-type ContactType = Attributes<Contacts>;
+type ContactType = Attributes<Contacts> & {
+  Currency?: NonAttribute<Currency>;
+};
+type ContactIdType = number;
 
-export type { ContactType };
+export type { ContactType, ContactIdType };

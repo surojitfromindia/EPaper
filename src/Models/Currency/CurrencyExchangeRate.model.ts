@@ -37,7 +37,7 @@ class CurrencyExchangeRate extends Model<
   @NotNull
   declare effectiveDate: string;
 
-  @Attribute(DataTypes.REAL)
+  @Attribute(DataTypes.DECIMAL)
   @NotNull
   declare rate: number;
 

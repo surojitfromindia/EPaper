@@ -80,10 +80,30 @@ const getAllInvoice = async (req: Request) => {
 };
 const getAllInvoiceController = SuccessErrorWrapper(getAllInvoice, "done", 200);
 
+const getInvoiceEditPageFromContact = async (req: Request) => {
+  const req_query = req?.query;
+  const clientInfo = req.clientInfo;
+  const contactId = req_query.contact_id && Number(req_query.contact_id);
+
+  const invoiceEditPageService = new InvoiceEditPageService({
+    client_info: clientInfo,
+  });
+  const editPage = await invoiceEditPageService.getEditPageFromContact({
+    contact_id: contactId,
+  });
+  return InvoiceDTO.toInvoiceEditPageFromContact(editPage);
+};
+const getInvoiceEditPageFromContactController = SuccessErrorWrapper(
+  getInvoiceEditPageFromContact,
+  "done",
+  200,
+);
+
 export {
   createInvoiceController,
   getAnInvoiceController,
   getInvoiceEditPageController,
   updateInvoiceController,
   getAllInvoiceController,
+  getInvoiceEditPageFromContactController,
 };

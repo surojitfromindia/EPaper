@@ -1,10 +1,7 @@
-import {
-  ContactAutoCompleteType,
-  ContactService,
-} from "./Contact/Contact.service";
+import { ContactAutoCompleteType } from "./Contact/Contact.service";
 import { AutoCompleteService } from "./AutoComplete.service";
 import { ItemAutoCompleteType } from "./RegularItem.service";
-import { RegularItemService } from "./index";
+import { ContactAutoCompleteService, RegularItemService } from "./index";
 
 class AutoCompleteFactory {
   private readonly organization_id: number;
@@ -21,11 +18,7 @@ class AutoCompleteFactory {
     return new AutoCompleteService<ContactAutoCompleteType, any>({
       organization_id: this.organization_id,
       limit_and_page: { limit: this.limit, page: this.current_page },
-      service: new ContactService({
-        client_info: {
-          organizationId: this.organization_id,
-        },
-      }),
+      service: new ContactAutoCompleteService(),
     });
   }
 
