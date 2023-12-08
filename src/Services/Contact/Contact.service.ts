@@ -3,11 +3,17 @@ import {
   IAutoCompleteAble,
 } from "../AutoComplete.service";
 import { ContactDao } from "../../DAO";
+import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 
 type ContactAutoCompleteType = AutoCompleteBasicType & {
   contactName: string;
 };
 class ContactService implements IAutoCompleteAble<ContactAutoCompleteType> {
+  private clientInfo: ClientInfo;
+
+  constructor({ client_info }: { client_info: any }) {
+    this.clientInfo = client_info;
+  }
   async fetchEntries({
     organization_id,
     search_text,
@@ -28,7 +34,8 @@ class ContactService implements IAutoCompleteAble<ContactAutoCompleteType> {
       options.contact_type = "vendor";
     }
 
-    const contacts = await ContactDao.getContactsAutoComplete(options);
+    const contactDao = new ContactDao({ organization_id });
+    const contacts = await contactDao.getContactsAutoComplete(options);
 
     return contacts.map((contact) => ({
       id: contact.id as number,
@@ -36,7 +43,14 @@ class ContactService implements IAutoCompleteAble<ContactAutoCompleteType> {
       contactName: contact.contactName,
     }));
   }
+
+  async getContactById({ contact_id }) {
+    const contactDao = new ContactDao({
+      organization_id: this.clientInfo.organizationId,
+    });
+    return await contactDao.getContactDetails({ contact_id });
+  }
 }
 
-export default new ContactService();
+export { ContactService };
 export type { ContactAutoCompleteType };

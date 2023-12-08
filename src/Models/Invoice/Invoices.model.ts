@@ -95,9 +95,9 @@ class Invoice extends Model<
   @Default("active")
   declare status: "active" | "deleted";
 
-  @Attribute(DataTypes.ENUM("sent", "draft"))
+  @Attribute(DataTypes.ENUM("sent", "draft", "void"))
   @NotNull
-  declare transactionStatus: "sent" | "draft";
+  declare transactionStatus: "sent" | "draft" | "void";
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

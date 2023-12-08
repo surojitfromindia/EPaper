@@ -1,5 +1,9 @@
 import { Request } from "express";
-import { InvoiceService, InvoiceUpdateService } from "../../Services";
+import {
+  InvoiceEditPageService,
+  InvoiceService,
+  InvoiceUpdateService,
+} from "../../Services";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import { InvoiceDTO } from "../../DTO";
 
@@ -34,8 +38,10 @@ const getInvoiceEditPage = async (req: Request) => {
   const clientInfo = req.clientInfo;
   const invoiceId = req_query.invoice_id && Number(req_query.invoice_id);
 
-  const editPage = await InvoiceService.getEditPage({
+  const invoiceEditPageService = new InvoiceEditPageService({
     client_info: clientInfo,
+  });
+  const editPage = await invoiceEditPageService.getEditPage({
     invoice_id: invoiceId,
   });
   return InvoiceDTO.toInvoiceEditPage(editPage);

@@ -1,4 +1,4 @@
-import { Contacts } from "../../Models";
+import { Contacts, Currency } from "../../Models";
 import { Op } from "@sequelize/core";
 
 type GetContactsAutoCompleteParamsType = {
@@ -8,9 +8,25 @@ type GetContactsAutoCompleteParamsType = {
   contactType: "customer" | "vendor";
   contactName?: string;
 };
+
+type ContactForInvoiceReturnType = {
+  id: number;
+  contactName: string;
+  currencyId: number;
+  Currency: {
+    id: number;
+    currencyName: string;
+    currencySymbol: string;
+  };
+};
 class ContactDao {
-  static getContactsAutoComplete({
-    organization_id,
+  private organization_id: number;
+
+  constructor({ organization_id }: { organization_id: number }) {
+    this.organization_id = organization_id;
+  }
+
+  getContactsAutoComplete({
     skip,
     next,
     contactType,
@@ -23,7 +39,7 @@ class ContactDao {
 
     return Contacts.findAll({
       where: {
-        organizationId: organization_id,
+        organizationId: this.organization_id,
         status: "active",
         // contactName starts with and is case-insensitive
         contactName: {
@@ -35,6 +51,23 @@ class ContactDao {
       order: [["contactName", "ASC"]],
       limit: next,
       offset: skip,
+    });
+  }
+
+  async getContactDetails({ contact_id }) {
+    return await Contacts.findOne({
+      where: {
+        id: contact_id,
+        organizationId: this.organization_id,
+      },
+      include: [
+        {
+          model: Currency,
+          as: "Currency",
+          attributes: ["id", "currencyName", "currencySymbol"],
+        },
+      ],
+      attributes: ["id", "contactName", "currencyId"],
     });
   }
 }

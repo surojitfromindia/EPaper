@@ -18,6 +18,7 @@ import PreferenceService, {
 import InvoiceService from "./Invoice/Invoice.service";
 import { AutoCompleteService } from "./AutoComplete.service";
 import InvoiceUpdateService from "./Invoice/InvoiceUpdate.service";
+import { InvoiceEditPageService } from "./Invoice/Invoice.editPage.service";
 
 export {
   UserService,
@@ -37,4 +38,5 @@ export {
   PaymentTermService,
   AutoCompleteService,
   InvoiceUpdateService,
+  InvoiceEditPageService,
 };

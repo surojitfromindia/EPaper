@@ -5,13 +5,6 @@ import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { DataNotFoundError } from "../../Errors/APIErrors";
 import { InvoiceCalculation } from "./InvoiceCalculation";
-import {
-  ItemUnitService,
-  PaymentTermService,
-  TaxRateService,
-} from "../SettingServices/Setting.service";
-import { AccountsOfOrganizationService } from "../index";
-import { AccountsTree } from "../../Utils/AccoutsTree";
 import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
 import { DateUtil } from "../../Utils/DateUtil";
 import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
@@ -21,18 +14,7 @@ type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
   client_info: ClientInfo;
 };
-type InvoiceUpdateProps = {
-  invoice_details: ToInvoiceCreateType;
-  client_info: ClientInfo;
-  invoice_id: InvoiceIdType;
-};
-
 type InvoiceGetProps = {
-  invoice_id: InvoiceIdType;
-  client_info: ClientInfo;
-};
-
-type InvoiceGetEdiPageProps = {
   invoice_id: InvoiceIdType;
   client_info: ClientInfo;
 };
@@ -126,35 +108,6 @@ class InvoiceService {
       return invoice;
     }
     throw new DataNotFoundError();
-  }
-
-  async getEditPage({ client_info, invoice_id }: InvoiceGetEdiPageProps) {
-    let invoiceDetails = null;
-    const taxes = await TaxRateService.getAllTaxRates({ client_info });
-    const itemUnits = await ItemUnitService.getAllItemUnits({ client_info });
-    const paymentTerms = await PaymentTermService.getAllPaymentTerms({
-      client_info,
-    });
-    const { line_item_accounts_list } =
-      await AccountsOfOrganizationService.ofInvoiceLineItem({
-        client_info,
-      }).getAccountsForInvoiceLineItem();
-    if (invoice_id) {
-      invoiceDetails = await this.getAnInvoice({
-        invoice_id,
-        client_info,
-      });
-    }
-    return {
-      invoice_details: invoiceDetails,
-      taxes,
-      units: itemUnits,
-      payment_terms: paymentTerms,
-      line_item_accounts_list:
-        AccountsTree.createTreeOfOrganizationAccountsAsDTO({
-          accounts: line_item_accounts_list,
-        }).flatArrayFromTreeAsDTO(),
-    };
   }
 
   getAllInvoice({ client_info }: { client_info: ClientInfo }) {

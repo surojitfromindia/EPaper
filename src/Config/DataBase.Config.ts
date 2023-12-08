@@ -70,6 +70,6 @@ async function syncModel() {
   // await Invoice.sync({ alter, force });
 }
 
-// syncModel().catch((err) => console.log(err));
+syncModel().catch((err) => console.log(err));
 
 export default sequelize;
