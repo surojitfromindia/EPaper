@@ -67,7 +67,8 @@ async function syncModel() {
   const force = false;
   // await Currency.sync({ alter, force });
   // await CurrencyExchangeRate.sync({ alter, force });
-  // await Invoice.sync({ alter, force });
+  await Invoice.sync({ alter, force });
+  await InvoiceLineItem.sync({ alter, force });
 }
 
 syncModel().catch((err) => console.log(err));

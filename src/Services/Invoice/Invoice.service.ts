@@ -88,10 +88,14 @@ class InvoiceService {
         dueDate,
         invoicePaymentTermId,
         currencyId,
-        subTotal: invoiceCalculateReturn.subTotal,
-        total: invoiceCalculateReturn.total,
         discountTotal: invoiceCalculateReturn.discountTotal,
+        subTotal: invoiceCalculateReturn.subTotal,
         taxTotal: invoiceCalculateReturn.taxTotal,
+        total: invoiceCalculateReturn.total,
+        bcyDiscountTotal: invoiceCalculateReturn.bcyDiscountTotal,
+        bcySubTotal: invoiceCalculateReturn.bcySubTotal,
+        bcyTaxTotal: invoiceCalculateReturn.bcyTaxTotal,
+        bcyTotal: invoiceCalculateReturn.bcyTotal,
       });
 
       // create the invoice

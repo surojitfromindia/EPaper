@@ -9,13 +9,6 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/playdb</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="PostgreSQL78" uuid="5f693455-aa31-4932-8526-e2ab38b8cfed">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://dpg-cjq1f5e1208c73f9mt6g-a.oregon-postgres.render.com:5432/auth_db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="EDBTWO" uuid="87349f6c-82f9-4b15-aa54-cf92a21efd11">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>

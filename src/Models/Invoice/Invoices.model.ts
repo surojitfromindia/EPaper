@@ -151,6 +151,47 @@ class Invoice extends Model<
     return value;
   }
 
+  // bcy rate
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyDiscountTotal(): number {
+    const value = this.getDataValue("bcyDiscountTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyTaxTotal(): number {
+    const value = this.getDataValue("bcyTaxTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcySubTotal(): number {
+    const value = this.getDataValue("bcySubTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyTotal(): number {
+    const value = this.getDataValue("bcyTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
   @HasMany(() => InvoiceLineItem, "invoiceId")
   declare LineItems: NonAttribute<InvoiceLineItem[]>;
 

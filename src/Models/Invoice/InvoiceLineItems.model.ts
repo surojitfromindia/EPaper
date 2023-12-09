@@ -166,6 +166,57 @@ class InvoiceLineItem extends Model<
     }
     return value;
   }
+
+  // base rates
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyRate(): number {
+    const value = this.getDataValue("bcyRate");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyDiscountAmount(): number {
+    const value = this.getDataValue("bcyDiscountAmount");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyTaxAmount(): number {
+    const value = this.getDataValue("bcyTaxAmount");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyItemTotal(): number {
+    const value = this.getDataValue("bcyItemTotal");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyItemTotalTaxIncluded(): number {
+    const value = this.getDataValue("bcyItemTotalTaxIncluded");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
 }
 
 type InvoiceLineItemCreatable = CreationAttributes<InvoiceLineItem>;

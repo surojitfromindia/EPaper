@@ -142,6 +142,30 @@ CREATE TYPE public."enum_Contacts_status" AS ENUM (
 ALTER TYPE public."enum_Contacts_status" OWNER TO surojit;
 
 --
+-- Name: enum_CurrencyExchangeRate_status; Type: TYPE; Schema: public; Owner: surojit
+--
+
+CREATE TYPE public."enum_CurrencyExchangeRate_status" AS ENUM (
+    'active',
+    'deleted'
+    );
+
+
+ALTER TYPE public."enum_CurrencyExchangeRate_status" OWNER TO surojit;
+
+--
+-- Name: enum_Currency_status; Type: TYPE; Schema: public; Owner: surojit
+--
+
+CREATE TYPE public."enum_Currency_status" AS ENUM (
+    'active',
+    'deleted'
+    );
+
+
+ALTER TYPE public."enum_Currency_status" OWNER TO surojit;
+
+--
 -- Name: enum_GeneralPreferences_discountType; Type: TYPE; Schema: public; Owner: surojit
 --
 
@@ -216,6 +240,19 @@ CREATE TYPE public."enum_Invoices_status" AS ENUM (
 
 
 ALTER TYPE public."enum_Invoices_status" OWNER TO surojit;
+
+--
+-- Name: enum_Invoices_transaction_status; Type: TYPE; Schema: public; Owner: surojit
+--
+
+CREATE TYPE public."enum_Invoices_transaction_status" AS ENUM (
+    'sent',
+    'draft',
+    'void'
+    );
+
+
+ALTER TYPE public."enum_Invoices_transaction_status" OWNER TO surojit;
 
 --
 -- Name: enum_ItemUnits_status; Type: TYPE; Schema: public; Owner: surojit
@@ -626,7 +663,8 @@ CREATE TABLE public."Contacts"
     updated_at      timestamp(6) with time zone                                                   NOT NULL,
     organization_id integer                                                                       NOT NULL,
     status          public."enum_Contacts_status" DEFAULT 'active'::public."enum_Contacts_status" NOT NULL,
-    created_by      integer                                                                       NOT NULL
+    created_by      integer                                                                       NOT NULL,
+    currency_id     integer                                                                       NOT NULL
 );
 
 
@@ -654,6 +692,90 @@ ALTER TABLE public."Contacts_id_seq"
 --
 
 ALTER SEQUENCE public."Contacts_id_seq" OWNED BY public."Contacts".id;
+
+
+--
+-- Name: Currency; Type: TABLE; Schema: public; Owner: surojit
+--
+
+CREATE TABLE public."Currency"
+(
+    id              integer                                                                       NOT NULL,
+    currency_name   public.citext,
+    currency_symbol character varying(255)                                                        NOT NULL,
+    currency_code   character varying(255)                                                        NOT NULL,
+    status          public."enum_Currency_status" DEFAULT 'active'::public."enum_Currency_status" NOT NULL,
+    created_by      integer                                                                       NOT NULL,
+    organization_id integer                                                                       NOT NULL
+);
+
+
+ALTER TABLE public."Currency"
+    OWNER TO surojit;
+
+--
+-- Name: CurrencyExchangeRate; Type: TABLE; Schema: public; Owner: surojit
+--
+
+CREATE TABLE public."CurrencyExchangeRate"
+(
+    id              integer                                                                                               NOT NULL,
+    effective_date  date                                                                                                  NOT NULL,
+    rate            real                                                                                                  NOT NULL,
+    status          public."enum_CurrencyExchangeRate_status" DEFAULT 'active'::public."enum_CurrencyExchangeRate_status" NOT NULL,
+    currency_id     integer                                                                                               NOT NULL,
+    created_by      integer                                                                                               NOT NULL,
+    organization_id integer                                                                                               NOT NULL
+);
+
+
+ALTER TABLE public."CurrencyExchangeRate"
+    OWNER TO surojit;
+
+--
+-- Name: CurrencyExchangeRate_id_seq; Type: SEQUENCE; Schema: public; Owner: surojit
+--
+
+CREATE SEQUENCE public."CurrencyExchangeRate_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."CurrencyExchangeRate_id_seq"
+    OWNER TO surojit;
+
+--
+-- Name: CurrencyExchangeRate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: surojit
+--
+
+ALTER SEQUENCE public."CurrencyExchangeRate_id_seq" OWNED BY public."CurrencyExchangeRate".id;
+
+
+--
+-- Name: Currency_id_seq; Type: SEQUENCE; Schema: public; Owner: surojit
+--
+
+CREATE SEQUENCE public."Currency_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Currency_id_seq"
+    OWNER TO surojit;
+
+--
+-- Name: Currency_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: surojit
+--
+
+ALTER SEQUENCE public."Currency_id_seq" OWNED BY public."Currency".id;
 
 
 --
@@ -761,13 +883,13 @@ ALTER SEQUENCE public."InvoiceLineItems_id_seq" OWNED BY public."InvoiceLineItem
 
 CREATE TABLE public."InvoicePaymentTerms"
 (
-    id           integer                     NOT NULL,
-    name         character varying(255)      NOT NULL,
+    id         integer                     NOT NULL,
+    name       character varying(255)      NOT NULL,
     origin_payment_term_id integer,
     payment_term integer,
-    "interval"   public."enum_InvoicePaymentTerms_interval",
-    created_at   timestamp(6) with time zone NOT NULL,
-    updated_at   timestamp(6) with time zone NOT NULL
+    "interval" public."enum_InvoicePaymentTerms_interval",
+    created_at timestamp(6) with time zone NOT NULL,
+    updated_at timestamp(6) with time zone NOT NULL
 );
 
 
@@ -803,26 +925,28 @@ ALTER SEQUENCE public."InvoicePaymentTerms_id_seq" OWNED BY public."InvoicePayme
 
 CREATE TABLE public."Invoices"
 (
-    id               integer                                                                       NOT NULL,
-    contact_id       integer                                                                       NOT NULL,
-    invoice_number   character varying(255)                                                        NOT NULL,
+    id                 integer                                                                       NOT NULL,
+    contact_id         integer                                                                       NOT NULL,
+    invoice_number     character varying(255)                                                        NOT NULL,
     reference_number character varying(255),
-    order_number     character varying(255),
-    terms            character varying(255),
-    notes            character varying(255),
-    is_inclusive_tax boolean                                                                       NOT NULL,
-    status           public."enum_Invoices_status" DEFAULT 'active'::public."enum_Invoices_status" NOT NULL,
-    organization_id  integer                                                                       NOT NULL,
-    created_by       integer                                                                       NOT NULL,
-    discount_total   numeric                                                                       NOT NULL,
-    tax_total        numeric                                                                       NOT NULL,
-    sub_total        numeric                                                                       NOT NULL,
-    total            numeric                                                                       NOT NULL,
-    created_at       timestamp(6) with time zone                                                   NOT NULL,
-    updated_at       timestamp(6) with time zone                                                   NOT NULL,
+    order_number       character varying(255),
+    terms              character varying(255),
+    notes              character varying(255),
+    is_inclusive_tax   boolean                                                                       NOT NULL,
+    status             public."enum_Invoices_status" DEFAULT 'active'::public."enum_Invoices_status" NOT NULL,
+    organization_id    integer                                                                       NOT NULL,
+    created_by         integer                                                                       NOT NULL,
+    discount_total     numeric                                                                       NOT NULL,
+    tax_total          numeric                                                                       NOT NULL,
+    sub_total          numeric                                                                       NOT NULL,
+    total              numeric                                                                       NOT NULL,
+    created_at         timestamp(6) with time zone                                                   NOT NULL,
+    updated_at         timestamp(6) with time zone                                                   NOT NULL,
     invoice_payment_term_id integer,
-    issue_date       date                          DEFAULT CURRENT_DATE                            NOT NULL,
-    due_date         date                          DEFAULT CURRENT_DATE
+    issue_date         date                                                                          NOT NULL,
+    due_date           date                                                                          NOT NULL,
+    currency_id        integer                                                                       NOT NULL,
+    transaction_status public."enum_Invoices_transaction_status"                                     NOT NULL
 );
 
 
@@ -947,11 +1071,11 @@ CREATE TABLE public."OrganizationBasics"
     primary_address character varying(255)                                     NOT NULL,
     country_code    character varying(255)                                     NOT NULL,
     sector          character varying(255)                                     NOT NULL,
-    currency_code   character varying(255)                                     NOT NULL,
     status          character varying(255) DEFAULT 'active'::character varying NOT NULL,
     created_at      timestamp(6) with time zone                                NOT NULL,
     updated_at      timestamp(6) with time zone                                NOT NULL,
-    created_by      integer                                                    NOT NULL
+    created_by      integer                                                    NOT NULL,
+    currency_id     integer
 );
 
 
@@ -1079,23 +1203,23 @@ ALTER SEQUENCE public."PaymentTerms_id_seq" OWNED BY public."PaymentTerms".id;
 
 CREATE TABLE public."RegularItems"
 (
-    id               integer                                                    NOT NULL,
-    name             public.citext                                              NOT NULL,
-    product_type     public."enum_RegularItems_product_type"                    NOT NULL,
-    selling_price    numeric,
+    id              integer                                                    NOT NULL,
+    name            public.citext                                              NOT NULL,
+    product_type    public."enum_RegularItems_product_type"                    NOT NULL,
+    selling_price   numeric,
     selling_description character varying(255),
-    purchase_price   numeric,
+    purchase_price  numeric,
     purchase_description character varying(255),
-    item_for         public."enum_RegularItems_item_for"                        NOT NULL,
-    status           character varying(255) DEFAULT 'active'::character varying NOT NULL,
-    created_at       timestamp(6) with time zone                                NOT NULL,
-    updated_at       timestamp(6) with time zone                                NOT NULL,
-    created_by       integer                                                    NOT NULL,
-    organization_id  integer                                                    NOT NULL,
+    item_for        public."enum_RegularItems_item_for"                        NOT NULL,
+    status          character varying(255) DEFAULT 'active'::character varying NOT NULL,
+    created_at      timestamp(6) with time zone                                NOT NULL,
+    updated_at      timestamp(6) with time zone                                NOT NULL,
+    created_by      integer                                                    NOT NULL,
+    organization_id integer                                                    NOT NULL,
     sales_account_id integer,
     purchase_account_id integer,
-    tax_id           integer,
-    unit_id          integer
+    tax_id          integer,
+    unit_id         integer
 );
 
 
@@ -1272,6 +1396,22 @@ ALTER TABLE ONLY public."Contacts"
 
 
 --
+-- Name: Currency id; Type: DEFAULT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Currency"
+    ALTER COLUMN id SET DEFAULT nextval('public."Currency_id_seq"'::regclass);
+
+
+--
+-- Name: CurrencyExchangeRate id; Type: DEFAULT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."CurrencyExchangeRate"
+    ALTER COLUMN id SET DEFAULT nextval('public."CurrencyExchangeRate_id_seq"'::regclass);
+
+
+--
 -- Name: GeneralPreferences id; Type: DEFAULT; Schema: public; Owner: surojit
 --
 
@@ -1388,13 +1528,7 @@ COPY public."AccountTemplateDetails" (id, name, country_code, sector, status, is
                                       origin_template_id, created_by, organization_id) FROM stdin;
 1	Template 1	IN	IT	active	t	2023-09-14 00:26:07.831+05:30	2023-09-14 00:26:07.831+05:30	\N	1	1
 2	Account template for organization 70	IN	Others	active	\N	2023-09-14 00:26:45.519+05:30	2023-09-14 00:26:45.519+05:30	1	1	2
-3	Account template for organization 71	IN	Others	active	\N	2023-09-20 23:48:47.248+05:30	2023-09-20 23:48:47.248+05:30	1	1	71
-4	Account template for organization 72	IN	Others	active	\N	2023-09-20 23:51:22.872+05:30	2023-09-20 23:51:22.872+05:30	1	1	72
-7	Account template for organization 75	IN	Others	active	\N	2023-09-21 22:31:54.183+05:30	2023-09-21 22:31:54.183+05:30	1	1	75
-8	Account template for organization 76	IN	Others	active	\N	2023-09-23 13:55:12.765+05:30	2023-09-23 13:55:12.765+05:30	1	1	76
-9	Account template for organization 77	IN	Others	active	\N	2023-10-04 16:15:06.144+05:30	2023-10-04 16:15:06.144+05:30	1	1	77
-16	Account template for organization 104	IN	Others	active	\N	2023-10-08 21:10:06.922+05:30	2023-10-08 21:10:06.922+05:30	1	1	104
-20	Account template for organization 110	IN	Others	active	f	2023-10-23 21:03:30.555+05:30	2023-10-23 21:03:30.555+05:30	1	1	110
+25	Account template for organization 116	IN	Others	active	f	2023-12-09 09:48:04.145+05:30	2023-12-09 09:48:04.145+05:30	1	1	116
 \.
 
 
@@ -1489,7 +1623,6 @@ COPY public."AccountsOfOrganizations" (id, name, code, parent_code, depth, creat
 58	Credit Card Charges	538	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	2	1	2	58	\N	\N	active
 89	Harry Potter	23	\N	1	2023-09-19 00:06:26.477+05:30	2023-09-19 00:06:26.477+05:30	88	1	1	2	1	2	\N	\N		active
 94	LOP	78	\N	2	2023-09-19 23:54:34.082+05:30	2023-09-19 23:54:34.082+05:30	92	1	3	2	1	2	\N	\N		active
-451	Retained Earnings	314	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	20	\N	\N	active
 92	Very Petty Cash	78	\N	1	2023-09-19 23:21:58.752+05:30	2023-09-22 22:36:16.205+05:30	6	1	3	2	1	2	\N	\N		active
 8	Inventory Asset	151	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	7	2	1	2	8	\N	\N	active
 9	Employee Reimbursements	211	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	2	1	2	9	\N	\N	active
@@ -1519,463 +1652,80 @@ COPY public."AccountsOfOrganizations" (id, name, code, parent_code, depth, creat
 53	Contract Assets	533	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	2	1	2	53	\N	\N	active
 54	Office Supplies	534	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	2	1	2	54	\N	\N	active
 55	Advertising And Marketing	535	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	2	1	2	55	\N	\N	active
-95	Cost of Goods Sold	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	3	1	71	59	\N	\N	active
-96	Labor	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	3	1	71	60	\N	\N	active
-97	Materials	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	3	1	71	61	\N	\N	active
-98	Subcontractor	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	3	1	71	62	\N	\N	active
-452	Owner's Equity	315	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	21	\N	\N	active
+1317	Cost of Goods Sold	521	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	20	25	1	116	59	\N	\N	active
+1318	Labor	522	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	20	25	1	116	60	\N	\N	active
+1319	Materials	523	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	20	25	1	116	61	\N	\N	active
 59	Cost of Goods Sold	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	2	1	2	59	\N	\N	active
 60	Labor	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	2	1	2	60	\N	\N	active
 61	Materials	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	2	1	2	61	\N	\N	active
 62	Subcontractor	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	2	1	2	62	\N	\N	active
 63	Job Costing	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	2	1	2	63	\N	\N	active
 64	Exchange Gain or Loss	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	21	2	1	2	64	\N	\N	active
-99	Job Costing	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	3	1	71	63	\N	\N	active
-100	Exchange Gain or Loss	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	21	3	1	71	64	\N	\N	active
-101	Employee Advance	111	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	3	1	71	1	\N	\N	active
-102	Prepaid Expenses	112	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	3	1	71	2	\N	\N	active
-103	TDS Receivable	113	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	3	1	71	3	\N	\N	active
-104	Advance Tax	114	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	3	1	71	4	\N	\N	active
-105	Undeposited Funds	121	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	3	1	71	5	\N	\N	active
-106	Petty Cash	122	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	3	1	71	6	\N	\N	active
-107	Furniture and Equipment	141	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	5	3	1	71	7	\N	\N	active
-108	Inventory Asset	151	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	7	3	1	71	8	\N	\N	active
-109	Employee Reimbursements	211	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	3	1	71	9	\N	\N	active
-110	Opening Balance Adjustments	212	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	3	1	71	10	\N	\N	active
-111	Unearned Revenue	213	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	3	1	71	11	\N	\N	active
-112	TDS Payable	214	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	3	1	71	12	\N	\N	active
-113	Tax Payable	215	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	3	1	71	13	\N	\N	active
-114	Mortgages	231	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	3	1	71	14	\N	\N	active
-115	Meals and Entertainment	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	42	\N	\N	active
-116	Depreciation Expense	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	43	\N	\N	active
-117	Consultant Expense	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	44	\N	\N	active
-118	Repairs and Maintenance	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	45	\N	\N	active
-119	Other Expenses	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	46	\N	\N	active
-120	Lodging	527	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	47	\N	\N	active
-121	Uncategorized	528	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	48	\N	\N	active
-122	Raw Materials And Consumables	529	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	49	\N	\N	active
-123	Merchandise	530	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	50	\N	\N	active
-124	Transportation Expense	531	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	51	\N	\N	active
-125	Depreciation And Amortisation	532	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	52	\N	\N	active
-126	Construction Loans	232	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	3	1	71	15	\N	\N	active
-127	Dimension Adjustments	241	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	13	3	1	71	16	\N	\N	active
-128	Drawings	311	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	17	\N	\N	active
-129	Investments	312	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	18	\N	\N	active
-130	Distributions	313	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	19	\N	\N	active
-131	Retained Earnings	314	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	20	\N	\N	active
-132	Owner's Equity	315	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	21	\N	\N	active
-133	Opening Balance Offset	316	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	22	\N	\N	active
-134	Capital Stock	317	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	23	\N	\N	active
-135	Dividends Paid	318	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	3	1	71	24	\N	\N	active
-136	Other Charges	411	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	25	\N	\N	active
-137	Shipping Charge	412	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	26	\N	\N	active
-138	Sales	413	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	27	\N	\N	active
-139	General Income	414	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	28	\N	\N	active
-140	Interest Income	415	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	29	\N	\N	active
-141	Late Fee Income	416	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	30	\N	\N	active
-142	Discount	417	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	3	1	71	31	\N	\N	active
-143	Contract Assets	533	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	53	\N	\N	active
-144	Office Supplies	534	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	54	\N	\N	active
-145	Advertising And Marketing	535	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	55	\N	\N	active
-146	Purchase Discounts	536	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	56	\N	\N	active
-147	Bank Fees and Charges	537	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	57	\N	\N	active
-148	Credit Card Charges	538	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	58	\N	\N	active
-149	Travel Expense	511	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	32	\N	\N	active
-150	Telephone Expense	512	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	33	\N	\N	active
-151	Automobile Expense	513	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	34	\N	\N	active
-152	IT and Internet Expenses	515	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	35	\N	\N	active
-153	Rent Expense	516	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	36	\N	\N	active
-154	Janitorial Expense	517	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	37	\N	\N	active
-155	Postage	518	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	38	\N	\N	active
-156	Bad Debt	519	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	39	\N	\N	active
-157	Printing and Stationery	520	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	40	\N	\N	active
-158	Salaries and Employee Wages	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	3	1	71	41	\N	\N	active
-159	Cost of Goods Sold	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	4	1	72	59	\N	\N	active
-160	Labor	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	4	1	72	60	\N	\N	active
-161	Materials	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	4	1	72	61	\N	\N	active
-162	Subcontractor	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	4	1	72	62	\N	\N	active
-163	Job Costing	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	4	1	72	63	\N	\N	active
-164	Exchange Gain or Loss	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	21	4	1	72	64	\N	\N	active
-165	Employee Advance	111	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	4	1	72	1	\N	\N	active
-166	Prepaid Expenses	112	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	4	1	72	2	\N	\N	active
-167	TDS Receivable	113	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	4	1	72	3	\N	\N	active
-168	Advance Tax	114	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	4	1	72	4	\N	\N	active
-169	Undeposited Funds	121	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	4	1	72	5	\N	\N	active
-170	Petty Cash	122	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	4	1	72	6	\N	\N	active
-171	Furniture and Equipment	141	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	5	4	1	72	7	\N	\N	active
-172	Inventory Asset	151	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	7	4	1	72	8	\N	\N	active
-173	Employee Reimbursements	211	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	4	1	72	9	\N	\N	active
-174	Opening Balance Adjustments	212	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	4	1	72	10	\N	\N	active
-175	Unearned Revenue	213	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	4	1	72	11	\N	\N	active
-176	TDS Payable	214	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	4	1	72	12	\N	\N	active
-177	Tax Payable	215	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	4	1	72	13	\N	\N	active
-178	Mortgages	231	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	4	1	72	14	\N	\N	active
-179	Meals and Entertainment	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	42	\N	\N	active
-180	Depreciation Expense	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	43	\N	\N	active
-181	Consultant Expense	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	44	\N	\N	active
-182	Repairs and Maintenance	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	45	\N	\N	active
-183	Other Expenses	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	46	\N	\N	active
-184	Lodging	527	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	47	\N	\N	active
-185	Uncategorized	528	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	48	\N	\N	active
-186	Raw Materials And Consumables	529	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	49	\N	\N	active
-187	Merchandise	530	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	50	\N	\N	active
-188	Transportation Expense	531	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	51	\N	\N	active
-189	Depreciation And Amortisation	532	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	52	\N	\N	active
-190	Construction Loans	232	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	4	1	72	15	\N	\N	active
-191	Dimension Adjustments	241	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	13	4	1	72	16	\N	\N	active
-192	Drawings	311	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	17	\N	\N	active
-193	Investments	312	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	18	\N	\N	active
-194	Distributions	313	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	19	\N	\N	active
-195	Retained Earnings	314	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	20	\N	\N	active
-196	Owner's Equity	315	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	21	\N	\N	active
-197	Opening Balance Offset	316	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	22	\N	\N	active
-198	Capital Stock	317	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	23	\N	\N	active
-199	Dividends Paid	318	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	4	1	72	24	\N	\N	active
-200	Other Charges	411	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	25	\N	\N	active
-201	Shipping Charge	412	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	26	\N	\N	active
-202	Sales	413	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	27	\N	\N	active
-203	General Income	414	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	28	\N	\N	active
-204	Interest Income	415	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	29	\N	\N	active
-205	Late Fee Income	416	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	30	\N	\N	active
-206	Discount	417	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	4	1	72	31	\N	\N	active
-207	Contract Assets	533	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	53	\N	\N	active
-208	Office Supplies	534	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	54	\N	\N	active
-209	Advertising And Marketing	535	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	55	\N	\N	active
-210	Purchase Discounts	536	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	56	\N	\N	active
-211	Bank Fees and Charges	537	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	57	\N	\N	active
-212	Credit Card Charges	538	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	58	\N	\N	active
-213	Travel Expense	511	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	32	\N	\N	active
-214	Telephone Expense	512	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	33	\N	\N	active
-215	Automobile Expense	513	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	34	\N	\N	active
-216	IT and Internet Expenses	515	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	35	\N	\N	active
-217	Rent Expense	516	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	36	\N	\N	active
-218	Janitorial Expense	517	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	37	\N	\N	active
-219	Postage	518	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	38	\N	\N	active
-220	Bad Debt	519	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	39	\N	\N	active
-221	Printing and Stationery	520	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	40	\N	\N	active
-222	Salaries and Employee Wages	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	4	1	72	41	\N	\N	active
-415	Cost of Goods Sold	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	8	1	76	59	\N	\N	active
-416	Labor	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	8	1	76	60	\N	\N	active
-417	Materials	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	8	1	76	61	\N	\N	active
-418	Subcontractor	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	8	1	76	62	\N	\N	active
-419	Job Costing	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	8	1	76	63	\N	\N	active
-420	Exchange Gain or Loss	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	21	8	1	76	64	\N	\N	active
-421	Employee Advance	111	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	8	1	76	1	\N	\N	active
-422	Prepaid Expenses	112	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	8	1	76	2	\N	\N	active
-423	TDS Receivable	113	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	8	1	76	3	\N	\N	active
-424	Advance Tax	114	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	8	1	76	4	\N	\N	active
-425	Undeposited Funds	121	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	8	1	76	5	\N	\N	active
-426	Petty Cash	122	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	8	1	76	6	\N	\N	active
-427	Furniture and Equipment	141	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	5	8	1	76	7	\N	\N	active
-428	Inventory Asset	151	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	7	8	1	76	8	\N	\N	active
-429	Employee Reimbursements	211	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	8	1	76	9	\N	\N	active
-430	Opening Balance Adjustments	212	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	8	1	76	10	\N	\N	active
-431	Unearned Revenue	213	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	8	1	76	11	\N	\N	active
-432	TDS Payable	214	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	8	1	76	12	\N	\N	active
-433	Tax Payable	215	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	8	1	76	13	\N	\N	active
-434	Mortgages	231	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	8	1	76	14	\N	\N	active
-435	Meals and Entertainment	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	42	\N	\N	active
-436	Depreciation Expense	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	43	\N	\N	active
-437	Consultant Expense	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	44	\N	\N	active
-438	Repairs and Maintenance	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	45	\N	\N	active
-439	Other Expenses	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	46	\N	\N	active
-440	Lodging	527	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	47	\N	\N	active
-441	Uncategorized	528	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	48	\N	\N	active
-442	Raw Materials And Consumables	529	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	49	\N	\N	active
-443	Merchandise	530	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	50	\N	\N	active
-444	Transportation Expense	531	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	51	\N	\N	active
-445	Depreciation And Amortisation	532	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	52	\N	\N	active
-446	Construction Loans	232	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	8	1	76	15	\N	\N	active
-447	Dimension Adjustments	241	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	13	8	1	76	16	\N	\N	active
-448	Drawings	311	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	17	\N	\N	active
-449	Investments	312	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	18	\N	\N	active
-450	Distributions	313	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	19	\N	\N	active
-453	Opening Balance Offset	316	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	22	\N	\N	active
-454	Capital Stock	317	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	23	\N	\N	active
-455	Dividends Paid	318	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	8	1	76	24	\N	\N	active
-456	Other Charges	411	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	25	\N	\N	active
-457	Shipping Charge	412	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	26	\N	\N	active
-458	Sales	413	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	27	\N	\N	active
-459	General Income	414	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	28	\N	\N	active
-460	Interest Income	415	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	29	\N	\N	active
-461	Late Fee Income	416	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	30	\N	\N	active
-462	Discount	417	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	8	1	76	31	\N	\N	active
-463	Contract Assets	533	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	53	\N	\N	active
-464	Office Supplies	534	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	54	\N	\N	active
-465	Advertising And Marketing	535	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	55	\N	\N	active
-466	Purchase Discounts	536	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	56	\N	\N	active
-467	Bank Fees and Charges	537	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	57	\N	\N	active
-468	Credit Card Charges	538	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	58	\N	\N	active
-469	Travel Expense	511	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	32	\N	\N	active
-470	Telephone Expense	512	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	33	\N	\N	active
-471	Automobile Expense	513	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	34	\N	\N	active
-472	IT and Internet Expenses	515	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	35	\N	\N	active
-473	Rent Expense	516	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	36	\N	\N	active
-474	Janitorial Expense	517	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	37	\N	\N	active
-475	Postage	518	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	38	\N	\N	active
-476	Bad Debt	519	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	39	\N	\N	active
-477	Printing and Stationery	520	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	40	\N	\N	active
-478	Salaries and Employee Wages	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	8	1	76	41	\N	\N	active
+1320	Subcontractor	524	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	20	25	1	116	62	\N	\N	active
+1321	Job Costing	525	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	20	25	1	116	63	\N	\N	active
+1322	Exchange Gain or Loss	526	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	21	25	1	116	64	\N	\N	active
+1323	Employee Advance	111	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	2	25	1	116	1	\N	\N	active
+1324	Prepaid Expenses	112	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	2	25	1	116	2	\N	\N	active
+1325	TDS Receivable	113	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	2	25	1	116	3	\N	\N	active
+1326	Advance Tax	114	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	2	25	1	116	4	\N	\N	active
+1327	Undeposited Funds	121	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	3	25	1	116	5	\N	\N	active
+1328	Petty Cash	122	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	3	25	1	116	6	\N	\N	active
+1329	Furniture and Equipment	141	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	5	25	1	116	7	\N	\N	active
+1330	Inventory Asset	151	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	1	7	25	1	116	8	\N	\N	active
+1331	Employee Reimbursements	211	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	10	25	1	116	9	\N	\N	active
+1332	Opening Balance Adjustments	212	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	10	25	1	116	10	\N	\N	active
+1333	Unearned Revenue	213	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	10	25	1	116	11	\N	\N	active
+1334	TDS Payable	214	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	10	25	1	116	12	\N	\N	active
+1335	Tax Payable	215	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	10	25	1	116	13	\N	\N	active
+1336	Mortgages	231	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	12	25	1	116	14	\N	\N	active
+1337	Meals and Entertainment	522	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	42	\N	\N	active
+1338	Depreciation Expense	523	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	43	\N	\N	active
+1339	Consultant Expense	524	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	44	\N	\N	active
+1340	Repairs and Maintenance	525	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	45	\N	\N	active
+1341	Other Expenses	526	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	46	\N	\N	active
+1342	Lodging	527	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	47	\N	\N	active
+1343	Uncategorized	528	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	48	\N	\N	active
+1344	Raw Materials And Consumables	529	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	49	\N	\N	active
+1345	Merchandise	530	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	50	\N	\N	active
+1346	Transportation Expense	531	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	51	\N	\N	active
+1347	Depreciation And Amortisation	532	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	52	\N	\N	active
+1348	Construction Loans	232	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	12	25	1	116	15	\N	\N	active
+1349	Dimension Adjustments	241	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	2	13	25	1	116	16	\N	\N	active
+1350	Drawings	311	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	17	\N	\N	active
+1351	Investments	312	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	18	\N	\N	active
+1352	Distributions	313	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	19	\N	\N	active
+1353	Retained Earnings	314	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	20	\N	\N	active
+1354	Owner's Equity	315	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	21	\N	\N	active
+1355	Opening Balance Offset	316	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	22	\N	\N	active
+1356	Capital Stock	317	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	23	\N	\N	active
+1357	Dividends Paid	318	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	3	16	25	1	116	24	\N	\N	active
+1358	Other Charges	411	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	25	\N	\N	active
+1359	Shipping Charge	412	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	26	\N	\N	active
+1360	Sales	413	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	27	\N	\N	active
+1361	General Income	414	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	28	\N	\N	active
+1362	Interest Income	415	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	29	\N	\N	active
+1363	Late Fee Income	416	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	30	\N	\N	active
+1364	Discount	417	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	4	17	25	1	116	31	\N	\N	active
+1365	Contract Assets	533	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	53	\N	\N	active
+1366	Office Supplies	534	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	54	\N	\N	active
+1367	Advertising And Marketing	535	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	55	\N	\N	active
+1368	Purchase Discounts	536	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	56	\N	\N	active
+1369	Bank Fees and Charges	537	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	57	\N	\N	active
+1370	Credit Card Charges	538	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	58	\N	\N	active
+1371	Travel Expense	511	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	32	\N	\N	active
+1372	Telephone Expense	512	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	33	\N	\N	active
+1373	Automobile Expense	513	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	34	\N	\N	active
+1374	IT and Internet Expenses	515	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	35	\N	\N	active
+1375	Rent Expense	516	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	36	\N	\N	active
+1376	Janitorial Expense	517	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	37	\N	\N	active
+1377	Postage	518	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	38	\N	\N	active
+1378	Bad Debt	519	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	39	\N	\N	active
+1379	Printing and Stationery	520	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	40	\N	\N	active
+1380	Salaries and Employee Wages	521	\N	0	2023-12-09 09:48:04.15+05:30	2023-12-09 09:48:04.15+05:30	\N	5	19	25	1	116	41	\N	\N	active
 479	NIP	1	\N	1	2023-09-23 21:31:55.462+05:30	2023-09-23 21:31:55.462+05:30	32	5	19	2	1	2	\N	\N		active
 480	Renewed Materials	12	\N	1	2023-09-25 22:27:12.141+05:30	2023-09-25 22:27:12.141+05:30	61	5	20	2	1	2	\N	\N		active
 482	ME2	98	\N	2	2023-09-30 17:36:16.945+05:30	2023-09-30 17:36:28.957+05:30	91	1	3	2	1	2	\N	\N		deleted
-483	Cost of Goods Sold	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	9	1	77	59	\N	\N	active
-484	Labor	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	9	1	77	60	\N	\N	active
-485	Materials	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	9	1	77	61	\N	\N	active
-486	Subcontractor	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	9	1	77	62	\N	\N	active
 481	Top Class	121	\N	2	2023-09-25 23:09:35.95+05:30	2023-09-25 23:09:35.95+05:30	480	5	20	2	1	2	\N	\N		active
-487	Job Costing	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	9	1	77	63	\N	\N	active
-488	Exchange Gain or Loss	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	21	9	1	77	64	\N	\N	active
-489	Employee Advance	111	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	9	1	77	1	\N	\N	active
-490	Prepaid Expenses	112	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	9	1	77	2	\N	\N	active
-491	TDS Receivable	113	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	9	1	77	3	\N	\N	active
-492	Advance Tax	114	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	9	1	77	4	\N	\N	active
-493	Undeposited Funds	121	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	9	1	77	5	\N	\N	active
-494	Petty Cash	122	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	9	1	77	6	\N	\N	active
-495	Furniture and Equipment	141	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	5	9	1	77	7	\N	\N	active
-496	Inventory Asset	151	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	7	9	1	77	8	\N	\N	active
-497	Employee Reimbursements	211	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	9	1	77	9	\N	\N	active
-498	Opening Balance Adjustments	212	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	9	1	77	10	\N	\N	active
-499	Unearned Revenue	213	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	9	1	77	11	\N	\N	active
-500	TDS Payable	214	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	9	1	77	12	\N	\N	active
-501	Tax Payable	215	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	9	1	77	13	\N	\N	active
-502	Mortgages	231	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	9	1	77	14	\N	\N	active
-503	Meals and Entertainment	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	42	\N	\N	active
-504	Depreciation Expense	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	43	\N	\N	active
-505	Consultant Expense	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	44	\N	\N	active
-506	Repairs and Maintenance	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	45	\N	\N	active
-507	Other Expenses	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	46	\N	\N	active
-508	Lodging	527	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	47	\N	\N	active
-509	Uncategorized	528	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	48	\N	\N	active
-510	Raw Materials And Consumables	529	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	49	\N	\N	active
-511	Merchandise	530	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	50	\N	\N	active
-512	Transportation Expense	531	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	51	\N	\N	active
-513	Depreciation And Amortisation	532	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	52	\N	\N	active
-514	Construction Loans	232	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	9	1	77	15	\N	\N	active
-515	Dimension Adjustments	241	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	13	9	1	77	16	\N	\N	active
-516	Drawings	311	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	17	\N	\N	active
-517	Investments	312	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	18	\N	\N	active
-518	Distributions	313	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	19	\N	\N	active
-519	Retained Earnings	314	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	20	\N	\N	active
-520	Owner's Equity	315	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	21	\N	\N	active
-521	Opening Balance Offset	316	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	22	\N	\N	active
-522	Capital Stock	317	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	23	\N	\N	active
-523	Dividends Paid	318	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	9	1	77	24	\N	\N	active
-524	Other Charges	411	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	25	\N	\N	active
-525	Shipping Charge	412	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	26	\N	\N	active
-526	Sales	413	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	27	\N	\N	active
-527	General Income	414	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	28	\N	\N	active
-528	Interest Income	415	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	29	\N	\N	active
-529	Late Fee Income	416	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	30	\N	\N	active
-530	Discount	417	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	9	1	77	31	\N	\N	active
-531	Contract Assets	533	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	53	\N	\N	active
-532	Office Supplies	534	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	54	\N	\N	active
-533	Advertising And Marketing	535	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	55	\N	\N	active
-534	Purchase Discounts	536	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	56	\N	\N	active
-535	Bank Fees and Charges	537	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	57	\N	\N	active
-536	Credit Card Charges	538	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	58	\N	\N	active
-537	Travel Expense	511	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	32	\N	\N	active
-538	Telephone Expense	512	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	33	\N	\N	active
-539	Automobile Expense	513	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	34	\N	\N	active
-540	IT and Internet Expenses	515	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	35	\N	\N	active
-541	Rent Expense	516	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	36	\N	\N	active
-542	Janitorial Expense	517	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	37	\N	\N	active
-543	Postage	518	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	38	\N	\N	active
-544	Bad Debt	519	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	39	\N	\N	active
-545	Printing and Stationery	520	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	40	\N	\N	active
-546	Salaries and Employee Wages	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	9	1	77	41	\N	\N	active
-351	Cost of Goods Sold	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	7	1	75	59	\N	\N	active
-352	Labor	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	7	1	75	60	\N	\N	active
-353	Materials	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	7	1	75	61	\N	\N	active
-354	Subcontractor	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	7	1	75	62	\N	\N	active
-355	Job Costing	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	20	7	1	75	63	\N	\N	active
-356	Exchange Gain or Loss	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	21	7	1	75	64	\N	\N	active
-357	Employee Advance	111	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	7	1	75	1	\N	\N	active
-358	Prepaid Expenses	112	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	7	1	75	2	\N	\N	active
-359	TDS Receivable	113	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	7	1	75	3	\N	\N	active
-360	Advance Tax	114	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	2	7	1	75	4	\N	\N	active
-361	Undeposited Funds	121	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	7	1	75	5	\N	\N	active
-362	Petty Cash	122	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	3	7	1	75	6	\N	\N	active
-363	Furniture and Equipment	141	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	5	7	1	75	7	\N	\N	active
-364	Inventory Asset	151	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	1	7	7	1	75	8	\N	\N	active
-365	Employee Reimbursements	211	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	7	1	75	9	\N	\N	active
-366	Opening Balance Adjustments	212	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	7	1	75	10	\N	\N	active
-367	Unearned Revenue	213	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	7	1	75	11	\N	\N	active
-368	TDS Payable	214	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	7	1	75	12	\N	\N	active
-369	Tax Payable	215	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	10	7	1	75	13	\N	\N	active
-370	Mortgages	231	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	7	1	75	14	\N	\N	active
-371	Meals and Entertainment	522	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	42	\N	\N	active
-372	Depreciation Expense	523	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	43	\N	\N	active
-373	Consultant Expense	524	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	44	\N	\N	active
-374	Repairs and Maintenance	525	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	45	\N	\N	active
-375	Other Expenses	526	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	46	\N	\N	active
-376	Lodging	527	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	47	\N	\N	active
-377	Uncategorized	528	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	48	\N	\N	active
-378	Raw Materials And Consumables	529	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	49	\N	\N	active
-379	Merchandise	530	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	50	\N	\N	active
-380	Transportation Expense	531	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	51	\N	\N	active
-381	Depreciation And Amortisation	532	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	52	\N	\N	active
-382	Construction Loans	232	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	12	7	1	75	15	\N	\N	active
-383	Dimension Adjustments	241	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	2	13	7	1	75	16	\N	\N	active
-384	Drawings	311	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	17	\N	\N	active
-385	Investments	312	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	18	\N	\N	active
-386	Distributions	313	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	19	\N	\N	active
-387	Retained Earnings	314	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	20	\N	\N	active
-388	Owner's Equity	315	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	21	\N	\N	active
-389	Opening Balance Offset	316	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	22	\N	\N	active
-390	Capital Stock	317	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	23	\N	\N	active
-391	Dividends Paid	318	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	3	16	7	1	75	24	\N	\N	active
-392	Other Charges	411	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	25	\N	\N	active
-393	Shipping Charge	412	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	26	\N	\N	active
-394	Sales	413	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	27	\N	\N	active
-395	General Income	414	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	28	\N	\N	active
-396	Interest Income	415	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	29	\N	\N	active
-397	Late Fee Income	416	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	30	\N	\N	active
-398	Discount	417	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	4	17	7	1	75	31	\N	\N	active
-399	Contract Assets	533	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	53	\N	\N	active
-400	Office Supplies	534	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	54	\N	\N	active
-401	Advertising And Marketing	535	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	55	\N	\N	active
-402	Purchase Discounts	536	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	56	\N	\N	active
-403	Bank Fees and Charges	537	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	57	\N	\N	active
-404	Credit Card Charges	538	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	58	\N	\N	active
-405	Travel Expense	511	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	32	\N	\N	active
-406	Telephone Expense	512	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	33	\N	\N	active
-407	Automobile Expense	513	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	34	\N	\N	active
-408	IT and Internet Expenses	515	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	35	\N	\N	active
-409	Rent Expense	516	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	36	\N	\N	active
-410	Janitorial Expense	517	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	37	\N	\N	active
-411	Postage	518	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	38	\N	\N	active
-412	Bad Debt	519	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	39	\N	\N	active
-413	Printing and Stationery	520	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	40	\N	\N	active
-414	Salaries and Employee Wages	521	\N	0	2023-09-14 00:26:07.848+05:30	2023-09-14 00:26:07.848+05:30	\N	5	19	7	1	75	41	\N	\N	active
-997	Cost of Goods Sold	521	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	59	\N	\N	active
-998	Labor	522	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	60	\N	\N	active
-999	Materials	523	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	61	\N	\N	active
-1000	Subcontractor	524	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	62	\N	\N	active
-1001	Job Costing	525	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	20	20	1	110	63	\N	\N	active
-1002	Exchange Gain or Loss	526	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	21	20	1	110	64	\N	\N	active
-1003	Employee Advance	111	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	1	\N	\N	active
-1004	Prepaid Expenses	112	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	2	\N	\N	active
-1005	TDS Receivable	113	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	3	\N	\N	active
-1006	Advance Tax	114	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	2	20	1	110	4	\N	\N	active
-1007	Undeposited Funds	121	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	3	20	1	110	5	\N	\N	active
-1008	Petty Cash	122	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	3	20	1	110	6	\N	\N	active
-1009	Furniture and Equipment	141	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	5	20	1	110	7	\N	\N	active
-1010	Inventory Asset	151	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	1	7	20	1	110	8	\N	\N	active
-1011	Employee Reimbursements	211	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	9	\N	\N	active
-1012	Opening Balance Adjustments	212	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	10	\N	\N	active
-868	Cost of Goods Sold	521	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	59	\N	\N	active
-869	Labor	522	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	60	\N	\N	active
-870	Materials	523	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	61	\N	\N	active
-871	Subcontractor	524	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	62	\N	\N	active
-872	Job Costing	525	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	20	16	1	104	63	\N	\N	active
-873	Exchange Gain or Loss	526	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	21	16	1	104	64	\N	\N	active
-874	Employee Advance	111	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	2	16	1	104	1	\N	\N	active
-875	Prepaid Expenses	112	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	2	16	1	104	2	\N	\N	active
-876	TDS Receivable	113	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	2	16	1	104	3	\N	\N	active
-877	Advance Tax	114	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	2	16	1	104	4	\N	\N	active
-878	Undeposited Funds	121	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	3	16	1	104	5	\N	\N	active
-879	Petty Cash	122	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	3	16	1	104	6	\N	\N	active
-880	Furniture and Equipment	141	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	5	16	1	104	7	\N	\N	active
-881	Inventory Asset	151	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	1	7	16	1	104	8	\N	\N	active
-882	Employee Reimbursements	211	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	10	16	1	104	9	\N	\N	active
-883	Opening Balance Adjustments	212	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	10	16	1	104	10	\N	\N	active
-884	Unearned Revenue	213	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	10	16	1	104	11	\N	\N	active
-885	TDS Payable	214	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	10	16	1	104	12	\N	\N	active
-886	Tax Payable	215	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	10	16	1	104	13	\N	\N	active
-887	Mortgages	231	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	12	16	1	104	14	\N	\N	active
-888	Meals and Entertainment	522	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	42	\N	\N	active
-889	Depreciation Expense	523	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	43	\N	\N	active
-890	Consultant Expense	524	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	44	\N	\N	active
-891	Repairs and Maintenance	525	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	45	\N	\N	active
-892	Other Expenses	526	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	46	\N	\N	active
-893	Lodging	527	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	47	\N	\N	active
-894	Uncategorized	528	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	48	\N	\N	active
-895	Raw Materials And Consumables	529	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	49	\N	\N	active
-896	Merchandise	530	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	50	\N	\N	active
-897	Transportation Expense	531	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	51	\N	\N	active
-898	Depreciation And Amortisation	532	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	52	\N	\N	active
-899	Construction Loans	232	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	12	16	1	104	15	\N	\N	active
-900	Dimension Adjustments	241	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	2	13	16	1	104	16	\N	\N	active
-901	Drawings	311	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	17	\N	\N	active
-902	Investments	312	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	18	\N	\N	active
-903	Distributions	313	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	19	\N	\N	active
-904	Retained Earnings	314	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	20	\N	\N	active
-905	Owner's Equity	315	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	21	\N	\N	active
-906	Opening Balance Offset	316	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	22	\N	\N	active
-907	Capital Stock	317	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	23	\N	\N	active
-908	Dividends Paid	318	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	3	16	16	1	104	24	\N	\N	active
-909	Other Charges	411	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	25	\N	\N	active
-910	Shipping Charge	412	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	26	\N	\N	active
-911	Sales	413	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	27	\N	\N	active
-912	General Income	414	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	28	\N	\N	active
-913	Interest Income	415	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	29	\N	\N	active
-914	Late Fee Income	416	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	30	\N	\N	active
-915	Discount	417	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	4	17	16	1	104	31	\N	\N	active
-916	Contract Assets	533	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	53	\N	\N	active
-917	Office Supplies	534	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	54	\N	\N	active
-918	Advertising And Marketing	535	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	55	\N	\N	active
-919	Purchase Discounts	536	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	56	\N	\N	active
-920	Bank Fees and Charges	537	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	57	\N	\N	active
-921	Credit Card Charges	538	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	58	\N	\N	active
-922	Travel Expense	511	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	32	\N	\N	active
-923	Telephone Expense	512	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	33	\N	\N	active
-924	Automobile Expense	513	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	34	\N	\N	active
-925	IT and Internet Expenses	515	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	35	\N	\N	active
-926	Rent Expense	516	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	36	\N	\N	active
-927	Janitorial Expense	517	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	37	\N	\N	active
-928	Postage	518	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	38	\N	\N	active
-929	Bad Debt	519	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	39	\N	\N	active
-1013	Unearned Revenue	213	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	11	\N	\N	active
-1014	TDS Payable	214	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	12	\N	\N	active
-1015	Tax Payable	215	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	10	20	1	110	13	\N	\N	active
-1016	Mortgages	231	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	12	20	1	110	14	\N	\N	active
-1017	Meals and Entertainment	522	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	42	\N	\N	active
-1018	Depreciation Expense	523	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	43	\N	\N	active
-1019	Consultant Expense	524	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	44	\N	\N	active
-930	Printing and Stationery	520	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	40	\N	\N	active
-931	Salaries and Employee Wages	521	\N	0	2023-10-08 21:10:06.926+05:30	2023-10-08 21:10:06.926+05:30	\N	5	19	16	1	104	41	\N	\N	active
-1020	Repairs and Maintenance	525	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	45	\N	\N	active
-1021	Other Expenses	526	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	46	\N	\N	active
-1022	Lodging	527	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	47	\N	\N	active
-1023	Uncategorized	528	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	48	\N	\N	active
-1024	Raw Materials And Consumables	529	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	49	\N	\N	active
-1025	Merchandise	530	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	50	\N	\N	active
-1026	Transportation Expense	531	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	51	\N	\N	active
-1027	Depreciation And Amortisation	532	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	52	\N	\N	active
-1028	Construction Loans	232	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	12	20	1	110	15	\N	\N	active
-1029	Dimension Adjustments	241	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	2	13	20	1	110	16	\N	\N	active
-1030	Drawings	311	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	17	\N	\N	active
-1031	Investments	312	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	18	\N	\N	active
-1032	Distributions	313	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	19	\N	\N	active
-1033	Retained Earnings	314	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	20	\N	\N	active
-1034	Owner's Equity	315	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	21	\N	\N	active
-1035	Opening Balance Offset	316	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	22	\N	\N	active
-1036	Capital Stock	317	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	23	\N	\N	active
-1037	Dividends Paid	318	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	3	16	20	1	110	24	\N	\N	active
-1038	Other Charges	411	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	25	\N	\N	active
-1039	Shipping Charge	412	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	26	\N	\N	active
-1040	Sales	413	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	27	\N	\N	active
-1041	General Income	414	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	28	\N	\N	active
-1042	Interest Income	415	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	29	\N	\N	active
-1043	Late Fee Income	416	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	30	\N	\N	active
-1044	Discount	417	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	4	17	20	1	110	31	\N	\N	active
-1045	Contract Assets	533	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	53	\N	\N	active
-1046	Office Supplies	534	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	54	\N	\N	active
-1047	Advertising And Marketing	535	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	55	\N	\N	active
-1048	Purchase Discounts	536	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	56	\N	\N	active
-1049	Bank Fees and Charges	537	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	57	\N	\N	active
-1050	Credit Card Charges	538	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	58	\N	\N	active
-1051	Travel Expense	511	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	32	\N	\N	active
-1052	Telephone Expense	512	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	33	\N	\N	active
-1053	Automobile Expense	513	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	34	\N	\N	active
-1054	IT and Internet Expenses	515	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	35	\N	\N	active
-1055	Rent Expense	516	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	36	\N	\N	active
-1056	Janitorial Expense	517	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	37	\N	\N	active
-1057	Postage	518	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	38	\N	\N	active
-1058	Bad Debt	519	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	39	\N	\N	active
-1059	Printing and Stationery	520	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	40	\N	\N	active
-1060	Salaries and Employee Wages	521	\N	0	2023-10-23 21:03:30.559+05:30	2023-10-23 21:03:30.559+05:30	\N	5	19	20	1	110	41	\N	\N	active
 \.
 
 
@@ -2057,10 +1807,70 @@ COPY public."AccountsOfTemplates" (id, name, code, parent_code, status, depth, c
 -- Data for Name: Contacts; Type: TABLE DATA; Schema: public; Owner: surojit
 --
 
-COPY public."Contacts" (id, contact_name, contact_type, created_at, updated_at, organization_id, status,
-                        created_by) FROM stdin;
-1	Sayan	customer	2023-10-04 22:01:18.252+05:30	2023-10-04 22:01:20.512+05:30	2	active	1
-2	Tamal	customer	2023-10-04 22:01:44.603+05:30	2023-10-04 22:01:45.43+05:30	2	active	1
+COPY public."Contacts" (id, contact_name, contact_type, created_at, updated_at, organization_id, status, created_by,
+                        currency_id) FROM stdin;
+2	Tamal	customer	2023-10-04 22:01:44.603+05:30	2023-10-04 22:01:45.43+05:30	2	active	1	18
+1	Sayan	customer	2023-10-04 22:01:18.252+05:30	2023-10-04 22:01:20.512+05:30	2	active	1	11
+\.
+
+
+--
+-- Data for Name: Currency; Type: TABLE DATA; Schema: public; Owner: surojit
+--
+
+COPY public."Currency" (id, currency_name, currency_symbol, currency_code, status, created_by,
+                        organization_id) FROM stdin;
+11	Japanese Yen	¥	JPY	active	1	2
+5	Swiss Franc	CHF	CHF	active	1	2
+15	Russian Ruble	₽	RUB	active	1	2
+18	Singapore Dollar	S$	SGD	active	1	2
+16	Saudi Riyal	﷼	SAR	active	1	2
+9	Hong Kong Dollar	HK$	HKD	active	1	2
+20	United States Dollar	$	USD	active	1	2
+21	South African Rand	R	ZAR	active	1	2
+19	Turkish Lira	₺	TRY	active	1	2
+17	Swedish Krona	kr	SEK	active	1	2
+6	Chinese Yuan	¥	CNY	active	1	2
+4	Canadian Dollar	CA$	CAD	active	1	2
+8	British Pound Sterling	£	GBP	active	1	2
+1	United Arab Emirates Dirham	د.إ	AED	active	1	2
+3	Brazilian Real	R$	BRL	active	1	2
+10	Indian Rupee	₹	INR	active	1	2
+14	New Zealand Dollar	NZ$	NZD	active	1	2
+13	Norwegian Krone	kr	NOK	active	1	2
+12	Mexican Peso	Mex$	MXN	active	1	2
+2	Australian Dollar	A$	AUD	active	1	2
+7	Euro	€	EUR	active	1	2
+85	United Arab Emirates Dirham	د.إ	AED	active	1	116
+86	Australian Dollar	A$	AUD	active	1	116
+87	Brazilian Real	R$	BRL	active	1	116
+88	Canadian Dollar	CA$	CAD	active	1	116
+89	Swiss Franc	CHF	CHF	active	1	116
+90	Chinese Yuan	¥	CNY	active	1	116
+91	Euro	€	EUR	active	1	116
+92	British Pound Sterling	£	GBP	active	1	116
+93	Hong Kong Dollar	HK$	HKD	active	1	116
+94	Indian Rupee	₹	INR	active	1	116
+95	Japanese Yen	¥	JPY	active	1	116
+96	Mexican Peso	Mex$	MXN	active	1	116
+97	Norwegian Krone	kr	NOK	active	1	116
+98	New Zealand Dollar	NZ$	NZD	active	1	116
+99	Russian Ruble	₽	RUB	active	1	116
+100	Saudi Riyal	﷼	SAR	active	1	116
+101	Swedish Krona	kr	SEK	active	1	116
+102	Singapore Dollar	S$	SGD	active	1	116
+103	Turkish Lira	₺	TRY	active	1	116
+104	United States Dollar	$	USD	active	1	116
+105	South African Rand	R	ZAR	active	1	116
+\.
+
+
+--
+-- Data for Name: CurrencyExchangeRate; Type: TABLE DATA; Schema: public; Owner: surojit
+--
+
+COPY public."CurrencyExchangeRate" (id, effective_date, rate, status, currency_id, created_by,
+                                    organization_id) FROM stdin;
 \.
 
 
@@ -2071,8 +1881,7 @@ COPY public."Contacts" (id, contact_name, contact_type, created_at, updated_at, 
 COPY public."GeneralPreferences" (id, sales_tax_type, tax_rounding_type, discount_type, is_discount_before_tax,
                                   created_at, updated_at, organization_id) FROM stdin;
 1	entity_level	item_level	no_discount	t	2023-10-04 16:15:06.189+05:30	2023-10-04 16:15:06.189+05:30	2
-3	entity_level	item_level	no_discount	t	2023-10-08 21:10:06.962+05:30	2023-10-08 21:10:06.962+05:30	104
-5	entity_level	item_level	no_discount	t	2023-10-23 21:03:30.592+05:30	2023-10-23 21:03:30.592+05:30	110
+10	entity_level	item_level	no_discount	t	2023-12-09 09:48:04.188+05:30	2023-12-09 09:48:04.188+05:30	116
 \.
 
 
@@ -2083,16 +1892,7 @@ COPY public."GeneralPreferences" (id, sales_tax_type, tax_rounding_type, discoun
 COPY public."InvoiceLineItems" (id, name, description, unit, status, organization_id, invoice_id, item_id, account_id,
                                 tax_id, unit_id, rate, quantity, discount_percentage, discount_amount, tax_percentage,
                                 tax_amount, item_total, item_total_tax_included, created_at, updated_at) FROM stdin;
-92	Apron		Dozon	active	2	75	13	27	9	3	594	1	10	59.4	15	80.19	534.6	614.79	2023-11-26 14:26:37.397+05:30	2023-11-26 14:26:37.397+05:30
-93	Apron		Dozon	active	2	77	13	27	9	3	564	1	10	56.4	15	76.14	507.6	583.74	2023-11-26 14:28:38.221+05:30	2023-11-26 14:28:38.221+05:30
-94	Apron		Dozon	active	2	78	13	27	9	3	100	1	0	0	15	15	100	115	2023-11-26 15:29:00.362+05:30	2023-11-26 15:29:00.362+05:30
-95	Coffe		Dozon	active	2	111	9	27	1	3	600	1	0	0	10	60	600	660	2023-11-29 23:32:58.434+05:30	2023-11-29 23:32:58.434+05:30
-96	Apron	some items that protect you.	TML	active	2	112	13	27	9	4	12.52	2	10	2.18	15	2.94	19.6	22.54	2023-12-02 14:11:42.792+05:30	2023-12-02 14:11:42.792+05:30
-97	Apron		TML	active	2	113	13	27	9	4	100	1	0	0	15	15	100	115	2023-12-02 18:29:36.725+05:30	2023-12-02 18:29:36.725+05:30
-98	Apron		TML	active	2	114	13	27	9	4	100	1	0	0	15	15	100	115	2023-12-02 18:46:08.885+05:30	2023-12-02 18:46:08.885+05:30
-99	Chair		Units	active	2	115	10	27	2	2	9.67	1	0	0	28	2.12	7.55	9.67	2023-12-02 18:53:07.89+05:30	2023-12-02 18:53:07.89+05:30
-100	Chair		Units	active	2	116	10	27	2	2	9.67	32.9	78	193.87	28	15.31	54.68	69.99	2023-12-02 19:16:25.793+05:30	2023-12-02 19:16:25.793+05:30
-101	Apron		TML	active	2	116	13	27	9	4	34.9	0.98	12	3.57	15	3.93	26.17	30.1	2023-12-02 19:16:25.793+05:30	2023-12-02 19:16:25.793+05:30
+148	Apron		TML	active	2	123	13	27	1	4	112	1	0	0	10	11.2	112	123.2	2023-12-09 20:36:32.345+05:30	2023-12-09 20:36:32.345+05:30
 \.
 
 
@@ -2102,35 +1902,11 @@ COPY public."InvoiceLineItems" (id, name, description, unit, status, organizatio
 
 COPY public."InvoicePaymentTerms" (id, name, origin_payment_term_id, payment_term, "interval", created_at,
                                    updated_at) FROM stdin;
-1	Due on Receipt	8	\N	end_of_day	2023-10-24 20:34:54.218+05:30	2023-10-24 20:34:54.218+05:30
-2	Due on Receipt	8	\N	end_of_day	2023-10-24 20:46:19.377+05:30	2023-10-24 20:46:19.377+05:30
-3	Due on Receipt	8	0	end_of_day	2023-10-24 20:48:32.069+05:30	2023-10-24 20:48:32.069+05:30
-77	NET 365	12	365	regular	2023-11-29 23:32:58.419+05:30	2023-11-29 23:32:58.419+05:30
-5	Due on Receipt	8	0	end_of_day	2023-10-25 23:24:42.79+05:30	2023-10-25 23:24:42.79+05:30
-78	Net 45	4	45	regular	2023-12-02 14:11:42.74+05:30	2023-12-02 14:11:42.74+05:30
 -1	CUSTOM	-1	\N	\N	2023-12-02 23:57:43.491+05:30	2023-12-02 23:57:52.677+05:30
-79	End of Next Month	7	1	end_of_month	2023-12-02 18:53:07.879+05:30	2023-12-02 18:53:07.879+05:30
-11	Net 60	5	60	regular	2023-10-25 23:35:43.165+05:30	2023-10-25 23:35:43.165+05:30
-12	Due on Receipt	8	0	end_of_day	2023-10-25 23:36:28.706+05:30	2023-10-25 23:36:28.706+05:30
-13	Due on Receipt	8	0	end_of_day	2023-10-25 23:37:24.546+05:30	2023-10-25 23:37:24.546+05:30
-14	NET 365	12	365	regular	2023-10-25 23:38:22.304+05:30	2023-10-25 23:38:22.304+05:30
-80	NET 365	12	365	regular	2023-12-02 19:16:25.785+05:30	2023-12-02 19:16:25.785+05:30
-16	Due on Receipt	8	0	end_of_day	2023-11-25 10:02:08.454+05:30	2023-11-25 10:02:08.454+05:30
-28	NET 365	12	365	regular	2023-11-26 08:38:19.649+05:30	2023-11-26 08:38:19.649+05:30
-30	NET 365	12	365	regular	2023-11-26 08:39:34.426+05:30	2023-11-26 08:39:34.426+05:30
-31	NET 365	12	365	regular	2023-11-26 09:25:51.291+05:30	2023-11-26 09:25:51.291+05:30
-32	NET 365	12	365	regular	2023-11-26 09:28:22.505+05:30	2023-11-26 09:28:22.505+05:30
-33	NET 365	12	365	regular	2023-11-26 09:29:19.224+05:30	2023-11-26 09:29:19.224+05:30
-34	NET 365	12	365	regular	2023-11-26 09:41:45.556+05:30	2023-11-26 09:41:45.556+05:30
-35	NET 365	12	365	regular	2023-11-26 09:48:02.999+05:30	2023-11-26 09:48:02.999+05:30
-36	NET 365	12	365	regular	2023-11-26 09:52:13.787+05:30	2023-11-26 09:52:13.787+05:30
-37	NET 365	12	365	regular	2023-11-26 10:03:00.022+05:30	2023-11-26 10:03:00.022+05:30
-38	NET 365	12	365	regular	2023-11-26 10:06:56.119+05:30	2023-11-26 10:06:56.119+05:30
-39	NET 365	12	365	regular	2023-11-26 14:14:18.188+05:30	2023-11-26 14:14:18.188+05:30
-40	NET 365	12	365	regular	2023-11-26 14:25:16.93+05:30	2023-11-26 14:25:16.93+05:30
-41	NET 365	12	365	regular	2023-11-26 14:26:37.385+05:30	2023-11-26 14:26:37.385+05:30
-43	NET 365	12	365	regular	2023-11-26 14:28:38.214+05:30	2023-11-26 14:28:38.214+05:30
-44	NET 365	12	365	regular	2023-11-26 15:29:00.352+05:30	2023-11-26 15:29:00.352+05:30
+100	End of Month	6	0	end_of_month	2023-12-09 20:01:25.825+05:30	2023-12-09 20:01:25.825+05:30
+105	End of Month	6	0	end_of_month	2023-12-09 20:07:03.726+05:30	2023-12-09 20:07:03.726+05:30
+106	End of Month	6	0	end_of_month	2023-12-09 20:23:17.234+05:30	2023-12-09 20:23:17.234+05:30
+107	End of Month	6	0	end_of_month	2023-12-09 20:36:32.331+05:30	2023-12-09 20:36:32.331+05:30
 \.
 
 
@@ -2140,16 +1916,9 @@ COPY public."InvoicePaymentTerms" (id, name, origin_payment_term_id, payment_ter
 
 COPY public."Invoices" (id, contact_id, invoice_number, reference_number, order_number, terms, notes, is_inclusive_tax,
                         status, organization_id, created_by, discount_total, tax_total, sub_total, total, created_at,
-                        updated_at, invoice_payment_term_id, issue_date, due_date) FROM stdin;
-77	1	2	\N	\N	\N	\N	f	active	2	1	56.4	76.14	507.6	583.74	2023-11-26 14:28:38.217+05:30	2023-11-26 14:28:38.217+05:30	43	2023-11-26	2024-11-25
-78	1	nh	\N	\N	\N	\N	f	active	2	1	0	15	100	115	2023-11-26 15:29:00.357+05:30	2023-11-26 15:29:00.357+05:30	44	2023-11-26	2024-11-25
-75	1	1	\N	\N	\N	\N	f	active	2	1	59.4	80.19	534.6	614.79	2023-11-26 14:26:37.393+05:30	2023-11-26 14:26:37.393+05:30	41	2023-11-26	2024-11-25
-111	1	3	\N	\N	\N	\N	f	active	2	1	0	60	600	660	2023-11-29 23:32:58.424+05:30	2023-11-29 23:32:58.424+05:30	77	2023-11-29	2024-11-28
-112	2	78	\N	\N	\N	\N	t	active	2	1	2.18	2.94	19.6	22.54	2023-12-02 14:11:42.779+05:30	2023-12-02 14:11:42.779+05:30	78	2023-12-02	2024-01-16
-113	2	44	\N	\N	\N	\N	f	active	2	1	0	15	100	115	2023-12-02 18:29:36.717+05:30	2023-12-02 18:29:36.717+05:30	-1	2023-12-02	2023-12-02
-114	2	K1	\N	\N	\N	\N	f	active	2	1	0	15	100	115	2023-12-02 18:46:08.879+05:30	2023-12-02 18:46:08.879+05:30	-1	2023-12-02	2023-12-02
-115	1	IO	\N	\N	\N	\N	t	active	2	1	0	2.12	7.55	9.67	2023-12-02 18:53:07.884+05:30	2023-12-02 18:53:07.884+05:30	79	2023-12-02	2024-01-31
-116	1	LO	\N	\N	\N	\N	t	active	2	1	197.44	19.24	80.85	100.09	2023-12-02 19:16:25.789+05:30	2023-12-02 19:16:25.789+05:30	80	2023-12-02	2024-12-01
+                        updated_at, invoice_payment_term_id, issue_date, due_date, currency_id,
+                        transaction_status) FROM stdin;
+123	1	1				KKK	f	active	2	1	0	11.2	112	123.2	2023-12-09 20:01:25.842+05:30	2023-12-09 20:36:32.356+05:30	107	2023-12-09	2023-12-31	11	draft
 \.
 
 
@@ -2160,12 +1929,7 @@ COPY public."Invoices" (id, contact_id, invoice_number, reference_number, order_
 COPY public."ItemPreferences" (id, quantity_precision, is_item_name_duplication_enabled, created_at, updated_at,
                                organization_id) FROM stdin;
 1	2	t	2023-09-20 23:48:47.292+05:30	2023-09-20 23:48:47.292+05:30	2
-2	2	t	2023-09-20 23:51:22.912+05:30	2023-09-20 23:51:22.912+05:30	72
-5	2	t	2023-09-21 22:31:54.223+05:30	2023-09-21 22:31:54.223+05:30	75
-6	2	t	2023-09-23 13:55:12.812+05:30	2023-09-23 13:55:12.812+05:30	76
-7	2	t	2023-10-04 16:15:06.186+05:30	2023-10-04 16:15:06.186+05:30	77
-11	2	t	2023-10-08 21:10:06.96+05:30	2023-10-08 21:10:06.96+05:30	104
-13	2	t	2023-10-23 21:03:30.59+05:30	2023-10-23 21:03:30.59+05:30	110
+18	2	t	2023-12-09 09:48:04.186+05:30	2023-12-09 09:48:04.186+05:30	116
 \.
 
 
@@ -2178,24 +1942,15 @@ COPY public."ItemUnits" (id, name, unit, status, created_at, updated_at, created
 2	\N	Units	active	2023-10-05 23:05:56.056+05:30	2023-10-05 23:05:56.056+05:30	1	2
 3	\N	Dozon	active	2023-10-05 23:31:34.028+05:30	2023-10-05 23:31:34.028+05:30	1	2
 4	\N	TML	active	2023-10-08 12:33:02.352+05:30	2023-10-08 12:33:02.352+05:30	1	2
-14	BOX	box	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-15	Centimeter	cm	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-16	Meter	m	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-17	Feet	ft	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-18	Gram	g	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-19	Kilogram	kg	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-20	Other	oth	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-21	Pieces	pcs	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-22	Dozen	dz	active	2023-10-08 21:10:06.964+05:30	2023-10-08 21:10:06.964+05:30	1	104
-32	BOX	box	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-33	Centimeter	cm	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-34	Meter	m	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-35	Feet	ft	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-36	Gram	g	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-37	Kilogram	kg	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-38	Other	oth	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-39	Pieces	pcs	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
-40	Dozen	dz	active	2023-10-23 21:03:30.595+05:30	2023-10-23 21:03:30.595+05:30	1	110
+77	BOX	box	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+78	Centimeter	cm	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+79	Meter	m	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+80	Feet	ft	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+81	Gram	g	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+82	Kilogram	kg	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+83	Other	oth	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+84	Pieces	pcs	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
+85	Dozen	dz	active	2023-12-09 09:48:04.193+05:30	2023-12-09 09:48:04.193+05:30	1	116
 \.
 
 
@@ -2203,20 +1958,11 @@ COPY public."ItemUnits" (id, name, unit, status, created_at, updated_at, created
 -- Data for Name: OrganizationBasics; Type: TABLE DATA; Schema: public; Owner: surojit
 --
 
-COPY public."OrganizationBasics" (id, name, primary_address, country_code, sector, currency_code, status, created_at,
-                                  updated_at, created_by) FROM stdin;
-1	Reducer	Goa, India	IN	Others	INR	active	2023-08-26 00:09:34.016+05:30	2023-08-26 00:09:34.016+05:30	1
-3	DEN	Kolkata, India	IN	Others	INR	active	2023-09-14 00:12:34.35+05:30	2023-09-14 00:12:34.35+05:30	1
-4	EPaper	Goa, India	IN	Others	INR	active	2023-08-26 14:21:45.101+05:30	2023-08-26 14:21:45.101+05:30	1
-5	DEN	Kolkata, India	IN	Others	INR	active	2023-09-14 00:17:16.073+05:30	2023-09-14 00:17:16.073+05:30	1
-2	DEN	Kolkata, India	IN	Others	INR	active	2023-09-14 00:26:45.497+05:30	2023-09-14 00:26:45.497+05:30	1
-71	DEN	Kolkata, India	IN	Others	INR	active	2023-09-20 23:48:47.223+05:30	2023-09-20 23:48:47.223+05:30	1
-72	DEN	Kolkata, India	IN	Others	INR	active	2023-09-20 23:51:22.855+05:30	2023-09-20 23:51:22.855+05:30	1
-75	DEN	Kolkata, India	IN	Others	INR	active	2023-09-21 22:31:54.17+05:30	2023-09-21 22:31:54.17+05:30	1
-76	DEN	Kolkata, India	IN	Others	INR	active	2023-09-23 13:55:12.741+05:30	2023-09-23 13:55:12.741+05:30	1
-77	MON	Kolkata, India	IN	Others	INR	active	2023-10-04 16:15:06.121+05:30	2023-10-04 16:15:06.121+05:30	1
-104	COM	Kolkata, India	IN	Others	INR	active	2023-10-08 21:10:06.91+05:30	2023-10-08 21:10:06.91+05:30	1
-110	Pampom	Kolkata, India	IN	Others	INR	active	2023-10-23 21:03:30.537+05:30	2023-10-23 21:03:30.537+05:30	1
+COPY public."OrganizationBasics" (id, name, primary_address, country_code, sector, status, created_at, updated_at,
+                                  created_by, currency_id) FROM stdin;
+2	DEN	Kolkata, India	IN	Others	active	2023-09-14 00:26:45.497+05:30	2023-09-14 00:26:45.497+05:30	1	11
+1	Reducer	Goa, India	IN	Others	active	2023-08-26 00:09:34.016+05:30	2023-08-26 00:09:34.016+05:30	1	\N
+116	MNNN	Kolkata, India	IN	Others	active	2023-12-09 09:48:04.125+05:30	2023-12-09 09:48:04.203+05:30	1	94
 \.
 
 
@@ -2226,16 +1972,8 @@ COPY public."OrganizationBasics" (id, name, primary_address, country_code, secto
 
 COPY public."OrganizationsUsers" (id, job_status, status, role_id, invited_by, invited_on, accepted_on,
                                   is_default_organization, created_at, updated_at, user_id, organization_id) FROM stdin;
-68	working	active	admin	\N	\N	\N	\N	2023-09-14 00:12:34.354+05:30	2023-09-14 00:12:34.354+05:30	1	68
-69	working	active	admin	\N	\N	\N	\N	2023-09-14 00:17:16.08+05:30	2023-09-14 00:17:16.08+05:30	1	69
-70	working	active	admin	\N	\N	\N	\N	2023-09-14 00:26:45.508+05:30	2023-09-14 00:26:45.508+05:30	1	70
-71	working	active	admin	\N	\N	\N	\N	2023-09-20 23:48:47.237+05:30	2023-09-20 23:48:47.237+05:30	1	71
-72	working	active	admin	\N	\N	\N	\N	2023-09-20 23:51:22.865+05:30	2023-09-20 23:51:22.865+05:30	1	72
-75	working	active	admin	\N	\N	\N	\N	2023-09-21 22:31:54.177+05:30	2023-09-21 22:31:54.177+05:30	1	75
-76	working	active	admin	\N	\N	\N	\N	2023-09-23 13:55:12.757+05:30	2023-09-23 13:55:12.757+05:30	1	76
-77	working	active	admin	\N	\N	\N	\N	2023-10-04 16:15:06.133+05:30	2023-10-04 16:15:06.133+05:30	1	77
-99	working	active	admin	\N	\N	\N	f	2023-10-08 21:10:06.916+05:30	2023-10-08 21:10:06.916+05:30	1	104
-105	working	active	admin	\N	\N	\N	f	2023-10-23 21:03:30.546+05:30	2023-10-23 21:03:30.546+05:30	1	110
+109	working	active	admin	\N	\N	\N	f	2023-12-09 09:43:01.772+05:30	2023-12-09 09:43:01.772+05:30	1	115
+110	working	active	admin	\N	\N	\N	f	2023-12-09 09:48:04.135+05:30	2023-12-09 09:48:04.135+05:30	1	116
 1	working	active	admin	\N	\N	\N	\N	2023-08-26 00:09:34.021+05:30	2023-08-26 00:09:34.021+05:30	1	1
 65	working	active	admin	\N	\N	\N	t	2023-08-26 14:21:45.113+05:30	2023-08-26 14:21:45.113+05:30	1	2
 \.
@@ -2247,14 +1985,21 @@ COPY public."OrganizationsUsers" (id, job_status, status, role_id, invited_by, i
 
 COPY public."PaymentTerms" (id, name, payment_term, is_default, "interval", status, created_by, organization_id,
                             created_at, updated_at) FROM stdin;
-6	End of Month	0	f	end_of_month	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+41	Net 15	15	f	regular	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
+42	Net 30	30	f	regular	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
+43	Net 45	45	f	regular	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
 5	Net 60	60	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
 4	Net 45	45	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
 7	End of Next Month	1	f	end_of_month	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
 3	Net 30	30	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+44	Net 60	60	f	regular	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
+45	End of Month	0	f	end_of_month	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
 8	Due on Receipt	0	f	end_of_day	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:53:41.419+05:30
+46	End of Next Month	1	f	end_of_month	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
+47	Due on Receipt	0	t	end_of_day	active	1	116	2023-12-09 09:48:04.197+05:30	2023-12-09 09:48:04.197+05:30
 2	NET 15	15	f	regular	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
-12	NET 365	365	t	regular	active	1	2	2023-10-23 21:53:53.163+05:30	2023-10-23 22:00:01.868+05:30
+6	End of Month	0	t	end_of_month	active	1	2	2023-10-23 21:03:30.605+05:30	2023-10-23 21:03:30.605+05:30
+12	NET 365	365	f	regular	active	1	2	2023-10-23 21:53:53.163+05:30	2023-10-23 22:00:01.868+05:30
 \.
 
 
@@ -2288,23 +2033,12 @@ COPY public."RegularItems" (id, name, product_type, selling_price, selling_descr
 COPY public."TaxRates" (id, name, description, rate, country_code, tax_type, status, created_at, updated_at, created_by,
                         organization_id, is_editable, is_deletable) FROM stdin;
 2	GST28	GST Of 28%	28	IN	direct_tax	active	2023-09-22 03:36:52.723+05:30	2023-09-22 03:36:54.745+05:30	1	2	f	f
-6	GST28	GST Of 28%	28	IN	direct_tax	active	2023-09-23 13:55:12.818+05:30	2023-09-23 13:55:12.818+05:30	1	76	f	f
-7	GST18	GST Of 18%	18	IN	direct_tax	active	2023-09-23 13:55:12.818+05:30	2023-09-23 13:55:12.818+05:30	1	76	f	f
-8	GST12	GST Of 12%	12	IN	direct_tax	active	2023-09-23 13:55:12.818+05:30	2023-09-23 13:55:12.818+05:30	1	76	f	f
-10	GST28	GST Of 28%	28	IN	direct_tax	active	2023-10-04 16:15:06.196+05:30	2023-10-04 16:15:06.196+05:30	1	77	f	f
-11	GST18	GST Of 18%	18	IN	direct_tax	active	2023-10-04 16:15:06.196+05:30	2023-10-04 16:15:06.196+05:30	1	77	f	f
-12	GST12	GST Of 12%	12	IN	direct_tax	active	2023-10-04 16:15:06.196+05:30	2023-10-04 16:15:06.196+05:30	1	77	f	f
-13	GST05	GST Of 5%	5	IN	direct_tax	active	2023-10-04 16:15:06.196+05:30	2023-10-04 16:15:06.196+05:30	1	77	f	f
-15	GST28	GST Of 28%	28	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
-16	GST18	GST Of 18%	18	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
-17	GST12	GST Of 12%	12	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
-18	GST05	GST Of 5%	5	IN	direct_tax	active	2023-10-08 21:10:06.966+05:30	2023-10-08 21:10:06.966+05:30	1	104	f	f
-23	GST28	GST Of 28%	28	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
-24	GST18	GST Of 18%	18	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
-25	GST12	GST Of 12%	12	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
-26	GST05	GST Of 5%	5	IN	direct_tax	active	2023-10-23 21:03:30.601+05:30	2023-10-23 21:03:30.601+05:30	1	110	f	f
 9	GST15	GST Of 15%	15	IN	direct_tax	active	2023-09-23 13:55:12.818+05:30	2023-09-23 13:55:12.818+05:30	1	2	f	f
 1	GST10	GST Of 10%	10	IN	direct_tax	active	2023-09-21 22:31:54.226+05:30	2023-09-21 22:31:54.226+05:30	1	2	f	f
+43	GST28	GST Of 28%	28	IN	direct_tax	active	2023-12-09 09:48:04.195+05:30	2023-12-09 09:48:04.195+05:30	1	116	f	f
+44	GST18	GST Of 18%	18	IN	direct_tax	active	2023-12-09 09:48:04.195+05:30	2023-12-09 09:48:04.195+05:30	1	116	f	f
+45	GST12	GST Of 12%	12	IN	direct_tax	active	2023-12-09 09:48:04.195+05:30	2023-12-09 09:48:04.195+05:30	1	116	f	f
+46	GST05	GST Of 5%	5	IN	direct_tax	active	2023-12-09 09:48:04.195+05:30	2023-12-09 09:48:04.195+05:30	1	116	f	f
 \.
 
 
@@ -2328,7 +2062,7 @@ SELECT pg_catalog.setval('public."AccountGroups_id_seq"', 7, true);
 -- Name: AccountTemplateDetails_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."AccountTemplateDetails_id_seq"', 20, true);
+SELECT pg_catalog.setval('public."AccountTemplateDetails_id_seq"', 25, true);
 
 
 --
@@ -2349,7 +2083,7 @@ SELECT pg_catalog.setval('public."AccountsConfigs_id_seq"', 20, true);
 -- Name: AccountsOfOrganizations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."AccountsOfOrganizations_id_seq"', 1060, true);
+SELECT pg_catalog.setval('public."AccountsOfOrganizations_id_seq"', 1380, true);
 
 
 --
@@ -2367,66 +2101,80 @@ SELECT pg_catalog.setval('public."Contacts_id_seq"', 2, true);
 
 
 --
+-- Name: CurrencyExchangeRate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
+--
+
+SELECT pg_catalog.setval('public."CurrencyExchangeRate_id_seq"', 1, false);
+
+
+--
+-- Name: Currency_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
+--
+
+SELECT pg_catalog.setval('public."Currency_id_seq"', 105, true);
+
+
+--
 -- Name: GeneralPreferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."GeneralPreferences_id_seq"', 5, true);
+SELECT pg_catalog.setval('public."GeneralPreferences_id_seq"', 10, true);
 
 
 --
 -- Name: InvoiceLineItems_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."InvoiceLineItems_id_seq"', 101, true);
+SELECT pg_catalog.setval('public."InvoiceLineItems_id_seq"', 148, true);
 
 
 --
 -- Name: InvoicePaymentTerms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."InvoicePaymentTerms_id_seq"', 80, true);
+SELECT pg_catalog.setval('public."InvoicePaymentTerms_id_seq"', 107, true);
 
 
 --
 -- Name: Invoices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."Invoices_id_seq"', 116, true);
+SELECT pg_catalog.setval('public."Invoices_id_seq"', 123, true);
 
 
 --
 -- Name: ItemPreferences_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."ItemPreferences_id_seq"', 13, true);
+SELECT pg_catalog.setval('public."ItemPreferences_id_seq"', 18, true);
 
 
 --
 -- Name: ItemUnits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."ItemUnits_id_seq"', 40, true);
+SELECT pg_catalog.setval('public."ItemUnits_id_seq"', 85, true);
 
 
 --
 -- Name: OrganizationBasics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."OrganizationBasics_id_seq"', 110, true);
+SELECT pg_catalog.setval('public."OrganizationBasics_id_seq"', 116, true);
 
 
 --
 -- Name: OrganizationsUsers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."OrganizationsUsers_id_seq"', 105, true);
+SELECT pg_catalog.setval('public."OrganizationsUsers_id_seq"', 110, true);
 
 
 --
 -- Name: PaymentTerms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."PaymentTerms_id_seq"', 12, true);
+SELECT pg_catalog.setval('public."PaymentTerms_id_seq"', 47, true);
 
 
 --
@@ -2440,7 +2188,7 @@ SELECT pg_catalog.setval('public."RegularItems_id_seq"', 14, true);
 -- Name: TaxRates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: surojit
 --
 
-SELECT pg_catalog.setval('public."TaxRates_id_seq"', 26, true);
+SELECT pg_catalog.setval('public."TaxRates_id_seq"', 46, true);
 
 
 --
@@ -2504,6 +2252,22 @@ ALTER TABLE ONLY public."AccountsOfTemplates"
 
 ALTER TABLE ONLY public."Contacts"
     ADD CONSTRAINT "Contacts_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: CurrencyExchangeRate CurrencyExchangeRate_pkey; Type: CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."CurrencyExchangeRate"
+    ADD CONSTRAINT "CurrencyExchangeRate_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Currency Currency_pkey; Type: CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Currency"
+    ADD CONSTRAINT "Currency_pkey" PRIMARY KEY (id);
 
 
 --
@@ -2801,6 +2565,14 @@ ALTER TABLE ONLY public."AccountsOfTemplates"
 
 
 --
+-- Name: Contacts Contacts_currency_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Contacts"
+    ADD CONSTRAINT "Contacts_currency_id_fk" FOREIGN KEY (currency_id) REFERENCES public."Currency" (id);
+
+
+--
 -- Name: Contacts Contacts_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
 --
 
@@ -2814,6 +2586,46 @@ ALTER TABLE ONLY public."Contacts"
 
 ALTER TABLE ONLY public."Contacts"
     ADD CONSTRAINT "Contacts_user_id_fkey" FOREIGN KEY (created_by) REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: CurrencyExchangeRate CurrencyExchangeRate_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."CurrencyExchangeRate"
+    ADD CONSTRAINT "CurrencyExchangeRate_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: CurrencyExchangeRate CurrencyExchangeRate_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."CurrencyExchangeRate"
+    ADD CONSTRAINT "CurrencyExchangeRate_currency_id_fkey" FOREIGN KEY (currency_id) REFERENCES public."Currency" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: CurrencyExchangeRate CurrencyExchangeRate_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."CurrencyExchangeRate"
+    ADD CONSTRAINT "CurrencyExchangeRate_organization_id_fkey" FOREIGN KEY (organization_id) REFERENCES public."OrganizationBasics" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Currency Currency_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Currency"
+    ADD CONSTRAINT "Currency_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Currency Currency_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Currency"
+    ADD CONSTRAINT "Currency_organization_id_fkey" FOREIGN KEY (organization_id) REFERENCES public."OrganizationBasics" (id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -2889,6 +2701,14 @@ ALTER TABLE ONLY public."Invoices"
 
 
 --
+-- Name: Invoices Invoices_currency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."Invoices"
+    ADD CONSTRAINT "Invoices_currency_id_fkey" FOREIGN KEY (currency_id) REFERENCES public."Currency" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: Invoices Invoices_invoice_payment_term_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: surojit
 --
 
@@ -2934,6 +2754,21 @@ ALTER TABLE ONLY public."ItemUnits"
 
 ALTER TABLE ONLY public."OrganizationBasics"
     ADD CONSTRAINT "OrganizationBasics_created_by_fkey" FOREIGN KEY (created_by) REFERENCES public."Users" (id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: OrganizationBasics OrganizationBasics_currenct_fk; Type: FK CONSTRAINT; Schema: public; Owner: surojit
+--
+
+ALTER TABLE ONLY public."OrganizationBasics"
+    ADD CONSTRAINT "OrganizationBasics_currenct_fk" FOREIGN KEY (currency_id) REFERENCES public."Currency" (id);
+
+
+--
+-- Name: CONSTRAINT "OrganizationBasics_currenct_fk" ON "OrganizationBasics"; Type: COMMENT; Schema: public; Owner: surojit
+--
+
+COMMENT ON CONSTRAINT "OrganizationBasics_currenct_fk" ON public."OrganizationBasics" IS 'organization currency id';
 
 
 --

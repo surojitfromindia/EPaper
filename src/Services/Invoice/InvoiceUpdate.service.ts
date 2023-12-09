@@ -112,10 +112,14 @@ class InvoiceUpdateService {
         dueDate,
         invoicePaymentTermId,
         currencyId,
-        subTotal: invoiceCalculateReturn.subTotal,
-        total: invoiceCalculateReturn.total,
         discountTotal: invoiceCalculateReturn.discountTotal,
+        subTotal: invoiceCalculateReturn.subTotal,
         taxTotal: invoiceCalculateReturn.taxTotal,
+        total: invoiceCalculateReturn.total,
+        bcyDiscountTotal: invoiceCalculateReturn.bcyDiscountTotal,
+        bcySubTotal: invoiceCalculateReturn.bcySubTotal,
+        bcyTaxTotal: invoiceCalculateReturn.bcyTaxTotal,
+        bcyTotal: invoiceCalculateReturn.bcyTotal,
       });
 
       // only a few line items will be updated, we separate them by identifying a key "id."

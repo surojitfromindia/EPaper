@@ -12,6 +12,10 @@ type InvoiceCalculateReturn = {
   discountTotal: number;
   subTotal: number;
   total: number;
+  bcyTaxTotal: number;
+  bcyDiscountTotal: number;
+  bcySubTotal: number;
+  bcyTotal: number;
 };
 
 type InvoiceCalculationConstructorProps = {
@@ -33,6 +37,7 @@ class InvoiceCalculation {
   readonly isDiscountBeforeTax: GenerelaPrefernce["isDiscountBeforeTax"];
   readonly isTaxInclusive: boolean;
 
+  readonly exchangeRate: number = 1;
   constructor({
     invoice,
     line_items,
@@ -90,8 +95,15 @@ class InvoiceCalculation {
         taxAmount,
         itemTotal,
         itemTotalTaxIncluded,
+        bcyRate: lineItem.rate * this.exchangeRate,
+        bcyDiscountAmount: discountAmount * this.exchangeRate,
+        bcyTaxAmount: taxAmount * this.exchangeRate,
+        bcyItemTotal: itemTotal * this.exchangeRate,
+        bcyItemTotalTaxIncluded: itemTotalTaxIncluded * this.exchangeRate,
       };
-      updatedLineItems.push(newLineItem);
+      updatedLineItems.push({
+        ...newLineItem,
+      });
 
       // update the global values
       invoiceTaxTotal = mathLib.getWithPrecision(invoiceTaxTotal + taxAmount);
@@ -107,6 +119,10 @@ class InvoiceCalculation {
       subTotal: invoiceSubTotal,
       total: invoiceTotal,
       line_items: updatedLineItems,
+      bcyDiscountTotal: invoiceDiscountTotal * this.exchangeRate,
+      bcyTaxTotal: invoiceTaxTotal * this.exchangeRate,
+      bcySubTotal: invoiceSubTotal * this.exchangeRate,
+      bcyTotal: invoiceTotal * this.exchangeRate,
     };
   }
 }
