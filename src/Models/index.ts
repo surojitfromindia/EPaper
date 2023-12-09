@@ -17,7 +17,7 @@ import { Invoice } from "./Invoice/Invoices.model";
 import { InvoiceLineItem } from "./Invoice/InvoiceLineItems.model";
 import { PaymentTerms } from "./PaymentTerm/PaymentTerms.model";
 import { InvoicePaymentTerm } from "./Invoice/InvoicePaymentTerms.model";
-import { Currency } from "./Currency/Currency.model";
+import { CurrencyModel } from "./Currency/Currency.model";
 import { CurrencyExchangeRate } from "./Currency/CurrencyExchangeRate.model";
 
 export {
@@ -40,6 +40,6 @@ export {
   InvoiceLineItem,
   PaymentTerms,
   InvoicePaymentTerm,
-  Currency,
+  CurrencyModel,
   CurrencyExchangeRate,
 };

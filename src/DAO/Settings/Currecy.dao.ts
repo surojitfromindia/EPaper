@@ -1,8 +1,8 @@
-import { Currency } from "../../Models";
+import { CurrencyModel } from "../../Models";
 
 class CurrencyDAO {
   async getAll({ organization_id }) {
-    return await Currency.findAll({
+    return await CurrencyModel.findAll({
       where: {
         organizationId: organization_id,
       },
@@ -11,7 +11,7 @@ class CurrencyDAO {
   }
 
   async createAll({ currency_details }, { transaction }) {
-    return await Currency.bulkCreate(currency_details, {
+    return await CurrencyModel.bulkCreate(currency_details, {
       transaction,
     });
   }

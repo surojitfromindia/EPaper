@@ -1,4 +1,4 @@
-import { Contacts, Currency } from "../../Models";
+import { Contacts, CurrencyModel } from "../../Models";
 import { Op } from "@sequelize/core";
 
 type GetContactsAutoCompleteParamsType = {
@@ -62,7 +62,7 @@ class ContactDao {
       },
       include: [
         {
-          model: Currency,
+          model: CurrencyModel,
           as: "Currency",
           attributes: ["id", "currencyName", "currencySymbol", "currencyCode"],
         },

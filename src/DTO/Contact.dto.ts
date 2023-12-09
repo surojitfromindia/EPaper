@@ -1,6 +1,7 @@
 import { ContactAutoCompleteType } from "../Services/Contact/Contact.service";
 import { ValidityUtil } from "../Utils/ValidityUtil";
 import { ContactType } from "../Models/Contact/Contacts.model";
+import { CurrencyDTO } from "./Currency.DTO";
 
 class ContactDTO {
   static toTransactionContact(contact_details: any) {
@@ -26,8 +27,9 @@ class ContactDTO {
       currency_id: contact_details.currencyId,
     };
     if (ValidityUtil.isNotEmpty(contact_details.Currency)) {
-      basic_payload.currency_code = contact_details.Currency.currencyCode;
-      basic_payload.currency_symbol = contact_details.Currency.currencySymbol;
+      Object.assign(basic_payload, {
+        ...CurrencyDTO.toCurrency(contact_details.Currency),
+      });
     }
     return basic_payload;
   }

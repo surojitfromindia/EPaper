@@ -1,4 +1,4 @@
-import { OrganizationBasic, User } from "../Models";
+import { CurrencyModel, OrganizationBasic, User } from "../Models";
 import {
   OrganizationBasicCreatable,
   OrganizationBasicIdType,
@@ -28,12 +28,22 @@ class OrganizationDao {
     });
   }
 
-  async getById({
+  async getOrganizationByIdRaw({
     organization_id,
   }: {
     organization_id: OrganizationBasicIdType;
   }) {
     return await OrganizationBasic.findByPk(organization_id, {});
+  }
+
+  async getOrganizationById({
+    organization_id,
+  }: {
+    organization_id: OrganizationBasicIdType;
+  }) {
+    return await OrganizationBasic.findByPk(organization_id, {
+      include: [{ model: CurrencyModel, as: "Currency" }],
+    });
   }
 }
 

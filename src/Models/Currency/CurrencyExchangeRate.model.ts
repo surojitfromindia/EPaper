@@ -7,7 +7,7 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { Currency, OrganizationBasic, User } from "../index";
+import { CurrencyModel, OrganizationBasic, User } from "../index";
 import {
   Attribute,
   AutoIncrement,
@@ -49,8 +49,8 @@ class CurrencyExchangeRate extends Model<
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare currencyId: number;
-  @BelongsTo(() => Currency, "currencyId")
-  declare Currency?: NonAttribute<Currency>;
+  @BelongsTo(() => CurrencyModel, "currencyId")
+  declare Currency?: NonAttribute<CurrencyModel>;
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

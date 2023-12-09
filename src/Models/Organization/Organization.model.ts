@@ -7,7 +7,7 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { User } from "../index";
+import { CurrencyModel, User } from "../index";
 import {
   Attribute,
   AutoIncrement,
@@ -47,9 +47,10 @@ class OrganizationBasic extends Model<
   @NotNull
   declare sector: string;
 
-  @Attribute(DataTypes.STRING)
-  @NotNull
-  declare currencyCode: string;
+  @Attribute(DataTypes.INTEGER)
+  declare currencyId: number;
+  @BelongsTo(() => CurrencyModel, "currencyId")
+  declare Currency?: NonAttribute<CurrencyModel>;
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull

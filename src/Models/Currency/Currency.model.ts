@@ -25,9 +25,9 @@ import {
   createdAt: false,
   updatedAt: false,
 })
-class Currency extends Model<
-  InferAttributes<Currency>,
-  InferCreationAttributes<Currency>
+class CurrencyModel extends Model<
+  InferAttributes<CurrencyModel>,
+  InferCreationAttributes<CurrencyModel>
 > {
   @Attribute(DataTypes.INTEGER)
   @PrimaryKey
@@ -65,7 +65,7 @@ class Currency extends Model<
   declare Organization?: NonAttribute<OrganizationBasic>;
 }
 
-export { Currency };
-type CurrencyType = Attributes<Currency>;
+export { CurrencyModel };
+type CurrencyType = Attributes<CurrencyModel>;
 
 export type { CurrencyType };

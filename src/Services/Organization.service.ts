@@ -8,16 +8,13 @@ import { PreferenceService, SettingService } from "./index";
 class OrganizationService {
   /**
    * Create a new organization.
-   * @param {Object} organization_details
-   * @param {ClientInfoType} client_info
-   * @returns {Promise<{country_code: *, organization_id: *, name: *, primary_address: *, created_by: *, currency_code: *}>}
    */
   async registerOrganization({ organization_details, client_info }) {
     const createdBy = client_info.userId;
     const newOrganization: any =
       OrganizationDTO.toOrganizationCreate(organization_details);
     newOrganization.createdBy = createdBy;
-    const createdOrganization = await sequelize.transaction(async (t1) => {
+    return await sequelize.transaction(async (t1) => {
       // create an organization with basic fields
       const organizationBasic = await OrganizationDao.create(
         {
@@ -66,22 +63,40 @@ class OrganizationService {
         { transaction: t1 },
       );
 
-      // also create predefined taxes and other fields
-      await SettingService.initAllDefaultSettings(
-        {
-          client_info,
-          organization_id: organizationId,
-          organization_country_code: countryCode,
-        },
-        {
-          transaction: t1,
-        },
-      );
+      // also create predefined fields
+      const settingsService = new SettingService({
+        organization_id: organizationId,
+        client_info,
+      });
+      const { organizationCurrencyId } =
+        await settingsService.initAllDefaultSettings(
+          {
+            organization_currency_code: newOrganization.currencyCode,
+          },
+          {
+            transaction: t1,
+          },
+        );
+      // set currency_id of organization
+      organizationBasic.set("currencyId", organizationCurrencyId);
+      await organizationBasic.save({ transaction: t1 });
 
-      return organizationBasic;
+      return this.getOrganizationById({ organization_id: organizationId });
     });
-    return OrganizationDTO.toOrganization(createdOrganization);
+  }
+
+  async getOrganizationByIdRaw({ organization_id }) {
+    return await OrganizationDao.getOrganizationByIdRaw({ organization_id });
+  }
+
+  async getOrganizationById({ organization_id }) {
+    const organization = await OrganizationDao.getOrganizationById({
+      organization_id,
+    });
+    return await OrganizationDao.getOrganizationById({
+      organization_id,
+    });
   }
 }
 
-export default Object.freeze(new OrganizationService());
+export default OrganizationService;

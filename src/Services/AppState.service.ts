@@ -6,7 +6,7 @@ class AppStateService {
     const organizationId = client_info.organizationId;
     const userId = client_info.userId;
     const userDetails = await UserDao.getUserById({ user_id: userId });
-    const organizationDetails = await OrganizationDao.getById({
+    const organizationDetails = await OrganizationDao.getOrganizationById({
       organization_id: organizationId,
     });
     return AppStateDto.toAppState({

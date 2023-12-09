@@ -11,6 +11,7 @@ import { InvoiceDTO } from "./Invoice.dto";
 import { PaymentTermsDTO } from "./PaymentTerms.dto";
 import { TaxRateDTO } from "./TaxRate.dto";
 import { ContactDTO } from "./Contact.dto";
+import { CurrencyDTO } from "./Currency.DTO";
 
 export {
   UserDTO,
@@ -26,4 +27,5 @@ export {
   InvoiceDTO,
   PaymentTermsDTO,
   ContactDTO,
+  CurrencyDTO,
 };

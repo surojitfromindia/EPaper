@@ -7,8 +7,8 @@ import {
   AccountTemplateDetails,
   AccountTypes,
   Contacts,
-  Currency,
   CurrencyExchangeRate,
+  CurrencyModel,
   GeneralPreferenceModel,
   Invoice,
   InvoiceLineItem,
@@ -57,7 +57,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     InvoiceLineItem,
     PaymentTerms,
     InvoicePaymentTerm,
-    Currency,
+    CurrencyModel,
     CurrencyExchangeRate,
   ],
 });
