@@ -2,6 +2,7 @@ import { Includeable, Transaction } from "@sequelize/core";
 import {
   AccountsOfOrganization,
   Contacts,
+  CurrencyModel,
   Invoice,
   InvoiceLineItem,
   InvoicePaymentTerm,
@@ -33,16 +34,20 @@ const INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES = [
   "itemTotal",
   "itemTotalTaxIncluded",
 ];
+const INVOICE_CURRENCY_DEFAULT_ATTRIBUTES = [
+  "id",
+  "currencySymbol",
+  "currencyCode",
+];
 type GetByIdFullOptions = {
   invoice_id: InvoiceIdType;
   organization_id: number;
-  include_branch?: boolean;
   include_line_items?: boolean;
 };
 
 type GetByIdOptions = Pick<
   GetByIdFullOptions,
-  "invoice_id" | "organization_id" | "include_branch"
+  "invoice_id" | "organization_id"
 >;
 
 type InvoiceUpdateProps = {
@@ -86,8 +91,9 @@ class InvoiceDao {
           attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
         },
         {
-          model: InvoicePaymentTerm,
-          as: "InvoicePaymentTerm",
+          model: CurrencyModel,
+          as: "Currency",
+          attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
         },
       ],
       order: [
@@ -115,15 +121,11 @@ class InvoiceDao {
     });
     return this.getByIdWithLineItems({ invoice_id, organization_id });
   }
-  async getByIdWithLineItems({
-    invoice_id,
-    include_branch,
-    organization_id,
-  }: GetByIdOptions) {
+
+  async getByIdWithLineItems({ invoice_id, organization_id }: GetByIdOptions) {
     return this.#getInvoiceById({
       invoice_id,
       organization_id,
-      include_branch,
       include_line_items: true,
     });
   }
@@ -142,6 +144,11 @@ class InvoiceDao {
       {
         model: InvoicePaymentTerm,
         as: "InvoicePaymentTerm",
+      },
+      {
+        model: CurrencyModel,
+        as: "Currency",
+        attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
       },
     ];
     if (include_line_items) {

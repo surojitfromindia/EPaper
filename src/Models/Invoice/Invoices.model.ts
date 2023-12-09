@@ -176,6 +176,7 @@ type InvoiceType = Attributes<Invoice> & {
   LineItems?: InvoiceLineItem[];
   InvoicePaymentTerm?: InvoicePaymentTerm;
   Contact?: Contacts;
+  Currency?: CurrencyModel;
 };
 type InvoiceIdType = number;
 

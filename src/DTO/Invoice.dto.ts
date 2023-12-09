@@ -1,5 +1,6 @@
 import {
   ContactDTO,
+  CurrencyDTO,
   InvoiceLineItemDTO,
   ItemUnitDTO,
   PaymentTermsDTO,
@@ -12,6 +13,7 @@ import {
 import { InvoiceLineItemCreatableBasic } from "../Models/Invoice/InvoiceLineItems.model";
 import { DateUtil } from "../Utils/DateUtil";
 import { DEFAULT_DATE_FORMAT } from "../Constants/DateFormat.Constant";
+import { ValidityUtil } from "../Utils/ValidityUtil";
 
 class InvoiceDTO {
   static toInvoiceEditPage({
@@ -20,19 +22,22 @@ class InvoiceDTO {
     payment_terms,
     line_item_accounts_list,
     invoice_details,
+    contact,
   }) {
-    const basic_date = {
+    const basic_data = {
       taxes: taxes.map(TaxRateDTO.toTaxRate),
       units: units.map(ItemUnitDTO.toItemUnit),
       payment_terms: payment_terms.map(PaymentTermsDTO.toPaymentTerm),
       line_item_accounts_list,
     };
     if (invoice_details) {
-      basic_date["invoice"] = InvoiceDTO.toInvoice({
+      basic_data["invoice"] = InvoiceDTO.toInvoice({
         invoice: invoice_details,
       });
+      basic_data["contact"] = ContactDTO.toContact(contact);
     }
-    return basic_date;
+
+    return basic_data;
   }
 
   static toInvoiceEditPageFromContact({ contact }) {
@@ -87,6 +92,12 @@ class InvoiceDTO {
         line_items: invoice.LineItems.map(InvoiceLineItemDTO.toInvoiceLineItem),
       });
     }
+    if (ValidityUtil.isNotEmpty(invoice.Currency)) {
+      Object.assign(return_data, {
+        ...CurrencyDTO.toCurrency(invoice.Currency),
+      });
+    }
+
     return return_data;
   }
 

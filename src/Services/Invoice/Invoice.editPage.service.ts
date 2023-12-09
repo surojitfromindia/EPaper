@@ -27,6 +27,7 @@ class InvoiceEditPageService {
   async getEditPage({ invoice_id }: InvoiceGetEdiPageProps) {
     const client_info = this.clientInfo;
     let invoiceDetails = null;
+    let contact = null;
     const taxes = await TaxRateService.getAllTaxRates({
       client_info: this.clientInfo,
     });
@@ -45,9 +46,16 @@ class InvoiceEditPageService {
         invoice_id,
         client_info,
       });
+      const contactService = new ContactService({
+        client_info,
+      });
+      contact = await contactService.getContactById({
+        contact_id: invoiceDetails.contactId,
+      });
     }
     return {
       invoice_details: invoiceDetails,
+      contact,
       taxes,
       units: itemUnits,
       payment_terms: paymentTerms,
