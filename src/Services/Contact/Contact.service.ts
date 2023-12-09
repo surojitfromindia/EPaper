@@ -19,6 +19,13 @@ class ContactService {
     });
     return await contactDao.getContactDetails({ contact_id });
   }
+
+  async getContactByIdRaw({ contact_id }) {
+    const contactDao = new ContactDao({
+      organization_id: this.clientInfo.organizationId,
+    });
+    return await contactDao.getContactDetailsRaw({ contact_id });
+  }
 }
 
 export { ContactService };

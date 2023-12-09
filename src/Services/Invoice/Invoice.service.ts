@@ -1,6 +1,5 @@
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { InvoiceIdType } from "../../Models/Invoice/Invoices.model";
-import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.model";
 import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { DataNotFoundError } from "../../Errors/APIErrors";
@@ -9,6 +8,8 @@ import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
 import { DateUtil } from "../../Utils/DateUtil";
 import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
 import { InvoiceUtil } from "./InvoiceUtil";
+import { ValidityUtil } from "../../Utils/ValidityUtil";
+import { ContactService } from "../Contact/Contact.service";
 
 type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -22,32 +23,36 @@ class InvoiceService {
   async create({ client_info, invoice_details }: InvoiceCreateProps) {
     const organizationId = client_info.organizationId;
     const userId = client_info.userId;
+    const contactId = invoice_details.contactId;
+    const issueDate = invoice_details.issueDate;
 
-    // invoice and line items
+    // these values are replaceable
+    let dueDate = invoice_details.dueDate;
+    let paymentTermId = invoice_details.paymentTermId;
+    let currencyId = invoice_details.currencyId;
+    let invoicePaymentTermId: number | null = null;
+
     const invoiceBody = {
       ...invoice_details,
       organizationId,
       createdBy: userId,
     };
-    const paymentTermId = invoice_details.paymentTermId;
-
-    // line items
-    const lineItemsBody: InvoiceLineItemCreatable[] = invoice_details.lineItems;
 
     return await sequelize.transaction(async (t1) => {
+      // line item and gross data calculation
       const invoiceCalculation = await InvoiceCalculation.init({
         client_info,
         invoice: invoiceBody,
-        line_items: lineItemsBody,
+        line_items: invoiceBody.lineItems,
       });
-      const { invoice: newInvoice, line_items: newLineItems } =
-        invoiceCalculation.calculate();
+      const invoiceCalculateReturn = invoiceCalculation.calculate();
+      const newLineItems = invoiceCalculateReturn.line_items;
 
       // calculate due date
       if (paymentTermId) {
-        const { due_date: dueDate, payment_term_details: paymentTermDetails } =
+        const { due_date, payment_term_details: paymentTermDetails } =
           await InvoiceUtil.calculateDueDate({
-            issue_date: DateUtil.parseFromStr(newInvoice.issueDate),
+            issue_date: DateUtil.parseFromStr(issueDate),
             payment_term_id: paymentTermId,
             organization_id: organizationId,
           });
@@ -64,14 +69,35 @@ class InvoiceService {
           );
 
         // update the due date and create a new invoicePaymentTerm
-        newInvoice.dueDate = DateUtil.Formatter(dueDate).format(DATE_FORMAT_DB);
-        newInvoice.invoicePaymentTermId = createdInvoicePaymentTerm.id;
+        dueDate = DateUtil.Formatter(due_date).format(DATE_FORMAT_DB);
+        invoicePaymentTermId = createdInvoicePaymentTerm.id;
       }
+
+      // if currencyId is not present, get the currencyId from contact
+      if (ValidityUtil.isEmpty(currencyId)) {
+        const contactService = new ContactService({
+          client_info,
+        });
+        const contact = await contactService.getContactByIdRaw({
+          contact_id: contactId,
+        });
+        currencyId = contact.currencyId;
+      }
+
+      Object.assign(invoiceBody, {
+        dueDate,
+        invoicePaymentTermId,
+        currencyId,
+        subTotal: invoiceCalculateReturn.subTotal,
+        total: invoiceCalculateReturn.total,
+        discountTotal: invoiceCalculateReturn.discountTotal,
+        taxTotal: invoiceCalculateReturn.taxTotal,
+      });
 
       // create the invoice
       const createdInvoice = await InvoiceDao.create(
         {
-          invoice_details: newInvoice,
+          invoice_details: invoiceBody,
         },
         {
           transaction: t1,
@@ -86,6 +112,7 @@ class InvoiceService {
           organizationId,
         }),
       );
+
       await InvoiceLineItemDao.bulkCreate(
         {
           invoice_line_items: newLineItemsWithInvoiceId,

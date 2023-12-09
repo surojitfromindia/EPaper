@@ -112,6 +112,7 @@ class InvoiceDTO {
       lineItems: invoice.line_items.map(
         InvoiceLineItemDTO.toInvoiceLineItemCreate,
       ),
+      currencyId: invoice.currency_id,
     };
   }
 
@@ -136,6 +137,7 @@ class InvoiceDTO {
         InvoiceLineItemDTO.toInvoiceLineItemUpdate,
       ),
       paymentTermId: invoice.payment_term_id ?? "",
+      currencyId: invoice.currency_id,
     };
   }
 }

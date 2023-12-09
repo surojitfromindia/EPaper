@@ -12,6 +12,8 @@ import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { DateUtil } from "../../Utils/DateUtil";
 import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
 import { InvoiceUtil } from "./InvoiceUtil";
+import { ValidityUtil } from "../../Utils/ValidityUtil";
+import { ContactService } from "../Contact/Contact.service";
 
 type InvoiceUpdateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -27,15 +29,21 @@ class InvoiceUpdateService {
   }: InvoiceUpdateProps) {
     const organizationId = client_info.organizationId;
     const invoiceId = invoice_id;
+    const contactId = invoice_details.contactId;
+    const issueDate = invoice_details.issueDate;
+
+    // these values are replaceable
+    let dueDate = invoice_details.dueDate;
+    let paymentTermId = invoice_details.paymentTermId;
+    let currencyId = invoice_details.currencyId;
+    let invoicePaymentTermId: number | null = null;
 
     // new invoice body.
     const invoiceBody: InvoiceCreatable = {
       ...invoice_details,
       id: invoiceId,
       organizationId: organizationId,
-      createdBy: client_info.userId,
     };
-    const paymentTermId = invoice_details.paymentTermId;
 
     // all line items.
     const allLineItems = invoice_details.lineItems;
@@ -57,18 +65,18 @@ class InvoiceUpdateService {
     return await sequelize.transaction(async (t1): Promise<Invoice> => {
       // do the calculation
       const invoiceCalculation = await InvoiceCalculation.init({
-        invoice: invoiceBody,
         client_info,
+        invoice: invoiceBody,
         line_items: allLineItems,
       });
-      const { invoice: updateInvoice, line_items } =
-        invoiceCalculation.calculate();
+      const invoiceCalculateReturn = invoiceCalculation.calculate();
+      const newLineItems = invoiceCalculateReturn.line_items;
 
       // calculate due date
-      if (paymentTermId) {
-        const { due_date: dueDate, payment_term_details: paymentTermDetails } =
+      if (ValidityUtil.isNotEmpty(paymentTermId)) {
+        const { due_date, payment_term_details: paymentTermDetails } =
           await InvoiceUtil.calculateDueDate({
-            issue_date: DateUtil.parseFromStr(updateInvoice.issueDate),
+            issue_date: DateUtil.parseFromStr(issueDate),
             payment_term_id: paymentTermId,
             organization_id: organizationId,
           });
@@ -85,20 +93,40 @@ class InvoiceUpdateService {
           );
 
         // update the due date and create a new invoicePaymentTerm
-        updateInvoice.dueDate =
-          DateUtil.Formatter(dueDate).format(DATE_FORMAT_DB);
-        updateInvoice.invoicePaymentTermId = createdInvoicePaymentTerm.id;
+        dueDate = DateUtil.Formatter(due_date).format(DATE_FORMAT_DB);
+        invoicePaymentTermId = createdInvoicePaymentTerm.id;
       }
+
+      // if currencyId is not present, get the currencyId from contact
+      if (ValidityUtil.isEmpty(currencyId)) {
+        const contactService = new ContactService({
+          client_info,
+        });
+        const contact = await contactService.getContactByIdRaw({
+          contact_id: contactId,
+        });
+        currencyId = contact.currencyId;
+      }
+
+      Object.assign(invoiceBody, {
+        dueDate,
+        invoicePaymentTermId,
+        currencyId,
+        subTotal: invoiceCalculateReturn.subTotal,
+        total: invoiceCalculateReturn.total,
+        discountTotal: invoiceCalculateReturn.discountTotal,
+        taxTotal: invoiceCalculateReturn.taxTotal,
+      });
 
       // only a few line items will be updated, we separate them by identifying a key "id."
       // if id is present, then it is an update, otherwise it will be created.
       const updatableLineItems = ComparisonUtil.getEntriesOnlyInFirstArray({
         first_array: previousLineItems,
-        second_array: line_items.filter((lineItem) => lineItem.id),
+        second_array: newLineItems.filter((lineItem) => lineItem.id),
         key_for_second_array: "id",
         key_for_first_array: "id",
       }).map((lineItem) => ({
-        ...lineItem,
+        ...newLineItems,
         organizationId: client_info.organizationId,
         invoiceId: invoiceId,
       }));
@@ -106,7 +134,7 @@ class InvoiceUpdateService {
       // item that is not updatable will be created.
       const creatableLineItems = ComparisonUtil.getEntriesNotInFirstArray({
         first_array: updatableLineItems,
-        second_array: line_items,
+        second_array: newLineItems,
         key_for_first_array: "id",
         key_for_second_array: "id",
       }).map((lineItem) => ({
@@ -149,7 +177,7 @@ class InvoiceUpdateService {
         {
           invoice_id: invoiceId,
           organization_id: organizationId,
-          invoice_details: updateInvoice,
+          invoice_details: invoiceBody,
         },
         {
           transaction: t1,

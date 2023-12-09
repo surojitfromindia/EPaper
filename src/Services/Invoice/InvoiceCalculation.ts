@@ -7,8 +7,11 @@ import { MathLib } from "../../Utils/MathLib/mathLib";
 import { LineItemCalculation } from "../helpers/LineItemCalculation";
 
 type InvoiceCalculateReturn = {
-  invoice: InvoiceCreatable;
   line_items: InvoiceLineItemCreatable[];
+  taxTotal: number;
+  discountTotal: number;
+  subTotal: number;
+  total: number;
 };
 
 type InvoiceCalculationConstructorProps = {
@@ -98,16 +101,11 @@ class InvoiceCalculation {
       invoiceSubTotal = mathLib.getWithPrecision(invoiceSubTotal + itemTotal);
     }
     invoiceTotal = mathLib.getWithPrecision(invoiceTaxTotal + invoiceSubTotal);
-
-    const updateInvoice = {
-      ...this.invoice,
+    return {
       taxTotal: invoiceTaxTotal,
       discountTotal: invoiceDiscountTotal,
       subTotal: invoiceSubTotal,
       total: invoiceTotal,
-    };
-    return {
-      invoice: updateInvoice,
       line_items: updatedLineItems,
     };
   }

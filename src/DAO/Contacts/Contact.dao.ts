@@ -70,6 +70,15 @@ class ContactDao {
       attributes: ["id", "contactName", "currencyId"],
     });
   }
+
+  async getContactDetailsRaw({ contact_id }) {
+    return await Contacts.findOne({
+      where: {
+        id: contact_id,
+        organizationId: this.organization_id,
+      },
+    });
+  }
 }
 
 export default ContactDao;
