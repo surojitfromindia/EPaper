@@ -16,7 +16,7 @@ import {
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
-import { PaymentTerms } from "../PaymentTerm/PaymentTerms.model";
+import { PaymentTermModel } from "../PaymentTerm/PaymentTerms.model";
 
 @Table({
   underscored: true,
@@ -38,8 +38,8 @@ class InvoicePaymentTerm extends Model<
   @Attribute(DataTypes.INTEGER)
   @AllowNull // allow null cause payment term can be custom.
   declare originPaymentTermId: number;
-  @BelongsTo(() => PaymentTerms, "originPaymentTermId")
-  declare OriginPaymentTermDetails?: NonAttribute<PaymentTerms>;
+  @BelongsTo(() => PaymentTermModel, "originPaymentTermId")
+  declare OriginPaymentTermDetails?: NonAttribute<PaymentTermModel>;
 
   @Attribute(DataTypes.INTEGER)
   @AllowNull

@@ -1,15 +1,15 @@
-import UserDTO from "./User.dto";
-import OrganizationDTO from "./Organization.dto";
-import AccountsOfTemplateDTO from "./AccountsOfTemplate.dto";
-import OrganizationsUsersDTO from "./OrganizationsUsers.dto";
-import RegularItemDto from "./RegularItem.dto";
-import AccountsOfOrganizationDTO from "./AccountsOfOrganization.dto";
-import AccountTypesDTO from "./AccountTypes.dto";
-import ItemUnitDTO from "./ItemUnit.dto";
+import UserDTO from "./User.DTO";
+import OrganizationDTO from "./Organization.DTO";
+import AccountsOfTemplateDTO from "./AccountsOfTemplate.DTO";
+import OrganizationsUsersDTO from "./OrganizationsUsers.DTO";
+import RegularItemDto from "./RegularItem.DTO";
+import AccountsOfOrganizationDTO from "./AccountsOfOrganization.DTO";
+import AccountTypesDTO from "./AccountTypes.DTO";
+import ItemUnitDTO from "./ItemUnit.DTO";
 import { InvoiceLineItemDTO } from "./InvoiceLineItem.dto";
 import { InvoiceDTO } from "./Invoice.dto";
-import { PaymentTermsDTO } from "./PaymentTerms.dto";
-import { TaxRateDTO } from "./TaxRate.dto";
+import { PaymentTermsDTO } from "./PaymentTerms.DTO";
+import { TaxRateDTO } from "./TaxRate.DTO";
 import { ContactDTO } from "./Contact.dto";
 import { CurrencyDTO } from "./Currency.DTO";
 

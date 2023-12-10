@@ -3,8 +3,6 @@ import { OrganizationDTO, UserDTO } from "./index";
 class AppStateDTO {
   /**
    * Transform an dao to app state response
-   * @param {AppStateDetailsType} app_state
-   * @returns {AppStateDetailsTypeDTO}
    * */
   static toAppState(app_state) {
     return {

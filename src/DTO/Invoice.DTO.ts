@@ -116,7 +116,7 @@ class InvoiceDTO {
       referenceNumber: invoice.referenceNumber ?? null,
       orderNumber: invoice.orderNumber ?? null,
       terms: invoice.terms ?? null,
-      notes: invoice.notes ?? null,
+      notes: invoice.notes ?? "",
       isInclusiveTax: invoice.is_inclusive_tax,
       paymentTermId: invoice.payment_term_id,
       transactionStatus: invoice.transaction_status,

@@ -1,5 +1,5 @@
 import { Tree } from "./Tree";
-import AccountsOfOrganizationDto from "../DTO/AccountsOfOrganization.dto";
+import AccountsOfOrganizationDto from "../DTO/AccountsOfOrganization.DTO";
 import ld from "lodash";
 
 class AccountsTree {

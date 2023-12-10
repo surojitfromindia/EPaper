@@ -22,6 +22,7 @@ const INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES = [
   "description",
   "unit",
   "itemId",
+  "productType",
   "accountId",
   "taxId",
   "unitId",

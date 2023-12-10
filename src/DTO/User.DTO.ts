@@ -1,4 +1,4 @@
-import organizationsUsersDto from "./OrganizationsUsers.dto";
+import organizationsUsersDto from "./OrganizationsUsers.DTO";
 
 class UserDTO {
   /**

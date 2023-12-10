@@ -1,5 +1,5 @@
 import { OrganizationDao, UserDao } from "../DAO/index";
-import AppStateDto from "../DTO/AppState.dto";
+import AppStateDto from "../DTO/AppState.DTO";
 
 class AppStateService {
   async getAppState({ client_info }) {

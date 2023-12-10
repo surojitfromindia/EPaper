@@ -10,6 +10,7 @@ class InvoiceLineItemDTO {
     Object.assign(return_data, {
       line_item_id: line_item.id,
       item_id: line_item.itemId,
+      product_type: line_item.productType,
       name: line_item.name,
       description: line_item.description,
       unit: line_item.unit,
@@ -44,6 +45,7 @@ class InvoiceLineItemDTO {
     return {
       name: line_item.name,
       itemId: line_item.item_id,
+      productType: line_item.product_type,
       description: line_item.description,
       unit: line_item.unit,
       unitId: line_item.unit_id,
@@ -63,6 +65,7 @@ class InvoiceLineItemDTO {
       id: line_item.line_item_id,
       name: line_item.name,
       itemId: line_item.item_id,
+      productType: line_item.product_type,
       description: line_item.description,
       unit: line_item.unit,
       unitId: line_item.unit_id,

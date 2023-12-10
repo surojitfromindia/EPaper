@@ -71,6 +71,10 @@ class InvoiceLineItem extends Model<
   @BelongsTo(() => RegularItems, "itemId")
   declare Item?: NonAttribute<RegularItems>;
 
+  @Attribute(DataTypes.ENUM("service", "goods"))
+  @NotNull
+  declare productType: "service" | "goods";
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare accountId: number;

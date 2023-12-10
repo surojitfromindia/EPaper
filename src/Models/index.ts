@@ -15,7 +15,7 @@ import { RegularItems } from "./Item/RegularItems.model";
 import { Contacts } from "./Contact/Contacts.model";
 import { Invoice } from "./Invoice/Invoices.model";
 import { InvoiceLineItem } from "./Invoice/InvoiceLineItems.model";
-import { PaymentTerms } from "./PaymentTerm/PaymentTerms.model";
+import { PaymentTermModel } from "./PaymentTerm/PaymentTerms.model";
 import { InvoicePaymentTerm } from "./Invoice/InvoicePaymentTerms.model";
 import { CurrencyModel } from "./Currency/Currency.model";
 import { CurrencyExchangeRate } from "./Currency/CurrencyExchangeRate.model";
@@ -38,7 +38,7 @@ export {
   Contacts,
   Invoice,
   InvoiceLineItem,
-  PaymentTerms,
+  PaymentTermModel,
   InvoicePaymentTerm,
   CurrencyModel,
   CurrencyExchangeRate,

@@ -7,7 +7,12 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { CurrencyModel, OrganizationBasic, User } from "../index";
+import {
+  CurrencyModel,
+  OrganizationBasic,
+  PaymentTermModel,
+  User,
+} from "../index";
 import {
   AllowNull,
   Attribute,
@@ -35,23 +40,18 @@ class Contacts extends Model<
   declare id: CreationOptional<number>;
 
   @Attribute(DataTypes.CITEXT)
-  @AllowNull
   declare contactName?: string;
+
+  @Attribute(DataTypes.CITEXT)
+  @AllowNull
+  declare companyName?: string;
 
   @Attribute(DataTypes.ENUM("customer", "vendor"))
   @NotNull
   declare contactType: "customer" | "vendor";
 
-  @Attribute(DataTypes.ENUM("active", "deleted"))
-  @Default("active")
-  @NotNull
-  declare status: "active" | "deleted";
-
-  @Attribute(DataTypes.INTEGER)
-  @NotNull
-  declare createdBy: number;
-  @BelongsTo(() => User, "createdBy")
-  declare CreatedBy?: NonAttribute<User>;
+  @Attribute(DataTypes.ENUM("business", "individual"))
+  declare contactSubType: "business" | "individual";
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
@@ -60,10 +60,30 @@ class Contacts extends Model<
   declare Currency?: NonAttribute<CurrencyModel>;
 
   @Attribute(DataTypes.INTEGER)
+  declare paymentTermId: number;
+  @BelongsTo(() => PaymentTermModel, "paymentTermId")
+  declare PaymentTerm?: NonAttribute<PaymentTermModel>;
+
+  @Attribute(DataTypes.STRING)
+  @AllowNull
+  declare remarks?: string;
+
+  @Attribute(DataTypes.INTEGER)
   @NotNull
   declare organizationId: number;
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization?: NonAttribute<OrganizationBasic>;
+
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare createdBy: number;
+  @BelongsTo(() => User, "createdBy")
+  declare CreatedBy?: NonAttribute<User>;
+
+  @Attribute(DataTypes.ENUM("active", "deleted"))
+  @Default("active")
+  @NotNull
+  declare status: "active" | "deleted";
 }
 
 export { Contacts };

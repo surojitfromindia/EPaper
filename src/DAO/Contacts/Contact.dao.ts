@@ -1,4 +1,4 @@
-import { Contacts, CurrencyModel } from "../../Models";
+import { Contacts, CurrencyModel, PaymentTermModel } from "../../Models";
 import { Op } from "@sequelize/core";
 
 type GetContactsAutoCompleteParamsType = {
@@ -66,6 +66,10 @@ class ContactDao {
           as: "Currency",
           attributes: ["id", "currencyName", "currencySymbol", "currencyCode"],
         },
+        {
+          model: PaymentTermModel,
+          as: "PaymentTerm",
+        },
       ],
       attributes: ["id", "contactName", "currencyId"],
     });
@@ -78,6 +82,17 @@ class ContactDao {
         organizationId: this.organization_id,
       },
     });
+  }
+
+  async createContact({ contact_details }, { transaction }) {
+    return await Contacts.create(
+      {
+        ...contact_details,
+      },
+      {
+        transaction,
+      },
+    );
   }
 }
 

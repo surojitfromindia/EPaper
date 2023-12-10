@@ -23,9 +23,9 @@ import { OrganizationBasic } from "../Organization/Organization.model";
   underscored: true,
   tableName: "PaymentTerms",
 })
-class PaymentTerms extends Model<
-  InferAttributes<PaymentTerms>,
-  InferCreationAttributes<PaymentTerms>
+class PaymentTermModel extends Model<
+  InferAttributes<PaymentTermModel>,
+  InferCreationAttributes<PaymentTermModel>
 > {
   @Attribute(DataTypes.INTEGER)
   @PrimaryKey
@@ -67,7 +67,7 @@ class PaymentTerms extends Model<
   declare Organization?: NonAttribute<OrganizationBasic>;
 }
 
-type PaymentTermIdType = PaymentTerms["id"];
-type PaymentTermType = Attributes<PaymentTerms>;
-export { PaymentTerms };
+type PaymentTermIdType = PaymentTermModel["id"];
+type PaymentTermType = Attributes<PaymentTermModel>;
+export { PaymentTermModel };
 export type { PaymentTermIdType, PaymentTermType };

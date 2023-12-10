@@ -6,7 +6,7 @@ import {
 } from "../../Constants/AutoComplete.Constant";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import { ContactDTO } from "../../DTO";
-import RegularItemDTO from "../../DTO/RegularItem.dto";
+import RegularItemDTO from "../../DTO/RegularItem.DTO";
 
 const fetchContacts = async (req: Request) => {
   const clientInfo = req.clientInfo;

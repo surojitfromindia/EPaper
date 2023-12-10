@@ -1,6 +1,6 @@
 import { RegularItemService } from "../../Services/index";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
-import RegularItemDTO from "../../DTO/RegularItem.dto";
+import RegularItemDTO from "../../DTO/RegularItem.DTO";
 import { RegularItemDto } from "../../DTO/index";
 import { Request } from "express";
 

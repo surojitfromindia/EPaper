@@ -33,6 +33,18 @@ class ContactDTO {
     }
     return basic_payload;
   }
+
+  static toContactCreate(contact_payload: any) {
+    return {
+      contactName: contact_payload.contact_name,
+      companyName: contact_payload.company_name,
+      currencyId: contact_payload.currency_id,
+      paymentTermId: contact_payload.payment_term_id,
+      remarks: contact_payload.remarks,
+      contactType: contact_payload.contact_type,
+      contactSubType: contact_payload.contact_sub_type,
+    };
+  }
 }
 
 export { ContactDTO };

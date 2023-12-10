@@ -1,15 +1,15 @@
-import { PaymentTerms } from "../../Models";
+import { PaymentTermModel } from "../../Models";
 
 class PaymentTermDao {
   async create({ payment_term_details }, { transaction }) {
-    const paymentTerms = await PaymentTerms.create(payment_term_details, {
+    const paymentTerms = await PaymentTermModel.create(payment_term_details, {
       transaction,
     });
-    return await PaymentTerms.findByPk(paymentTerms.get("id"));
+    return await PaymentTermModel.findByPk(paymentTerms.get("id"));
   }
 
   async get({ payment_term_id, organization_id }) {
-    return await PaymentTerms.findOne({
+    return await PaymentTermModel.findOne({
       where: {
         id: payment_term_id,
         organizationId: organization_id,
@@ -18,7 +18,7 @@ class PaymentTermDao {
   }
 
   async getAll({ organization_id }) {
-    return await PaymentTerms.findAll({
+    return await PaymentTermModel.findAll({
       where: {
         organizationId: organization_id,
       },
@@ -30,7 +30,7 @@ class PaymentTermDao {
     { payment_term_details, payment_term_id, organization_id },
     { transaction },
   ) {
-    await PaymentTerms.update(payment_term_details, {
+    await PaymentTermModel.update(payment_term_details, {
       where: {
         id: payment_term_id,
         organizationId: organization_id,
@@ -41,13 +41,13 @@ class PaymentTermDao {
   }
 
   async createAll({ payment_term_details }, { transaction }) {
-    return await PaymentTerms.bulkCreate(payment_term_details, {
+    return await PaymentTermModel.bulkCreate(payment_term_details, {
       transaction,
     });
   }
 
   async unsetTheCurrentDefault({ organization_id }, { transaction }) {
-    return await PaymentTerms.update(
+    return await PaymentTermModel.update(
       {
         isDefault: false,
       },
