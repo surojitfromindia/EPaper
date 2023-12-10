@@ -7,7 +7,7 @@ import {
 import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { InvoiceCalculation } from "./InvoiceCalculation";
-import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
+import { ToInvoiceCreateType } from "../../DTO/Invoice.DTO";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { DateUtil } from "../../Utils/DateUtil";
 import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";

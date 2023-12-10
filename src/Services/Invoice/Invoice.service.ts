@@ -4,7 +4,7 @@ import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { DataNotFoundError } from "../../Errors/APIErrors";
 import { InvoiceCalculation } from "./InvoiceCalculation";
-import { ToInvoiceCreateType } from "../../DTO/Invoice.dto";
+import { ToInvoiceCreateType } from "../../DTO/Invoice.DTO";
 import { DateUtil } from "../../Utils/DateUtil";
 import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
 import { InvoiceUtil } from "./InvoiceUtil";

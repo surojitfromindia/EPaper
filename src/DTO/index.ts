@@ -6,11 +6,11 @@ import RegularItemDto from "./RegularItem.DTO";
 import AccountsOfOrganizationDTO from "./AccountsOfOrganization.DTO";
 import AccountTypesDTO from "./AccountTypes.DTO";
 import ItemUnitDTO from "./ItemUnit.DTO";
-import { InvoiceLineItemDTO } from "./InvoiceLineItem.dto";
-import { InvoiceDTO } from "./Invoice.dto";
+import { InvoiceLineItemDTO } from "./InvoiceLineItem.DTO";
+import { InvoiceDTO } from "./Invoice.DTO";
 import { PaymentTermsDTO } from "./PaymentTerms.DTO";
 import { TaxRateDTO } from "./TaxRate.DTO";
-import { ContactDTO } from "./Contact.dto";
+import { ContactDTO } from "./Contact.DTO";
 import { CurrencyDTO } from "./Currency.DTO";
 
 export {
