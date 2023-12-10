@@ -1,4 +1,3 @@
-import { InvoiceCreatable } from "../../Models/Invoice/Invoices.model";
 import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.model";
 import { GenerelaPrefernce } from "../../Models/Preference/GeneralPreference/GeneralPreference.model";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
@@ -19,40 +18,44 @@ type InvoiceCalculateReturn = {
 };
 
 type InvoiceCalculationConstructorProps = {
-  invoice: InvoiceCreatable;
+  isInclusiveTax: boolean;
+  exchangeRate: number;
   line_items: InvoiceLineItemCreatable[];
   general_preference: GenerelaPrefernce;
 };
 type InvoiceCalculationInitProps = {
-  invoice: InvoiceCreatable;
+  is_inclusive_tax: boolean;
+  exchange_rate: number;
   line_items: InvoiceLineItemCreatable[];
   client_info: ClientInfo;
 };
 
 class InvoiceCalculation {
-  readonly invoice: InvoiceCreatable;
   readonly lineItems: InvoiceLineItemCreatable[];
   readonly taxRoundingType: GenerelaPrefernce["taxRoundingType"];
   readonly discountType: GenerelaPrefernce["discountType"];
   readonly isDiscountBeforeTax: GenerelaPrefernce["isDiscountBeforeTax"];
-  readonly isTaxInclusive: boolean;
-
-  readonly exchangeRate: number = 1;
+  readonly isInclusiveTax: boolean;
+  readonly exchangeRate: number;
   constructor({
-    invoice,
+    isInclusiveTax,
+    exchangeRate,
     line_items,
     general_preference,
   }: InvoiceCalculationConstructorProps) {
-    this.invoice = invoice;
-    this.isTaxInclusive = invoice.isInclusiveTax;
+    this.isInclusiveTax = isInclusiveTax;
+    this.exchangeRate = exchangeRate;
     this.lineItems = line_items;
+
+    // get the general preference and store
     this.taxRoundingType = general_preference.taxRoundingType;
     this.discountType = general_preference.discountType;
     this.isDiscountBeforeTax = general_preference.isDiscountBeforeTax;
   }
 
   static async init({
-    invoice,
+    is_inclusive_tax,
+    exchange_rate,
     line_items,
     client_info,
   }: InvoiceCalculationInitProps) {
@@ -61,7 +64,8 @@ class InvoiceCalculation {
       client_info,
     });
     return new InvoiceCalculation({
-      invoice,
+      isInclusiveTax: is_inclusive_tax,
+      exchangeRate: exchange_rate,
       line_items,
       general_preference: generalPreference,
     });
@@ -80,7 +84,7 @@ class InvoiceCalculation {
       const ln = new LineItemCalculation({
         line_item: lineItem,
         mathLib,
-        is_tax_inclusive: this.isTaxInclusive,
+        is_tax_inclusive: this.isInclusiveTax,
       });
       const { itemTotalTaxIncluded, taxAmount, itemTotal, discountAmount } = ln
         .applyDiscount({

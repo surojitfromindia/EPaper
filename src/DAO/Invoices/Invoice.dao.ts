@@ -73,9 +73,12 @@ class InvoiceDao {
       transaction: Transaction;
     },
   ) {
-    return await Invoice.create(invoice_details, {
-      transaction,
-    });
+    return await Invoice.create(
+      { ...invoice_details, syncStatus: "notSynced" },
+      {
+        transaction,
+      },
+    );
   }
 
   async getAll({ organization_id }: InvoiceListProps) {
@@ -111,14 +114,17 @@ class InvoiceDao {
       transaction: Transaction;
     },
   ) {
-    await Invoice.update(invoice_details, {
-      where: {
-        id: invoice_id,
-        organizationId: organization_id,
-        status: "active",
+    await Invoice.update(
+      { ...invoice_details, syncStatus: "notSynced" },
+      {
+        where: {
+          id: invoice_id,
+          organizationId: organization_id,
+          status: "active",
+        },
+        transaction,
       },
-      transaction,
-    });
+    );
     return this.getByIdWithLineItems({ invoice_id, organization_id });
   }
 

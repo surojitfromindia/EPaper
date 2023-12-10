@@ -71,6 +71,7 @@ class InvoiceDTO {
       tax_total: invoice.taxTotal,
       sub_total: invoice.subTotal,
       total: invoice.total,
+      exchange_rate: invoice.exchangeRate,
     });
     if (invoice.Contact) {
       const contact = ContactDTO.toTransactionContact(invoice.Contact);
@@ -112,10 +113,10 @@ class InvoiceDTO {
       invoiceNumber: invoice.invoice_number,
       issueDate: invoice.issue_date,
       dueDate: invoice.due_date,
-      referenceNumber: invoice.referenceNumber,
-      orderNumber: invoice.orderNumber,
-      terms: invoice.terms,
-      notes: invoice.notes,
+      referenceNumber: invoice.referenceNumber ?? null,
+      orderNumber: invoice.orderNumber ?? null,
+      terms: invoice.terms ?? null,
+      notes: invoice.notes ?? null,
       isInclusiveTax: invoice.is_inclusive_tax,
       paymentTermId: invoice.payment_term_id,
       transactionStatus: invoice.transaction_status,
@@ -124,6 +125,7 @@ class InvoiceDTO {
         InvoiceLineItemDTO.toInvoiceLineItemCreate,
       ),
       currencyId: invoice.currency_id,
+      exchangeRate: invoice.exchange_rate,
     };
   }
 
@@ -149,6 +151,7 @@ class InvoiceDTO {
       ),
       paymentTermId: invoice.payment_term_id ?? "",
       currencyId: invoice.currency_id,
+      exchangeRate: invoice.exchange_rate,
     };
   }
 }

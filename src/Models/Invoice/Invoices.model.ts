@@ -17,7 +17,10 @@ import {
   User,
 } from "../index";
 import { MathLib } from "../../Utils/MathLib/mathLib";
-import { MAXIMUM_NUMERIC_PRECISION } from "../../Constants/General.Constant";
+import {
+  MAXIMUM_EXCHANGE_RATE_PRECISION,
+  MAXIMUM_NUMERIC_PRECISION,
+} from "../../Constants/General.Constant";
 import {
   AllowNull,
   Attribute,
@@ -89,11 +92,6 @@ class Invoice extends Model<
   @Attribute(DataTypes.BOOLEAN)
   @NotNull
   declare isInclusiveTax: boolean;
-
-  @Attribute(DataTypes.ENUM("active", "deleted"))
-  @NotNull
-  @Default("active")
-  declare status: "active" | "deleted";
 
   @Attribute(DataTypes.ENUM("sent", "draft", "void"))
   @NotNull
@@ -200,6 +198,27 @@ class Invoice extends Model<
   declare invoicePaymentTermId: number;
   @BelongsTo(() => InvoicePaymentTerm, "invoicePaymentTermId")
   declare InvoicePaymentTerm?: NonAttribute<InvoicePaymentTerm>;
+
+  @Attribute(DataTypes.ENUM("active", "deleted"))
+  @NotNull
+  @Default("active")
+  declare status: "active" | "deleted";
+
+  @Attribute(DataTypes.ENUM("synced", "notSynced"))
+  @NotNull
+  @Default("synced")
+  declare syncStatus: "synced" | "notSynced";
+
+  @Attribute(DataTypes.DECIMAL(10, MAXIMUM_EXCHANGE_RATE_PRECISION))
+  @NotNull
+  @Default(1)
+  get exchangeRate(): number {
+    const value = this.getDataValue("exchangeRate");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_EXCHANGE_RATE_PRECISION, value);
+    }
+    return value;
+  }
 }
 
 type InvoiceCreatable = CreationAttributes<Invoice>;

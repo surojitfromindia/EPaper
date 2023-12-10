@@ -66,7 +66,8 @@ class InvoiceUpdateService {
       // do the calculation
       const invoiceCalculation = await InvoiceCalculation.init({
         client_info,
-        invoice: invoiceBody,
+        is_inclusive_tax: invoiceBody.isInclusiveTax,
+        exchange_rate: invoiceBody.exchangeRate,
         line_items: allLineItems,
       });
       const invoiceCalculateReturn = invoiceCalculation.calculate();
