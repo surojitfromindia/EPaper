@@ -89,6 +89,7 @@ class Contacts extends Model<
 export { Contacts };
 type ContactType = Attributes<Contacts> & {
   Currency?: NonAttribute<CurrencyModel>;
+  PaymentTerm?: NonAttribute<PaymentTermModel>;
 };
 type ContactIdType = number;
 

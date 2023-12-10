@@ -78,6 +78,7 @@ class InvoiceUpdateService {
         const { due_date, payment_term_details: paymentTermDetails } =
           await InvoiceUtil.calculateDueDate({
             issue_date: DateUtil.parseFromStr(issueDate),
+            due_date: DateUtil.parseFromStr(dueDate),
             payment_term_id: paymentTermId,
             organization_id: organizationId,
           });

@@ -3,6 +3,7 @@ import { DateUtil } from "../../Utils/DateUtil";
 
 type CalculateDueDateProps = {
   issue_date: Date;
+  due_date?: Date;
   payment_term_id: number;
   organization_id: number;
 };
@@ -10,11 +11,12 @@ type CalculateDueDateProps = {
 export class InvoiceUtil {
   static async calculateDueDate({
     issue_date,
+    due_date,
     payment_term_id,
     organization_id,
   }: CalculateDueDateProps) {
     if (payment_term_id === -1) {
-      return { due_date: issue_date, payment_term_details: null };
+      return { due_date: due_date ?? issue_date, payment_term_details: null };
     }
     const paymentTerm = await PaymentTermDao.get({
       payment_term_id,

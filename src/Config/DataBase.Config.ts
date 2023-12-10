@@ -72,6 +72,6 @@ async function syncModel() {
   await Contacts.sync({ alter, force });
 }
 
-syncModel().catch((err) => console.log(err));
+// syncModel().catch((err) => console.log(err));
 
 export default sequelize;

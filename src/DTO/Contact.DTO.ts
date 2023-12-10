@@ -2,6 +2,7 @@ import { ContactAutoCompleteType } from "../Services/Contact/Contact.service";
 import { ValidityUtil } from "../Utils/ValidityUtil";
 import { ContactType } from "../Models/Contact/Contacts.model";
 import { CurrencyDTO } from "./Currency.DTO";
+import { PaymentTermsDTO } from "./PaymentTerms.DTO";
 
 class ContactDTO {
   static toTransactionContact(contact_details: any) {
@@ -25,10 +26,19 @@ class ContactDTO {
       contact_name: contact_details.contactName,
       status: contact_details.status,
       currency_id: contact_details.currencyId,
+      payment_term_id: contact_details.paymentTermId,
+      remarks: contact_details.remarks,
+      contact_type: contact_details.contactType,
+      contact_sub_type: contact_details.contactSubType,
     };
     if (ValidityUtil.isNotEmpty(contact_details.Currency)) {
       Object.assign(basic_payload, {
         ...CurrencyDTO.toCurrency(contact_details.Currency),
+      });
+    }
+    if (ValidityUtil.isNotEmpty(contact_details.PaymentTerm)) {
+      Object.assign(basic_payload, {
+        ...PaymentTermsDTO.toPaymentTerm(contact_details.PaymentTerm),
       });
     }
     return basic_payload;
