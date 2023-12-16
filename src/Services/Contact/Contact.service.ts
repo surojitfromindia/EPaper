@@ -45,6 +45,13 @@ class ContactService {
     });
     return contactDao.getContactDetails({ contact_id: createdContact.id });
   }
+
+  async getAllContactDetails() {
+    const contactDao = new ContactDao({
+      organization_id: this.clientInfo.organizationId,
+    });
+    return await contactDao.getAllContactDetails();
+  }
 }
 
 export { ContactService };

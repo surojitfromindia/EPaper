@@ -4,6 +4,6 @@ import "dotenv/config";
 import APIServer from "./APIServer";
 
 // then call listen method
-APIServer.listen(5000, () => {
+APIServer.listen(5020, () => {
   console.log("Listening on port 5000");
 });

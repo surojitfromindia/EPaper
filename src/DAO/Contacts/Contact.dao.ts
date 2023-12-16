@@ -102,6 +102,27 @@ class ContactDao {
       },
     );
   }
+
+  async getAllContactDetails() {
+    return await Contacts.findAll({
+      where: {
+        organizationId: this.organization_id,
+      },
+      include: [
+        {
+          model: CurrencyModel,
+          as: "Currency",
+          attributes: DEFAULT_CONTACT_CURRENCY_SELECTION,
+        },
+        {
+          model: PaymentTermModel,
+          as: "PaymentTerm",
+          attributes: DEFAULT_CONTACT_PAYMENT_TERM_SELECTION,
+        },
+      ],
+      order: [["contactName", "ASC"]],
+    });
+  }
 }
 
 export default ContactDao;

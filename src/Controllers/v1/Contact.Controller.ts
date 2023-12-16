@@ -13,7 +13,7 @@ const createContact = async (req: Request) => {
   const createdContact = await contactService.createContact({
     contact_details: contactDetailsFromPayload,
   });
-  return { item: ContactDTO.toContact(createdContact) };
+  return { contact: ContactDTO.toContact(createdContact) };
 };
 const createContactController = SuccessErrorWrapper(
   createContact,
@@ -21,4 +21,18 @@ const createContactController = SuccessErrorWrapper(
   201,
 );
 
-export { createContactController };
+const getAllContactDetails = async (req: Request) => {
+  const clientInfo = req.clientInfo;
+  const contactService = new ContactService({
+    client_info: clientInfo,
+  });
+  const allContactDetails = await contactService.getAllContactDetails();
+  return { contacts: allContactDetails.map(ContactDTO.toContact) };
+};
+const getAllContactDetailsController = SuccessErrorWrapper(
+  getAllContactDetails,
+  "done",
+  200,
+);
+
+export { createContactController, getAllContactDetailsController };
