@@ -1,4 +1,4 @@
-import { ContactService } from "../../Services";
+import { ContactEditPageService, ContactService } from "../../Services";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import { ContactDTO } from "../../DTO";
 import { Request } from "express";
@@ -35,4 +35,27 @@ const getAllContactDetailsController = SuccessErrorWrapper(
   200,
 );
 
-export { createContactController, getAllContactDetailsController };
+const getContactEditPage = async (req: Request) => {
+  const req_query = req?.query;
+  const clientInfo = req.clientInfo;
+  const contactId = req_query.contact_id && Number(req_query.contact_id);
+
+  const contactEditPageService = new ContactEditPageService({
+    client_info: clientInfo,
+  });
+  const editPage = await contactEditPageService.getEditPage({
+    contact_id: contactId,
+  });
+  return ContactDTO.toContactEditPage(editPage);
+};
+const getContactEditPageController = SuccessErrorWrapper(
+  getContactEditPage,
+  "done",
+  200,
+);
+
+export {
+  createContactController,
+  getAllContactDetailsController,
+  getContactEditPageController,
+};

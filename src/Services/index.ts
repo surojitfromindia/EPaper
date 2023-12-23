@@ -3,6 +3,7 @@ import OrganizationService from "./Organization.service";
 import AccountsTemplateService from "./AccountsOfTemplate.service";
 import AccountsTemplateImportService from "./ImportServices/AccountsOfTemplate.import.service";
 import SettingService, {
+  CurrencyService,
   ItemUnitService,
   PaymentTermService,
   TaxRateService,
@@ -21,6 +22,7 @@ import InvoiceUpdateService from "./Invoice/InvoiceUpdate.service";
 import { InvoiceEditPageService } from "./Invoice/Invoice.editPage.service";
 import { ContactAutoCompleteService } from "./Contact/Contact.AutoComplete.service";
 import { ContactService } from "./Contact/Contact.service";
+import { ContactEditPageService } from "./Contact/Contact.editPage.service";
 
 export {
   UserService,
@@ -43,4 +45,6 @@ export {
   InvoiceEditPageService,
   ContactAutoCompleteService,
   ContactService,
+  CurrencyService,
+  ContactEditPageService,
 };

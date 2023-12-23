@@ -3,6 +3,7 @@ import { ValidityUtil } from "../Utils/ValidityUtil";
 import { ContactType } from "../Models/Contact/Contacts.model";
 import { CurrencyDTO } from "./Currency.DTO";
 import { PaymentTermsDTO } from "./PaymentTerms.DTO";
+import { TaxRateDTO } from "./TaxRate.DTO";
 
 class ContactDTO {
   static toTransactionContact(contact_details: any) {
@@ -54,6 +55,19 @@ class ContactDTO {
       contactType: contact_payload.contact_type,
       contactSubType: contact_payload.contact_sub_type,
     };
+  }
+
+  static toContactEditPage({ taxes, payment_terms, contact, currencies }) {
+    const basic_data = {
+      taxes: taxes.map(TaxRateDTO.toTaxRate),
+      payment_terms: payment_terms.map(PaymentTermsDTO.toPaymentTerm),
+      currencies: currencies.map(CurrencyDTO.toCurrency),
+    };
+    if (contact) {
+      basic_data["contact"] = ContactDTO.toContact(contact);
+    }
+
+    return basic_data;
   }
 }
 

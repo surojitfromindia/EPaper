@@ -1,20 +1,26 @@
 import { CurrencyDAO } from "../../DAO/index";
 import { DEFAULT_CURRENCIES } from "../../Constants/Currency.Constant";
+import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
+import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 
 class CurrencyService {
-  async getAllCurrencies({ client_info }) {
-    const organizationId = client_info.organizationId;
+  private _clientInfo: ClientInfo;
+  private readonly _organizationId: OrganizationBasicIdType;
+
+  constructor({ client_info }: { client_info: ClientInfo }) {
+    this._clientInfo = client_info;
+    this._organizationId = client_info.organizationId;
+  }
+
+  async getAllCurrencies() {
     return await CurrencyDAO.getAll({
-      organization_id: organizationId,
+      organization_id: this._organizationId,
     });
   }
 
-  async initDefaultCurrencies(
-    { client_info, organization_id },
-    { transaction },
-  ) {
+  async initDefaultCurrencies({ organization_id }, { transaction }) {
     const organizationId = organization_id;
-    const userId = client_info.userId;
+    const userId = this._clientInfo.userId;
     let currencies = DEFAULT_CURRENCIES;
     if (DEFAULT_CURRENCIES) {
       currencies = DEFAULT_CURRENCIES.map((currency) => ({
@@ -32,4 +38,4 @@ class CurrencyService {
   }
 }
 
-export default Object.freeze(new CurrencyService());
+export default CurrencyService;

@@ -54,10 +54,12 @@ class SettingService {
       { transaction },
     );
 
-    const currencies = await CurrencyService.initDefaultCurrencies(
+    const currencyService = new CurrencyService({
+      client_info,
+    });
+    const currencies = await currencyService.initDefaultCurrencies(
       {
         organization_id,
-        client_info,
       },
       { transaction },
     );
@@ -74,4 +76,4 @@ class SettingService {
 }
 
 export default SettingService;
-export { ItemUnitService, TaxRateService, PaymentTermService };
+export { ItemUnitService, TaxRateService, PaymentTermService, CurrencyService };
