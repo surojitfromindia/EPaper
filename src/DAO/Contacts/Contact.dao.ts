@@ -1,4 +1,9 @@
-import { Contacts, CurrencyModel, PaymentTermModel } from "../../Models";
+import {
+  ContactPerson,
+  Contacts,
+  CurrencyModel,
+  PaymentTermModel,
+} from "../../Models";
 import { Op } from "@sequelize/core";
 
 const DEFAULT_CONTACT_CURRENCY_SELECTION = [
@@ -8,6 +13,18 @@ const DEFAULT_CONTACT_CURRENCY_SELECTION = [
   "currencyCode",
 ];
 const DEFAULT_CONTACT_PAYMENT_TERM_SELECTION = ["id", "name"];
+
+const DEFAULT_CONTACT_PERSON_SELECTION = [
+  "id",
+  "salutation",
+  "firstName",
+  "lastName",
+  "email",
+  "phone",
+  "mobile",
+  "designation",
+  "isPrimary",
+];
 
 type GetContactsAutoCompleteParamsType = {
   organization_id: number;
@@ -78,6 +95,12 @@ class ContactDao {
           model: PaymentTermModel,
           as: "PaymentTerm",
           attributes: DEFAULT_CONTACT_PAYMENT_TERM_SELECTION,
+        },
+
+        {
+          model: ContactPerson,
+          as: "ContactPersons",
+          attributes: DEFAULT_CONTACT_PERSON_SELECTION,
         },
       ],
     });

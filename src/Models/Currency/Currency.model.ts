@@ -7,13 +7,14 @@ import {
   Model,
   NonAttribute,
 } from "@sequelize/core";
-import { OrganizationBasic, User } from "../index";
+import { CurrencyExchangeRate, OrganizationBasic, User } from "../index";
 import {
   AllowNull,
   Attribute,
   AutoIncrement,
   BelongsTo,
   Default,
+  HasMany,
   NotNull,
   PrimaryKey,
   Table,
@@ -63,6 +64,9 @@ class CurrencyModel extends Model<
 
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization?: NonAttribute<OrganizationBasic>;
+
+  @HasMany(() => CurrencyExchangeRate, "currencyId")
+  declare exchangeRates?: NonAttribute<CurrencyExchangeRate[]>;
 }
 
 export { CurrencyModel };

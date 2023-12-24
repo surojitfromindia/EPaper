@@ -6,6 +6,7 @@ import {
   AccountsOfTemplate,
   AccountTemplateDetails,
   AccountTypes,
+  ContactPerson,
   Contacts,
   CurrencyExchangeRate,
   CurrencyModel,
@@ -59,6 +60,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     InvoicePaymentTerm,
     CurrencyModel,
     CurrencyExchangeRate,
+    ContactPerson,
   ],
 });
 
@@ -67,9 +69,10 @@ async function syncModel() {
   const force = false;
   // await Currency.sync({ alter, force });
   // await CurrencyExchangeRate.sync({ alter, force });
-  await Invoice.sync({ alter, force });
-  await InvoiceLineItem.sync({ alter, force });
-  await Contacts.sync({ alter, force });
+  // await Invoice.sync({ alter, force });
+  // await InvoiceLineItem.sync({ alter, force });
+  // await Contacts.sync({ alter, force });
+  await ContactPerson.sync({ alter, force });
 }
 
 // syncModel().catch((err) => console.log(err));

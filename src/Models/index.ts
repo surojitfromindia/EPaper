@@ -19,6 +19,7 @@ import { PaymentTermModel } from "./PaymentTerm/PaymentTerms.model";
 import { InvoicePaymentTerm } from "./Invoice/InvoicePaymentTerms.model";
 import { CurrencyModel } from "./Currency/Currency.model";
 import { CurrencyExchangeRate } from "./Currency/CurrencyExchangeRate.model";
+import { ContactPerson } from "./ContactPerson/ContactPerson.model";
 
 export {
   User,
@@ -42,4 +43,5 @@ export {
   InvoicePaymentTerm,
   CurrencyModel,
   CurrencyExchangeRate,
+  ContactPerson,
 };

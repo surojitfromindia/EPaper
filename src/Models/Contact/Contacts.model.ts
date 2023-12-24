@@ -8,6 +8,7 @@ import {
   NonAttribute,
 } from "@sequelize/core";
 import {
+  ContactPerson,
   CurrencyModel,
   OrganizationBasic,
   PaymentTermModel,
@@ -19,6 +20,7 @@ import {
   AutoIncrement,
   BelongsTo,
   Default,
+  HasMany,
   NotNull,
   PrimaryKey,
   Table,
@@ -84,12 +86,16 @@ class Contacts extends Model<
   @Default("active")
   @NotNull
   declare status: "active" | "deleted";
+
+  @HasMany(() => ContactPerson, "contactId")
+  declare ContactPersons?: NonAttribute<ContactPerson>[];
 }
 
 export { Contacts };
 type ContactType = Attributes<Contacts> & {
   Currency?: NonAttribute<CurrencyModel>;
   PaymentTerm?: NonAttribute<PaymentTermModel>;
+  ContactPersons?: NonAttribute<ContactPerson>[];
 };
 type ContactIdType = number;
 

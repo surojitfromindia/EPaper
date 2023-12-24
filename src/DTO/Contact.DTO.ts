@@ -4,7 +4,19 @@ import { ContactType } from "../Models/Contact/Contacts.model";
 import { CurrencyDTO } from "./Currency.DTO";
 import { PaymentTermsDTO } from "./PaymentTerms.DTO";
 import { TaxRateDTO } from "./TaxRate.DTO";
+import { ContactPersonDTO } from "./ContactPerson.DTO";
 
+type ContactCreatePayload = {
+  companyName: string;
+  contactName: string;
+  currencyId: number;
+  paymentTermId: number;
+  taxId: number;
+  remarks: string;
+  contactType: ContactType;
+  contactSubType: string;
+  contactPersons: ContactPersonDTO[];
+};
 class ContactDTO {
   static toTransactionContact(contact_details: any) {
     return {
@@ -33,6 +45,26 @@ class ContactDTO {
       contact_sub_type: contact_details.contactSubType,
       status: contact_details.status,
     };
+    if (ValidityUtil.isNotEmpty(contact_details.ContactPersons)) {
+      const primary_contact_person = contact_details.ContactPersons.find(
+        (cp) => cp.isPrimary,
+      );
+      if (primary_contact_person) {
+        Object.assign(basic_payload, {
+          salutation: primary_contact_person.salutation,
+          first_name: primary_contact_person.firstName,
+          last_name: primary_contact_person.lastName,
+          email: primary_contact_person.email,
+          phone: primary_contact_person.phone,
+          mobile: primary_contact_person.mobile,
+        });
+      }
+      Object.assign(basic_payload, {
+        contact_persons: contact_details.ContactPersons.map(
+          ContactPersonDTO.toContactPerson,
+        ),
+      });
+    }
     if (ValidityUtil.isNotEmpty(contact_details.Currency)) {
       Object.assign(basic_payload, {
         ...CurrencyDTO.toCurrency(contact_details.Currency),
@@ -46,7 +78,7 @@ class ContactDTO {
     return basic_payload;
   }
 
-  static toContactCreate(contact_payload: any) {
+  static toContactCreate(contact_payload: any): ContactCreatePayload {
     return {
       contactName: contact_payload.contact_name,
       companyName: contact_payload.company_name,
@@ -56,6 +88,9 @@ class ContactDTO {
       remarks: contact_payload.remarks,
       contactType: contact_payload.contact_type,
       contactSubType: contact_payload.contact_sub_type,
+      contactPersons: contact_payload.contact_persons.map(
+        ContactPersonDTO.toContactPersonCreateDTO,
+      ),
     };
   }
 
@@ -74,3 +109,4 @@ class ContactDTO {
 }
 
 export { ContactDTO };
+export type { ContactCreatePayload };
