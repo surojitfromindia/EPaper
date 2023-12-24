@@ -25,12 +25,13 @@ class ContactDTO {
     const basic_payload: any = {
       contact_id: contact_details.id,
       contact_name: contact_details.contactName,
-      status: contact_details.status,
+      company_name: contact_details.companyName,
       currency_id: contact_details.currencyId,
       payment_term_id: contact_details.paymentTermId,
       remarks: contact_details.remarks,
       contact_type: contact_details.contactType,
       contact_sub_type: contact_details.contactSubType,
+      status: contact_details.status,
     };
     if (ValidityUtil.isNotEmpty(contact_details.Currency)) {
       Object.assign(basic_payload, {
@@ -51,6 +52,7 @@ class ContactDTO {
       companyName: contact_payload.company_name,
       currencyId: contact_payload.currency_id,
       paymentTermId: contact_payload.payment_term_id,
+      taxId: contact_payload.tax_id,
       remarks: contact_payload.remarks,
       contactType: contact_payload.contact_type,
       contactSubType: contact_payload.contact_sub_type,
