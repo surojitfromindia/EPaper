@@ -1,5 +1,6 @@
 import {
   Attributes,
+  CreationAttributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -92,7 +93,12 @@ class ContactPerson extends Model<
 }
 
 export { ContactPerson };
+type ContactPersonCreatableType = CreationAttributes<ContactPerson> & {};
 type ContactPersonType = Attributes<ContactPerson> & {};
 type ContactPersonIdType = number;
 
-export type { ContactPersonType, ContactPersonIdType };
+export type {
+  ContactPersonType,
+  ContactPersonIdType,
+  ContactPersonCreatableType,
+};

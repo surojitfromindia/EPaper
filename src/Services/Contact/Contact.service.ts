@@ -4,7 +4,6 @@ import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middle
 import sequelize from "../../Config/DataBase.Config";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { ContactCreatePayload } from "../../DTO/Contact.DTO";
-import { ValidityUtil } from "../../Utils/ValidityUtil";
 
 type ContactAutoCompleteType = AutoCompleteBasicType & {
   contactName: string;
@@ -50,7 +49,7 @@ class ContactService {
         { transaction: t1 },
       );
 
-      await this.#createOrUpdateContactPersonsOfContact(
+      await this.#contactPersonStateHandle(
         {
           contact_id: createdContact.id,
           new_contact_persons: contact_details.contactPersons,
@@ -85,7 +84,7 @@ class ContactService {
         { transaction: t1 },
       );
 
-      await this.#createOrUpdateContactPersonsOfContact(
+      await this.#contactPersonStateHandle(
         {
           contact_id: contact_id,
           new_contact_persons: contact_details.contactPersons,
@@ -99,7 +98,7 @@ class ContactService {
     return contactDao.getContactDetails({ contact_id });
   }
 
-  #createOrUpdateContactPersonsOfContact = async (
+  #contactPersonStateHandle = async (
     {
       contact_id,
       new_contact_persons,
@@ -115,7 +114,7 @@ class ContactService {
       first_array: old_contact_persons,
       second_array: new_contact_persons,
       key_for_first_array: "id",
-      key_for_second_array: "contact_person_id",
+      key_for_second_array: "id",
     });
     const creatableContactPersonsDetails = creatableContactPersons.map(
       (contact_person) => ({
@@ -128,12 +127,14 @@ class ContactService {
     const deletableContactPersons = ComparisonUtil.getEntriesNotInFirstArray({
       first_array: new_contact_persons,
       second_array: old_contact_persons,
-      key_for_first_array: "contact_person_id",
+      key_for_first_array: "id",
       key_for_second_array: "id",
     });
-    const updatableContactPersons = new_contact_persons.filter((cp) =>
-      ValidityUtil.isNotEmpty(cp.contact_person_id),
-    );
+    const updatableContactPersons = ComparisonUtil.getEntriesIfMatched({
+      array: new_contact_persons,
+      ids: old_contact_persons.map((cp) => cp.id),
+      id_key: "id",
+    });
 
     //  if no isPrimary key is present in create or update payload, then set the first one as primary
     const isNewCPsHasPrimary = creatableContactPersonsDetails.some(
@@ -145,8 +146,10 @@ class ContactService {
 
     if (updatableContactPersons.length > 0 && !isUpdateCPsHasPrimary) {
       updatableContactPersons[0].isPrimary = true;
-    } else if (
+    }
+    if (
       creatableContactPersonsDetails.length > 0 &&
+      !isUpdateCPsHasPrimary &&
       !isNewCPsHasPrimary
     ) {
       creatableContactPersonsDetails[0].isPrimary = true;
@@ -159,10 +162,35 @@ class ContactService {
     const contactPersonDao = new ContactPersonDAO({
       organization_id: this.clientInfo.organizationId,
     });
-    await contactPersonDao.createContactPersons(
-      { contact_persons: creatableContactPersonsDetails },
-      { transaction },
-    );
+    if (creatableContactPersonsDetails.length > 0) {
+      await contactPersonDao.createContactPersons(
+        { contact_persons: creatableContactPersonsDetails },
+        { transaction },
+      );
+    }
+
+    if (deletableContactPersons.length > 0) {
+      await contactPersonDao.deleteContactPersons(
+        { contact_person_ids: deletableContactPersons.map((cp) => cp.id) },
+        { transaction },
+      );
+    }
+    if (updatableContactPersons.length > 0) {
+      // for each of updatable contact persons, update the contact person
+      await Promise.all(
+        updatableContactPersons.map((cp) =>
+          contactPersonDao.updateAContactPerson(
+            {
+              contact_person_id: cp.id,
+              contact_id: contact_id,
+              contact_person_details: cp,
+            },
+            { transaction },
+          ),
+        ),
+      );
+    }
+
     return true;
   };
 }

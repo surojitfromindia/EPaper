@@ -66,6 +66,25 @@ class ComparisonUtil {
     }
     return entriesInFirstArray;
   }
+
+  static getEntriesIfMatched<T1>({
+    array,
+    ids,
+    id_key,
+  }: {
+    array: T1[];
+    ids: (string | number)[];
+    id_key: string;
+  }) {
+    const entries = [];
+    for (const entry of array) {
+      const entryFound = ids.find((id) => id === entry[id_key]);
+      if (entryFound) {
+        entries.push(entry);
+      }
+    }
+    return entries;
+  }
 }
 
 export { ComparisonUtil };

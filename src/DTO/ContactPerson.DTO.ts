@@ -10,7 +10,7 @@ type ContactPersonCreatePayload = {
 };
 
 interface ContactPersonUpdatePayload extends ContactPersonCreatePayload {
-  contact_person_id: number;
+  id: number;
 }
 
 class ContactPersonDTO {
@@ -33,7 +33,7 @@ class ContactPersonDTO {
     contact_person: any,
   ): ContactPersonUpdatePayload {
     return {
-      contact_person_id: contact_person.contact_person_id,
+      id: contact_person.contact_person_id,
       salutation: contact_person.salutation,
       firstName: contact_person.first_name,
       lastName: contact_person.last_name,
@@ -47,7 +47,7 @@ class ContactPersonDTO {
 
   static toContactPerson(contact_person: any) {
     return {
-      contact_person_id: contact_person.contact_person_id,
+      contact_person_id: contact_person.id,
       salutation: contact_person.salutation,
       first_name: contact_person.firstName,
       last_name: contact_person.lastName,
