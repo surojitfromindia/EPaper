@@ -71,10 +71,10 @@ async function syncModel() {
   // await CurrencyExchangeRate.sync({ alter, force });
   // await Invoice.sync({ alter, force });
   // await InvoiceLineItem.sync({ alter, force });
-  // await Contacts.sync({ alter, force });
+  await Contacts.sync({ alter, force });
   await ContactPerson.sync({ alter, force });
 }
 
-// syncModel().catch((err) => console.log(err));
+syncModel().catch((err) => console.log(err));
 
 export default sequelize;
