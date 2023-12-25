@@ -1,6 +1,39 @@
+type ContactPersonCreatePayload = {
+  salutation: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  mobile: string;
+  designation: string;
+  isPrimary: boolean;
+};
+
+interface ContactPersonUpdatePayload extends ContactPersonCreatePayload {
+  contact_person_id: number;
+}
+
 class ContactPersonDTO {
-  static toContactPersonCreateDTO(contact_person: any) {
+  static toContactPersonCreateDTO(
+    contact_person: any,
+  ): ContactPersonCreatePayload {
     return {
+      salutation: contact_person.salutation,
+      firstName: contact_person.first_name,
+      lastName: contact_person.last_name,
+      email: contact_person.email,
+      phone: contact_person.phone,
+      mobile: contact_person.mobile,
+      designation: contact_person.designation,
+      isPrimary: contact_person.is_primary,
+    };
+  }
+
+  static toContactPersonUpdateDTO(
+    contact_person: any,
+  ): ContactPersonUpdatePayload {
+    return {
+      contact_person_id: contact_person.contact_person_id,
       salutation: contact_person.salutation,
       firstName: contact_person.first_name,
       lastName: contact_person.last_name,
@@ -28,3 +61,4 @@ class ContactPersonDTO {
 }
 
 export { ContactPersonDTO };
+export type { ContactPersonCreatePayload, ContactPersonUpdatePayload };

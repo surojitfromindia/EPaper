@@ -54,8 +54,29 @@ const getContactEditPageController = SuccessErrorWrapper(
   200,
 );
 
+const updateContact = async (req: Request) => {
+  const clientInfo = req.clientInfo;
+  const contactId = Number(req.params.contact_id);
+  const body = req.body;
+  const contactDetailsFromPayload = ContactDTO.toContactUpdate(body);
+  const contactService = new ContactService({
+    client_info: clientInfo,
+  });
+  const updatedContact = await contactService.updateContact({
+    contact_id: contactId,
+    contact_details: contactDetailsFromPayload,
+  });
+  return { contact: ContactDTO.toContact(updatedContact) };
+};
+const updateContactController = SuccessErrorWrapper(
+  updateContact,
+  "contact updated",
+  200,
+);
+
 export {
   createContactController,
   getAllContactDetailsController,
   getContactEditPageController,
+  updateContactController,
 };

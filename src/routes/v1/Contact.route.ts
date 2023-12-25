@@ -6,5 +6,6 @@ const contactRouter = Router();
 contactRouter.post("/", ContactController.createContactController);
 contactRouter.get("/", ContactController.getAllContactDetailsController);
 contactRouter.get("/edit_page", ContactController.getContactEditPageController);
+contactRouter.put("/:contact_id", ContactController.updateContactController);
 
 export default contactRouter;

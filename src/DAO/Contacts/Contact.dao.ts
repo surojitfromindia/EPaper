@@ -4,7 +4,8 @@ import {
   CurrencyModel,
   PaymentTermModel,
 } from "../../Models";
-import { Op } from "@sequelize/core";
+import { FindAttributeOptions, Op } from "@sequelize/core";
+import { ContactPersonType } from "../../Models/ContactPerson/ContactPerson.model";
 
 const DEFAULT_CONTACT_CURRENCY_SELECTION = [
   "id",
@@ -14,17 +15,18 @@ const DEFAULT_CONTACT_CURRENCY_SELECTION = [
 ];
 const DEFAULT_CONTACT_PAYMENT_TERM_SELECTION = ["id", "name"];
 
-const DEFAULT_CONTACT_PERSON_SELECTION = [
-  "id",
-  "salutation",
-  "firstName",
-  "lastName",
-  "email",
-  "phone",
-  "mobile",
-  "designation",
-  "isPrimary",
-];
+const DEFAULT_CONTACT_PERSON_SELECTION: FindAttributeOptions<ContactPersonType> =
+  [
+    "id",
+    "salutation",
+    "firstName",
+    "lastName",
+    "email",
+    "phone",
+    "mobile",
+    "designation",
+    "isPrimary",
+  ];
 
 type GetContactsAutoCompleteParamsType = {
   organization_id: number;
@@ -126,6 +128,21 @@ class ContactDao {
     );
   }
 
+  async updateContact({ contact_id, contact_details }, { transaction }) {
+    return await Contacts.update(
+      {
+        ...contact_details,
+      },
+      {
+        where: {
+          id: contact_id,
+          organizationId: this.organization_id,
+        },
+        transaction,
+      },
+    );
+  }
+
   async getAllContactDetails() {
     return await Contacts.findAll({
       where: {
@@ -144,6 +161,15 @@ class ContactDao {
         },
       ],
       order: [["contactName", "ASC"]],
+    });
+  }
+
+  async getContactPersonsOfContact({ contact_id }) {
+    return await ContactPerson.findAll({
+      where: {
+        contactId: contact_id,
+      },
+      attributes: DEFAULT_CONTACT_PERSON_SELECTION,
     });
   }
 }

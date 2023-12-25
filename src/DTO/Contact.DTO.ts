@@ -4,7 +4,11 @@ import { ContactType } from "../Models/Contact/Contacts.model";
 import { CurrencyDTO } from "./Currency.DTO";
 import { PaymentTermsDTO } from "./PaymentTerms.DTO";
 import { TaxRateDTO } from "./TaxRate.DTO";
-import { ContactPersonDTO } from "./ContactPerson.DTO";
+import {
+  ContactPersonCreatePayload,
+  ContactPersonDTO,
+  ContactPersonUpdatePayload,
+} from "./ContactPerson.DTO";
 
 type ContactCreatePayload = {
   companyName: string;
@@ -15,8 +19,14 @@ type ContactCreatePayload = {
   remarks: string;
   contactType: ContactType;
   contactSubType: string;
-  contactPersons: ContactPersonDTO[];
+  contactPersons: ContactPersonCreatePayload[];
 };
+
+interface ContactEditPayload extends ContactCreatePayload {
+  id?: number;
+  contactPersons: (ContactPersonCreatePayload | ContactPersonUpdatePayload)[];
+}
+
 class ContactDTO {
   static toTransactionContact(contact_details: any) {
     return {
@@ -90,6 +100,22 @@ class ContactDTO {
       contactSubType: contact_payload.contact_sub_type,
       contactPersons: contact_payload.contact_persons.map(
         ContactPersonDTO.toContactPersonCreateDTO,
+      ),
+    };
+  }
+
+  static toContactUpdate(contact_payload: any): ContactEditPayload {
+    return {
+      contactName: contact_payload.contact_name,
+      companyName: contact_payload.company_name,
+      currencyId: contact_payload.currency_id,
+      paymentTermId: contact_payload.payment_term_id,
+      taxId: contact_payload.tax_id,
+      remarks: contact_payload.remarks,
+      contactType: contact_payload.contact_type,
+      contactSubType: contact_payload.contact_sub_type,
+      contactPersons: contact_payload.contact_persons.map(
+        ContactPersonDTO.toContactPersonUpdateDTO,
       ),
     };
   }

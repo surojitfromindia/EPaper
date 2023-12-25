@@ -1,6 +1,12 @@
 class ComparisonUtil {
-  // given two arrays, return entries that are not in first array
-  // for key it should be same for both generic array types
+  /**
+   * given two arrays, return entries that are not in the first array.
+   * but present in the second array
+   * @param first_array
+   * @param second_array
+   * @param key_for_first_array
+   * @param key_for_second_array
+   */
   static getEntriesNotInFirstArray<T1, T2>({
     first_array,
     second_array,
