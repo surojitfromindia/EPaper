@@ -1,6 +1,9 @@
 import { AuthorizationDao } from "../../DAO/index";
 import { UserService } from "../../Services/index";
 import { NextFunction, Request, Response } from "express";
+import { ToUserDTO } from "../../DTO/User.DTO";
+import { DataNotFoundError } from "../../Errors/APIErrors";
+import { ValidityUtil } from "../../Utils/ValidityUtil";
 
 interface ClientInfo {
   userId: number | null;
@@ -9,7 +12,7 @@ interface ClientInfo {
   clientId: string;
   clientName: string;
   clientType: string;
-  clientEmail?: string;
+  clientEmail: string;
 }
 
 const authorizeClient = async (
@@ -60,10 +63,30 @@ const authorizeClient = async (
       organizationId: null,
       userOrganizations: [],
     };
-    const userDetails = await UserService.getUserByClientId({
-      client_id: basicClientInfo.clientId,
-      include_organization_details: true,
-    });
+
+    let userDetails: ToUserDTO;
+    try {
+      userDetails = await UserService.getUserByClientId({
+        client_id: basicClientInfo.clientId,
+        include_organization_details: true,
+      });
+    } catch (error) {
+      if (error instanceof DataNotFoundError) {
+        // user is registered but not for this application
+        await UserService.registerUser({
+          user_details: {
+            clientEmail: basicClientInfo.clientEmail,
+            clientId: basicClientInfo.clientId,
+            clientName: basicClientInfo.clientName,
+          },
+        });
+        userDetails = await UserService.getUserByClientId({
+          client_id: basicClientInfo.clientId,
+          include_organization_details: true,
+        });
+      }
+    }
+
     const userOrganizations = userDetails.user_organizations ?? [];
     clientInfo.userOrganizations = userOrganizations;
 
@@ -71,10 +94,16 @@ const authorizeClient = async (
     const defaultOrganization = userOrganizations.find(
       (org) => org.is_default_organization,
     );
+    const organizationFromQuery = req?.query.organization_id;
 
-    clientInfo.organizationId = req?.query.organization_id
-      ? Number(req.query.organization_id)
-      : defaultOrganization.organization_id;
+    if (
+      ValidityUtil.isNotEmpty(defaultOrganization) ||
+      ValidityUtil.isNotEmpty(organizationFromQuery)
+    ) {
+      clientInfo.organizationId = req?.query.organization_id
+        ? Number(organizationFromQuery)
+        : defaultOrganization.organization_id;
+    }
     clientInfo.userId = userDetails?.user_id ?? null;
 
     req.clientInfo = clientInfo;

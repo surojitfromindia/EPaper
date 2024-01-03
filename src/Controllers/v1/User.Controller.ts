@@ -1,9 +1,10 @@
 import { UserService } from "../../Services/index";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import { Request } from "express";
+import { UserCreatePayload } from "../../DTO/User.DTO";
 
 let registerUser = async (req: Request) => {
-  const body = req.clientInfo;
+  const body = req.clientInfo satisfies UserCreatePayload;
   const created_user = await UserService.registerUser({ user_details: body });
   return { user: created_user };
 };

@@ -3,9 +3,11 @@ import sequelize from "../Config/DataBase.Config";
 import { UserDao } from "../DAO/index";
 import { UserDTO } from "../DTO/index";
 import { DataNotFoundError } from "../Errors/APIErrors/index";
+import { User } from "../Models";
+import { UserCreatePayload } from "../DTO/User.DTO";
 
 class UserService {
-  async registerUser({ user_details }) {
+  async registerUser({ user_details }: { user_details: UserCreatePayload }) {
     const newUser = UserDTO.toUserCreate(user_details);
     const createdUser = await sequelize.transaction(async (t1) => {
       return await UserDao.create({ user: newUser }, { transaction: t1 });
@@ -38,7 +40,7 @@ class UserService {
     client_id: string;
     include_organization_details: boolean;
   }) {
-    let user;
+    let user: User;
     if (include_organization_details) {
       user = await UserDao.getUserByClientIdWithOrganization({ client_id });
     } else {
