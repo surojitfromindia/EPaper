@@ -12,6 +12,7 @@ const errorHandlerMiddleware = (
   res.status(httpErrorCode).json({
     success: false,
     message: error.message ?? httpErrorMessage,
+    code: error?.code,
     type: error.constructor.name,
     errors,
   });
