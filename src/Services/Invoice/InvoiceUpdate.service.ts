@@ -9,8 +9,6 @@ import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { InvoiceCalculation } from "./InvoiceCalculation";
 import { ToInvoiceCreateType } from "../../DTO/Invoice.DTO";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
-import { DateUtil } from "../../Utils/DateUtil";
-import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
 import { InvoiceUtil } from "./InvoiceUtil";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
 import { ContactService } from "../Contact/Contact.service";
@@ -75,19 +73,13 @@ class InvoiceUpdateService {
 
       // calculate due date
       if (ValidityUtil.isNotEmpty(paymentTermId)) {
-        const { due_date, payment_term_details: paymentTermDetails } =
-          await InvoiceUtil.calculateDueDate({
-            issue_date: DateUtil.parseFromStr(issueDate),
-            due_date: DateUtil.parseFromStr(dueDate),
-            payment_term_id: paymentTermId,
-            organization_id: organizationId,
-          });
-
-        // create the invoicePaymentTerm if paymentTermId is present
-        const createdInvoicePaymentTerm =
-          await InvoiceUtil.createInvoicePaymentTerm(
+        const { due_date, invoice_payment_term_id } =
+          await InvoiceUtil.generateInvoicePaymentTermId(
             {
-              payment_term_details: paymentTermDetails,
+              payment_term_id: paymentTermId,
+              issue_date: issueDate,
+              custom_due_date: dueDate,
+              organization_id: organizationId,
             },
             {
               transaction: t1,
@@ -95,8 +87,8 @@ class InvoiceUpdateService {
           );
 
         // update the due date and create a new invoicePaymentTerm
-        dueDate = DateUtil.Formatter(due_date).format(DATE_FORMAT_DB);
-        invoicePaymentTermId = createdInvoicePaymentTerm.id;
+        dueDate = due_date;
+        invoicePaymentTermId = invoice_payment_term_id;
       }
 
       // if currencyId is not present, get the currencyId from contact
@@ -132,7 +124,7 @@ class InvoiceUpdateService {
         key_for_second_array: "id",
         key_for_first_array: "id",
       }).map((lineItem) => ({
-        ...newLineItems,
+        ...lineItem,
         organizationId: client_info.organizationId,
         invoiceId: invoiceId,
       }));

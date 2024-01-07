@@ -1,5 +1,6 @@
 import { InvoicePaymentTermDao, PaymentTermDao } from "../../DAO";
 import { DateUtil } from "../../Utils/DateUtil";
+import { DATE_FORMAT_DB } from "../../Constants/DateFormat.Constant";
 
 type CalculateDueDateProps = {
   issue_date: Date;
@@ -65,5 +66,34 @@ export class InvoiceUtil {
         transaction,
       },
     );
+  }
+
+  static async generateInvoicePaymentTermId(
+    { payment_term_id, issue_date, custom_due_date, organization_id },
+    { transaction },
+  ) {
+    const { due_date, payment_term_details: paymentTermDetails } =
+      await InvoiceUtil.calculateDueDate({
+        issue_date: DateUtil.parseFromStr(issue_date),
+        due_date: DateUtil.parseFromStr(custom_due_date),
+        payment_term_id: payment_term_id,
+        organization_id: organization_id,
+      });
+
+    // create the invoicePaymentTerm if paymentTermId is present
+    const createdInvoicePaymentTerm =
+      await InvoiceUtil.createInvoicePaymentTerm(
+        {
+          payment_term_details: paymentTermDetails,
+        },
+        {
+          transaction,
+        },
+      );
+
+    return {
+      due_date: DateUtil.Formatter(due_date).format(DATE_FORMAT_DB),
+      invoice_payment_term_id: createdInvoicePaymentTerm.id,
+    };
   }
 }
