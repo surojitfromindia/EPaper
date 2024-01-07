@@ -10,7 +10,7 @@ type GetItemsAutoCompleteParamsType = {
   organization_id: number;
   skip: number;
   next: number;
-  item_for: "sales" | "purchase" | "sales_and_purchase";
+  item_for: ("sales" | "purchase" | "sales_and_purchase")[];
   item_name?: string;
 };
 
@@ -93,11 +93,6 @@ class RegularItemDao {
     item_for,
     item_name,
   }: GetItemsAutoCompleteParamsType) {
-    const extra_condition: any = {};
-    if (item_for) {
-      extra_condition.itemFor = item_for;
-    }
-
     return RegularItems.findAll({
       where: {
         organizationId: organization_id,
@@ -105,7 +100,9 @@ class RegularItemDao {
         name: {
           [Op.like]: item_name + "%",
         },
-        ...extra_condition,
+        itemFor: {
+          [Op.in]: item_for,
+        },
       },
       attributes: ["id", "name", "sellingPrice", "purchasePrice"],
       order: [["name", "ASC"]],

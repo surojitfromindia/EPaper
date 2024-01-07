@@ -217,15 +217,26 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     limit_and_offset,
   }): Promise<Array<ItemAutoCompleteType>> {
     const { limit, offset } = limit_and_offset;
-    const options: any = {
+
+    const itemFor = [];
+    switch (search_option.item_for) {
+      case "sales":
+        itemFor.push("sales", "sales_and_purchase");
+        break;
+      case "purchase":
+        itemFor.push("purchase", "sales_and_purchase");
+        break;
+      default:
+        itemFor.push("sales", "purchase", "sales_and_purchase");
+    }
+
+    const items = await RegularItemDao.getItemsAutoComplete({
       organization_id: organization_id,
       skip: offset,
       next: limit,
       item_name: search_text,
-      item_for: search_option.item_for,
-    };
-
-    const items = await RegularItemDao.getItemsAutoComplete(options);
+      item_for: itemFor,
+    });
 
     return items.map((item) => ({
       id: item.id as number,
