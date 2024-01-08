@@ -20,6 +20,8 @@ import { InvoicePaymentTerm } from "./Invoice/InvoicePaymentTerms.model";
 import { CurrencyModel } from "./Currency/Currency.model";
 import { CurrencyExchangeRate } from "./Currency/CurrencyExchangeRate.model";
 import { ContactPerson } from "./ContactPerson/ContactPerson.model";
+import { AutoNumbers } from "./AutoNumberGeneration/AutoNumber.model";
+import { AutoNumberGroups } from "./AutoNumberGeneration/AutoNumberGroup.model";
 
 export {
   User,
@@ -44,4 +46,6 @@ export {
   CurrencyModel,
   CurrencyExchangeRate,
   ContactPerson,
+  AutoNumberGroups,
+  AutoNumbers,
 };
