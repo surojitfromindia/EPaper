@@ -1,5 +1,5 @@
 import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.model";
-import { GenerelaPrefernce } from "../../Models/Preference/GeneralPreference/GeneralPreference.model";
+import { GeneralPreference } from "../../Models/Preference/GeneralPreference/GeneralPreference.model";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { GeneralPreferenceService } from "../PreferenceServices/Preference.service";
 import { MathLib } from "../../Utils/MathLib/mathLib";
@@ -21,7 +21,7 @@ type InvoiceCalculationConstructorProps = {
   isInclusiveTax: boolean;
   exchangeRate: number;
   line_items: InvoiceLineItemCreatable[];
-  general_preference: GenerelaPrefernce;
+  general_preference: GeneralPreference;
 };
 type InvoiceCalculationInitProps = {
   is_inclusive_tax: boolean;
@@ -32,9 +32,9 @@ type InvoiceCalculationInitProps = {
 
 class InvoiceCalculation {
   readonly lineItems: InvoiceLineItemCreatable[];
-  readonly taxRoundingType: GenerelaPrefernce["taxRoundingType"];
-  readonly discountType: GenerelaPrefernce["discountType"];
-  readonly isDiscountBeforeTax: GenerelaPrefernce["isDiscountBeforeTax"];
+  readonly taxRoundingType: GeneralPreference["taxRoundingType"];
+  readonly discountType: GeneralPreference["discountType"];
+  readonly isDiscountBeforeTax: GeneralPreference["isDiscountBeforeTax"];
   readonly isInclusiveTax: boolean;
   readonly exchangeRate: number;
   constructor({

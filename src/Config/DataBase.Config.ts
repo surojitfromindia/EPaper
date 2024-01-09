@@ -79,6 +79,7 @@ async function syncModel() {
   // await ContactPerson.sync({ alter, force });
   await AutoNumberGroups.sync({ alter, force });
   await AutoNumbers.sync({ alter, force });
+  // await GeneralPreferenceModel.sync({ alter, force });
 }
 
 // syncModel().catch((err) => console.log(err));

@@ -55,7 +55,7 @@ class AutoNumberGroupDAO {
     );
   }
 
-  async getAll({ transaction }) {
+  async getAll() {
     return await AutoNumberGroups.findAll({
       where: {
         organizationId: this.organization_id,
@@ -67,7 +67,6 @@ class AutoNumberGroupDAO {
           as: "AutoNumbers",
         },
       ],
-      transaction,
     });
   }
 }

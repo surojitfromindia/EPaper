@@ -20,6 +20,7 @@ import InvoicePaymentTermDao from "./Invoices/InvoicePaymentTerm.dao";
 import ContactDao from "./Contacts/Contact.dao";
 import CurrencyDAO from "./Settings/Currecy.dao";
 import ContactPersonDAO from "./ContactPersons/ContactPerson.dao";
+import { AutoNumberGroupDAO } from "./AutoNumberSeries/AutoNumberGroup.dao";
 
 export {
   UserDao,
@@ -44,4 +45,5 @@ export {
   ContactDao,
   CurrencyDAO,
   ContactPersonDAO,
+  AutoNumberGroupDAO,
 };

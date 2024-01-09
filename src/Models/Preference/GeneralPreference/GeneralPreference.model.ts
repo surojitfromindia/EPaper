@@ -12,6 +12,7 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
+  Default,
   NotNull,
   PrimaryKey,
   Table,
@@ -46,6 +47,21 @@ class GeneralPreferenceModel extends Model<
   @NotNull
   declare isDiscountBeforeTax: boolean;
 
+  @Attribute(DataTypes.BOOLEAN)
+  @NotNull
+  @Default(false)
+  declare isMultipleAutoNumberSeriesEnable: boolean;
+
+  @Attribute(DataTypes.BOOLEAN)
+  @NotNull
+  @Default(false)
+  declare isMultipleBranchesEnable: boolean;
+
+  @Attribute(DataTypes.BOOLEAN)
+  @NotNull
+  @Default(false)
+  declare isMultipleBranchesActive: boolean;
+
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare organizationId: number;
@@ -54,6 +70,6 @@ class GeneralPreferenceModel extends Model<
   declare Organization: NonAttribute<OrganizationBasic>;
 }
 
-type GenerelaPrefernce = Attributes<GeneralPreferenceModel>;
+type GeneralPreference = Attributes<GeneralPreferenceModel>;
 export { GeneralPreferenceModel };
-export type { GenerelaPrefernce };
+export type { GeneralPreference };
