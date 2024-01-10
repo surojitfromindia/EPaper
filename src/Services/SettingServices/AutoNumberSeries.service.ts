@@ -1,9 +1,10 @@
-import { AutoNumberGroupDAO, CurrencyDAO } from "../../DAO/index";
-import { DEFAULT_CURRENCIES } from "../../Constants/Currency.Constant";
+import { AutoNumberGroupDAO } from "../../DAO/index";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
+import { DEFAULT_AUTO_NUMBER_SERIES } from "../../Constants/AutoNumberSeries.Constant";
+import { AutoNumberDAO } from "../../DAO/AutoNumberSeries/AutoNumber.dao";
 
-class CurrencyService {
+class AutoNumberGroupService {
   private _clientInfo: ClientInfo;
   private readonly _organizationId: OrganizationBasicIdType;
   private readonly _userId: number;
@@ -22,24 +23,45 @@ class CurrencyService {
     return await this._autoNumberGroupDAO.getAll();
   }
 
-  async initDefaultCurrencies({ organization_id }, { transaction }) {
+  async initDefaultAutoNumber({ organization_id }, { transaction }) {
     const organizationId = organization_id;
     const userId = this._userId;
-    let currencies = DEFAULT_CURRENCIES;
-    if (DEFAULT_CURRENCIES) {
-      currencies = DEFAULT_CURRENCIES.map((currency) => ({
-        ...currency,
-        organizationId,
-        createdBy: userId,
-      }));
-    }
-    return await CurrencyDAO.createAll(
+    const defaultAutoNumberGroup = {
+      ...DEFAULT_AUTO_NUMBER_SERIES,
+      createdBy: userId,
+      organizationId: organizationId,
+    };
+
+    const autoNumberGroupDao = new AutoNumberGroupDAO({
+      organization_id: organizationId,
+    });
+    const autoNumberDao = new AutoNumberDAO({
+      organization_id: organizationId,
+    });
+    const createdAutoNumberGp = await autoNumberGroupDao.create(
       {
-        currency_details: currencies,
+        auto_number_group: defaultAutoNumberGroup,
+      },
+      { transaction },
+    );
+
+    const defaultAutoNumbers = defaultAutoNumberGroup.autoNumbers.map(
+      (autoNumber) => {
+        return {
+          ...autoNumber,
+          autoNumberGroupId: createdAutoNumberGp.id,
+          createdBy: userId,
+          organizationId: organizationId,
+        };
+      },
+    );
+    await autoNumberDao.bulkCreate(
+      {
+        auto_numbers: defaultAutoNumbers,
       },
       { transaction },
     );
   }
 }
 
-export default CurrencyService;
+export { AutoNumberGroupService };

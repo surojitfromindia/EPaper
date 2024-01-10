@@ -23,6 +23,7 @@ import { InvoiceEditPageService } from "./Invoice/Invoice.editPage.service";
 import { ContactAutoCompleteService } from "./Contact/Contact.AutoComplete.service";
 import { ContactService } from "./Contact/Contact.service";
 import { ContactEditPageService } from "./Contact/Contact.editPage.service";
+import { AutoNumberGroupService } from "./SettingServices/AutoNumberSeries.service";
 
 export {
   UserService,
@@ -47,4 +48,5 @@ export {
   ContactService,
   CurrencyService,
   ContactEditPageService,
+  AutoNumberGroupService,
 };

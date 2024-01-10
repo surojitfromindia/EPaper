@@ -10,9 +10,7 @@ import RegularItemDao from "./RegularItem.dao";
 import AccountsOfOrganizationDao from "./Accounts/AccountsOfOrganization.dao";
 import AccountTypesDao from "./Accounts/AccountTypes.dao";
 import AccountGroupsDao from "./Accounts/AccountGroups.dao";
-import ItemPreferenceDao from "./Preference/ItemPreference.dao";
 import ItemUnitDao from "./Settings/ItemUnit.dao";
-import GeneralPreferenceDao from "./Preference/GeneralPreference.dao";
 import InvoiceDao from "./Invoices/Invoice.dao";
 import InvoiceLineItemDao from "./Invoices/InvoiceLineItem.dao";
 import PaymentTermDao from "./Settings/PaymentTerm.dao";
@@ -21,6 +19,11 @@ import ContactDao from "./Contacts/Contact.dao";
 import CurrencyDAO from "./Settings/Currecy.dao";
 import ContactPersonDAO from "./ContactPersons/ContactPerson.dao";
 import { AutoNumberGroupDAO } from "./AutoNumberSeries/AutoNumberGroup.dao";
+import {
+  FeaturesPreferenceDAO,
+  GeneralPreferenceDAO,
+  ItemPreferenceDAO,
+} from "./Preference/index.dao.preference";
 
 export {
   UserDao,
@@ -35,9 +38,7 @@ export {
   AccountsOfOrganizationDao,
   AccountTypesDao,
   AccountGroupsDao,
-  ItemPreferenceDao,
   ItemUnitDao,
-  GeneralPreferenceDao,
   InvoiceDao,
   InvoiceLineItemDao,
   PaymentTermDao,
@@ -46,4 +47,9 @@ export {
   CurrencyDAO,
   ContactPersonDAO,
   AutoNumberGroupDAO,
+
+  //  preferences
+  GeneralPreferenceDAO,
+  ItemPreferenceDAO,
+  FeaturesPreferenceDAO,
 };

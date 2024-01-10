@@ -12,7 +12,6 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
-  Default,
   NotNull,
   PrimaryKey,
   Table,
@@ -46,21 +45,6 @@ class GeneralPreferenceModel extends Model<
   @Attribute(DataTypes.BOOLEAN)
   @NotNull
   declare isDiscountBeforeTax: boolean;
-
-  @Attribute(DataTypes.BOOLEAN)
-  @NotNull
-  @Default(false)
-  declare isMultipleAutoNumberSeriesEnable: boolean;
-
-  @Attribute(DataTypes.BOOLEAN)
-  @NotNull
-  @Default(false)
-  declare isMultipleBranchesEnable: boolean;
-
-  @Attribute(DataTypes.BOOLEAN)
-  @NotNull
-  @Default(false)
-  declare isMultipleBranchesActive: boolean;
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

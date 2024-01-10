@@ -16,4 +16,6 @@ class GeneralPreferenceDao {
   }
 }
 
-export default Object.freeze(new GeneralPreferenceDao());
+const GeneralPreferenceDAO = Object.freeze(new GeneralPreferenceDao());
+
+export { GeneralPreferenceDAO };

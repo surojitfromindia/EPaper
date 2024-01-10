@@ -1,12 +1,12 @@
 import { PREFERENCE_DEFAULTS } from "../../Constants/Preference.Constant";
-import { GeneralPreferenceDao } from "../../DAO/index";
+import { GeneralPreferenceDAO } from "../../DAO";
 import { PreferenceNotFoundError } from "../../Errors/APIErrors/index";
 
 class GeneralPreferenceService {
   async create({ organization_id }, { transaction }) {
     const generalPreference = PREFERENCE_DEFAULTS.GENERAL_PREFERENCE;
     generalPreference["organizationId"] = organization_id;
-    await GeneralPreferenceDao.create(
+    await GeneralPreferenceDAO.create(
       {
         preference_details: generalPreference,
       },
@@ -17,7 +17,7 @@ class GeneralPreferenceService {
 
   async get({ client_info }) {
     const organizationId = client_info.organizationId;
-    const preference = await GeneralPreferenceDao.get({
+    const preference = await GeneralPreferenceDAO.get({
       organization_id: organizationId,
     });
     if (preference) {

@@ -16,4 +16,6 @@ class ItemPreferenceDao {
   }
 }
 
-export default Object.freeze(new ItemPreferenceDao());
+const ItemPreferenceDAO = Object.freeze(new ItemPreferenceDao());
+
+export { ItemPreferenceDAO };

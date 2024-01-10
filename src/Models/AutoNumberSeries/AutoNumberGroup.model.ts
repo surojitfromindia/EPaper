@@ -2,12 +2,14 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
+  Default,
   HasMany,
   NotNull,
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
 import {
+  Attributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -34,15 +36,20 @@ class AutoNumberGroups extends Model<
   declare id: CreationOptional<number>;
 
   @Attribute(DataTypes.STRING)
+  @NotNull
   declare name: string;
 
   @Attribute(DataTypes.BOOLEAN)
+  @NotNull
   declare isDefault: boolean;
 
   @Attribute(DataTypes.BOOLEAN)
+  @NotNull
   declare isActive: boolean;
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
+  @NotNull
+  @Default("active")
   declare status: "active" | "deleted";
 
   @Attribute(DataTypes.INTEGER)
@@ -62,4 +69,5 @@ class AutoNumberGroups extends Model<
   declare AutoNumbers?: NonAttribute<AutoNumbers[]>;
 }
 
+type IAutoNumberGroup = Attributes<AutoNumberGroups>;
 export { AutoNumberGroups };

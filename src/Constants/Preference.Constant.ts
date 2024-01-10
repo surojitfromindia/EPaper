@@ -14,8 +14,15 @@ const GENERAL_PREFERENCE = {
   isDiscountBeforeTax: true,
 };
 
+const FEATURES_PREFERENCE = {
+  isMultipleAutoNumberSeriesEnable: false,
+  isMultipleBranchesEnable: false,
+  isMultipleBranchesActive: false,
+};
+
 const PREFERENCE_DEFAULTS = {
   ITEM_PREFERENCE,
   GENERAL_PREFERENCE,
+  FEATURES_PREFERENCE,
 };
 export { PREFERENCE_DEFAULTS };

@@ -1,4 +1,5 @@
 import {
+  Attributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -26,18 +27,23 @@ class AutoNumbers extends Model<
   declare id: CreationOptional<number>;
 
   @Attribute(DataTypes.ENUM("invoice", "credit_note", "customer_payment"))
+  @NotNull
   declare entityType: string;
 
   @Attribute(DataTypes.STRING)
+  @NotNull
   declare prefixString: string;
 
   @Attribute(DataTypes.STRING)
+  @NotNull
   declare nextNumber: string;
 
   @Attribute(DataTypes.INTEGER)
+  @NotNull
   declare autoNumberGroupId: number;
 
   @Attribute(DataTypes.INTEGER)
+  @NotNull
   declare numberZeroPad: number;
 
   @Attribute(DataTypes.INTEGER)
@@ -53,4 +59,6 @@ class AutoNumbers extends Model<
   declare CreatedBy?: NonAttribute<User>;
 }
 
+type IAutoNumber = Attributes<AutoNumbers>;
 export { AutoNumbers };
+export type { IAutoNumber };

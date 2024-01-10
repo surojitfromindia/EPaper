@@ -5,6 +5,7 @@ import CurrencyService from "./Currency.service";
 import OrganizationService from "../Organization.service";
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
+import { AutoNumberGroupService } from "./AutoNumberSeries.service";
 
 class SettingService {
   private readonly organizationId: OrganizationBasicIdType;
@@ -68,6 +69,16 @@ class SettingService {
       (currency) => currency.get("currencyCode") === organizationCurrencyCode,
     );
     organizationCurrencyId = organizationCurrency.get("id");
+
+    const autoNumberGroupService = new AutoNumberGroupService({
+      client_info,
+    });
+    await autoNumberGroupService.initDefaultAutoNumber(
+      {
+        organization_id,
+      },
+      { transaction },
+    );
 
     return {
       organizationCurrencyId,

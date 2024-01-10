@@ -1,5 +1,5 @@
 import { PREFERENCE_DEFAULTS } from "../../Constants/Preference.Constant";
-import { ItemPreferenceDao } from "../../DAO/index";
+import { ItemPreferenceDAO } from "../../DAO";
 import { PreferenceNotFoundError } from "../../Errors/APIErrors/index";
 
 class ItemPreferenceService {
@@ -9,7 +9,7 @@ class ItemPreferenceService {
       ...itemPreference,
       organizationId: organization_id,
     };
-    await ItemPreferenceDao.create(
+    await ItemPreferenceDAO.create(
       {
         preference_details: newItemPreference,
       },
@@ -20,7 +20,7 @@ class ItemPreferenceService {
 
   async get({ client_info }) {
     const organizationId = client_info.organizationId;
-    const preference = await ItemPreferenceDao.get({
+    const preference = await ItemPreferenceDAO.get({
       organization_id: organizationId,
     });
     if (preference) {

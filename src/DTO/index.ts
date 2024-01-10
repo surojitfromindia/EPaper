@@ -13,6 +13,7 @@ import { TaxRateDTO } from "./TaxRate.DTO";
 import { ContactDTO } from "./Contact.DTO";
 import { CurrencyDTO } from "./Currency.DTO";
 import { ContactPersonDTO } from "./ContactPerson.DTO";
+import { AutoNumberSeriesDTO } from "./AutoNumberSeries.DTO";
 
 export {
   UserDTO,
@@ -30,4 +31,5 @@ export {
   ContactDTO,
   CurrencyDTO,
   ContactPersonDTO,
+  AutoNumberSeriesDTO,
 };
