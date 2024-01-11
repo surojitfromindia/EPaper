@@ -1,26 +1,24 @@
-import { AutoNumberGroupDAO } from "../../DAO/index";
+import { AutoNumberGroupDAO } from "../../DAO";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 import { DEFAULT_AUTO_NUMBER_SERIES } from "../../Constants/AutoNumberSeries.Constant";
 import { AutoNumberDAO } from "../../DAO/AutoNumberSeries/AutoNumber.dao";
 
-class AutoNumberGroupService {
-  private _clientInfo: ClientInfo;
+class AutoNumberSeriesService {
   private readonly _organizationId: OrganizationBasicIdType;
   private readonly _userId: number;
   private readonly _autoNumberGroupDAO: AutoNumberGroupDAO;
+  private _autoNumberDao: AutoNumberDAO;
 
   constructor({ client_info }: { client_info: ClientInfo }) {
-    this._clientInfo = client_info;
     this._organizationId = client_info.organizationId;
     this._userId = client_info.userId;
     this._autoNumberGroupDAO = new AutoNumberGroupDAO({
       organization_id: this._organizationId,
     });
-  }
-
-  async getAllAutoNumberGroups() {
-    return await this._autoNumberGroupDAO.getAll();
+    this._autoNumberDao = new AutoNumberDAO({
+      organization_id: this._organizationId,
+    });
   }
 
   async initDefaultAutoNumber({ organization_id }, { transaction }) {
@@ -44,7 +42,6 @@ class AutoNumberGroupService {
       },
       { transaction },
     );
-
     const defaultAutoNumbers = defaultAutoNumberGroup.autoNumbers.map(
       (autoNumber) => {
         return {
@@ -62,6 +59,10 @@ class AutoNumberGroupService {
       { transaction },
     );
   }
+
+  async getAllAutoNumberGroups() {
+    return await this._autoNumberGroupDAO.getAll();
+  }
 }
 
-export { AutoNumberGroupService };
+export { AutoNumberSeriesService };

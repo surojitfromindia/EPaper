@@ -4,12 +4,14 @@ import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middle
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 
 class CurrencyService {
-  private _clientInfo: ClientInfo;
   private readonly _organizationId: OrganizationBasicIdType;
+  private readonly _userId: number;
+  private _currencyDAO: Readonly<typeof CurrencyDAO>;
 
   constructor({ client_info }: { client_info: ClientInfo }) {
-    this._clientInfo = client_info;
+    this._userId = client_info.userId;
     this._organizationId = client_info.organizationId;
+    this._currencyDAO = CurrencyDAO;
   }
 
   async getAllCurrencies() {
@@ -20,7 +22,7 @@ class CurrencyService {
 
   async initDefaultCurrencies({ organization_id }, { transaction }) {
     const organizationId = organization_id;
-    const userId = this._clientInfo.userId;
+    const userId = this._userId;
     let currencies = DEFAULT_CURRENCIES;
     if (DEFAULT_CURRENCIES) {
       currencies = DEFAULT_CURRENCIES.map((currency) => ({
@@ -29,7 +31,7 @@ class CurrencyService {
         createdBy: userId,
       }));
     }
-    return await CurrencyDAO.createAll(
+    return await this._currencyDAO.createAll(
       {
         currency_details: currencies,
       },

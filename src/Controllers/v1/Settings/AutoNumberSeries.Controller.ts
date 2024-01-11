@@ -1,11 +1,11 @@
 import { Request } from "express";
-import { AutoNumberGroupService } from "../../../Services";
+import { AutoNumberSeriesService } from "../../../Services";
 import { SuccessErrorWrapper } from "../../../Utils/SuccessErrorWrapper";
 import { AutoNumberSeriesDTO } from "../../../DTO";
 
 const getAllAutoNumberGroups = async (req: Request) => {
   const clientInfo = req.clientInfo;
-  const autoNumberGpService = new AutoNumberGroupService({
+  const autoNumberGpService = new AutoNumberSeriesService({
     client_info: clientInfo,
   });
   const autoNumberGroups = await autoNumberGpService.getAllAutoNumberGroups();
