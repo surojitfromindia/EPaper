@@ -5,6 +5,7 @@ import {
 } from "../SettingServices/Setting.service";
 import {
   AccountsOfOrganizationService,
+  AutoNumberSeriesService,
   ContactService,
   InvoiceService,
 } from "../index";
@@ -28,19 +29,32 @@ class InvoiceEditPageService {
     const client_info = this.clientInfo;
     let invoiceDetails = null;
     let contact = null;
+
+    // taxes
     const taxes = await TaxRateService.getAllTaxRates({
       client_info: this.clientInfo,
     });
+
+    // units
     const itemUnits = await ItemUnitService.getAllItemUnits({
       client_info: this.clientInfo,
     });
+
+    // payment terms
     const paymentTerms = await PaymentTermService.getAllPaymentTerms({
       client_info,
     });
+
+    // line item accounts
     const { line_item_accounts_list } =
       await AccountsOfOrganizationService.ofInvoiceLineItem({
         client_info,
       }).getAccountsForInvoiceLineItem();
+
+    // invoice setting
+    const invoiceSettings = await this.#getEditPageInvoiceSettings();
+
+    // the invoice details
     if (invoice_id) {
       invoiceDetails = await InvoiceService.getAnInvoice({
         invoice_id,
@@ -63,15 +77,33 @@ class InvoiceEditPageService {
         AccountsTree.createTreeOfOrganizationAccountsAsDTO({
           accounts: line_item_accounts_list,
         }).flatArrayFromTreeAsDTO(),
+      invoice_settings: invoiceSettings,
     };
   }
 
   async getEditPageFromContact({ contact_id }: { contact_id: ContactIdType }) {
+    // todo: have different taxes
+    // todo: have different payment modes
     const client_info = this.clientInfo;
     const contactService = new ContactService({ client_info });
     const contact = await contactService.getContactById({ contact_id });
     return {
       contact,
+    };
+  }
+
+  async #getEditPageInvoiceSettings() {
+    const autoNumberSeriesService = new AutoNumberSeriesService({
+      client_info: this.clientInfo,
+    });
+    const autoNumberGroups =
+      await autoNumberSeriesService.getAutoNumberGroupsOfEntity({
+        entity_type: "invoice",
+      });
+    const defaultAutoNumberGroup = autoNumberGroups.find((gp) => gp.isDefault);
+    return {
+      auto_number_groups: autoNumberGroups,
+      default_auto_number_group: defaultAutoNumberGroup,
     };
   }
 }

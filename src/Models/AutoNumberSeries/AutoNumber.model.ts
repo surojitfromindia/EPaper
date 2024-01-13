@@ -17,6 +17,8 @@ import {
 import { OrganizationBasic } from "../Organization/Organization.model";
 import { User } from "../User/User.model";
 
+type IAutoNumberEntityTypes = "invoice" | "credit_note" | "customer_payment";
+
 class AutoNumbers extends Model<
   InferAttributes<AutoNumbers>,
   InferCreationAttributes<AutoNumbers>
@@ -28,7 +30,7 @@ class AutoNumbers extends Model<
 
   @Attribute(DataTypes.ENUM("invoice", "credit_note", "customer_payment"))
   @NotNull
-  declare entityType: string;
+  declare entityType: IAutoNumberEntityTypes;
 
   @Attribute(DataTypes.STRING)
   @NotNull
@@ -61,4 +63,4 @@ class AutoNumbers extends Model<
 
 type IAutoNumber = Attributes<AutoNumbers>;
 export { AutoNumbers };
-export type { IAutoNumber };
+export type { IAutoNumber, IAutoNumberEntityTypes };

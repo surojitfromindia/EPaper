@@ -3,6 +3,7 @@ import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middle
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 import { DEFAULT_AUTO_NUMBER_SERIES } from "../../Constants/AutoNumberSeries.Constant";
 import { AutoNumberDAO } from "../../DAO/AutoNumberSeries/AutoNumber.dao";
+import { IAutoNumberEntityTypes } from "../../Models/AutoNumberSeries/AutoNumber.model";
 
 class AutoNumberSeriesService {
   private readonly _organizationId: OrganizationBasicIdType;
@@ -62,6 +63,18 @@ class AutoNumberSeriesService {
 
   async getAllAutoNumberGroups() {
     return await this._autoNumberGroupDAO.getAll();
+  }
+
+  async getAutoNumberGroupById({ auto_number_group_id }) {
+    return await this._autoNumberGroupDAO.get({ auto_number_group_id });
+  }
+
+  async getAutoNumberGroupsOfEntity({
+    entity_type,
+  }: {
+    entity_type: IAutoNumberEntityTypes;
+  }) {
+    return await this._autoNumberGroupDAO.getOfEntity({ entity_type });
   }
 }
 

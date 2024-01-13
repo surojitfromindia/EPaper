@@ -1,4 +1,5 @@
 import {
+  AutoNumberSeriesDTO,
   ContactDTO,
   CurrencyDTO,
   InvoiceLineItemDTO,
@@ -23,12 +24,16 @@ class InvoiceDTO {
     line_item_accounts_list,
     invoice_details,
     contact,
+    invoice_settings,
   }) {
     const basic_data = {
       taxes: taxes.map(TaxRateDTO.toTaxRate),
       units: units.map(ItemUnitDTO.toItemUnit),
       payment_terms: payment_terms.map(PaymentTermsDTO.toPaymentTerm),
       line_item_accounts_list,
+      invoice_settings: InvoiceSettingsDTO.toEditPageInvoiceSettings({
+        invoice_settings,
+      }),
     };
     if (invoice_details) {
       basic_data["invoice"] = InvoiceDTO.toInvoice({
@@ -158,3 +163,23 @@ class InvoiceDTO {
 type ToInvoiceCreateType = ReturnType<typeof InvoiceDTO.toInvoiceCreate>;
 export { InvoiceDTO };
 export type { ToInvoiceCreateType };
+
+class InvoiceSettingsDTO {
+  static toFullInvoiceSettings({ invoice_settings }) {}
+
+  static toEditPageInvoiceSettings({ invoice_settings }) {
+    const auto_number_groups = invoice_settings.auto_number_groups.map((gp) =>
+      AutoNumberSeriesDTO.toAutoNumberSeriesForSingleEntity(gp),
+    );
+    const default_auto_number_group =
+      AutoNumberSeriesDTO.toAutoNumberSeriesForSingleEntity(
+        invoice_settings.default_auto_number_group,
+      );
+    // we need only the first element of
+    return {
+      is_auto_number_enabled: true,
+      auto_number_groups,
+      default_auto_number_group,
+    };
+  }
+}
