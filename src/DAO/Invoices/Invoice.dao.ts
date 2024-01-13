@@ -14,6 +14,7 @@ import {
 } from "../../Models/Invoice/Invoices.model";
 import { AllowArray } from "@sequelize/core/_non-semver-use-at-your-own-risk_/utils/types.d.ts";
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
+import { ValidityUtil } from "../../Utils/ValidityUtil";
 
 const INVOICE_CONTACT_DEFAULT_ATTRIBUTES = ["contactName"];
 const INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES = [
@@ -195,6 +196,17 @@ class InvoiceDao {
         ],
       ],
     });
+  }
+
+  async isInvoiceNumberExists({ organization_id, invoice_number }) {
+    const invoice = await Invoice.findOne({
+      where: {
+        organizationId: organization_id,
+        invoiceNumber: invoice_number,
+      },
+      attributes: ["id", "invoiceNumber"],
+    });
+    return ValidityUtil.isNotEmpty(invoice);
   }
 }
 

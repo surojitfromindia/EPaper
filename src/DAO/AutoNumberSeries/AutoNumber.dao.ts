@@ -7,13 +7,14 @@ class AutoNumberDAO {
   constructor({ organization_id }) {
     this._organization_id = organization_id;
   }
-
   async bulkCreate({ auto_numbers }, { transaction }) {
     return await AutoNumbers.bulkCreate(auto_numbers, { transaction });
   }
 
-  async bulkUpdate({ auto_numbers }, { transaction }) {
-    return await AutoNumbers.bulkCreate(auto_numbers, { transaction });
+  async update({ auto_number_id, auto_number_details }, { transaction }) {
+    return await AutoNumbers.update(auto_number_details, {
+      where: { id: auto_number_id },
+    });
   }
 }
 

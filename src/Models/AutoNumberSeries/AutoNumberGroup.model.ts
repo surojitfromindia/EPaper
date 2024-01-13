@@ -10,6 +10,7 @@ import {
 } from "@sequelize/core/decorators-legacy";
 import {
   Attributes,
+  CreationAttributes,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -70,4 +71,6 @@ class AutoNumberGroups extends Model<
 }
 
 type IAutoNumberGroup = Attributes<AutoNumberGroups>;
+type IAutoNumberGroupCreationAttributes = CreationAttributes<AutoNumberGroups>;
 export { AutoNumberGroups };
+export type { IAutoNumberGroup, IAutoNumberGroupCreationAttributes };
