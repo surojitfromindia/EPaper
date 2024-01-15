@@ -7,25 +7,30 @@ import {
 import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { InvoiceCalculation } from "./InvoiceCalculation";
-import { ToInvoiceCreateType } from "../../DTO/Invoice.DTO";
+import { ToInvoiceUpdateType } from "../../DTO/Invoice.DTO";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { InvoiceUtil } from "./InvoiceUtil";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
 import { ContactService } from "../Contact/Contact.service";
 
 type InvoiceUpdateProps = {
-  invoice_details: ToInvoiceCreateType;
-  client_info: ClientInfo;
+  invoice_details: ToInvoiceUpdateType;
   invoice_id: InvoiceIdType;
 };
 
 class InvoiceUpdateService {
-  async update({
-    client_info,
-    invoice_details,
-    invoice_id,
-  }: InvoiceUpdateProps) {
-    const organizationId = client_info.organizationId;
+  private readonly _clientInfo: ClientInfo;
+  private readonly _organizationId: number;
+  private readonly _userId: number;
+
+  constructor({ client_info }: { client_info: ClientInfo }) {
+    this._clientInfo = client_info;
+    this._organizationId = client_info.organizationId;
+    this._userId = client_info.userId;
+  }
+
+  async update({ invoice_details, invoice_id }: InvoiceUpdateProps) {
+    const organizationId = this._organizationId;
     const invoiceId = invoice_id;
     const contactId = invoice_details.contactId;
     const issueDate = invoice_details.issueDate;
@@ -63,7 +68,7 @@ class InvoiceUpdateService {
     return await sequelize.transaction(async (t1): Promise<Invoice> => {
       // do the calculation
       const invoiceCalculation = await InvoiceCalculation.init({
-        client_info,
+        client_info: this._clientInfo,
         is_inclusive_tax: invoiceBody.isInclusiveTax,
         exchange_rate: invoiceBody.exchangeRate,
         line_items: allLineItems,
@@ -94,7 +99,7 @@ class InvoiceUpdateService {
       // if currencyId is not present, get the currencyId from contact
       if (ValidityUtil.isEmpty(currencyId)) {
         const contactService = new ContactService({
-          client_info,
+          client_info: this._clientInfo,
         });
         const contact = await contactService.getContactByIdRaw({
           contact_id: contactId,
@@ -125,7 +130,7 @@ class InvoiceUpdateService {
         key_for_first_array: "id",
       }).map((lineItem) => ({
         ...lineItem,
-        organizationId: client_info.organizationId,
+        organizationId,
         invoiceId: invoiceId,
       }));
 
@@ -137,7 +142,7 @@ class InvoiceUpdateService {
         key_for_second_array: "id",
       }).map((lineItem) => ({
         ...lineItem,
-        organizationId: client_info.organizationId,
+        organizationId,
         invoiceId: invoiceId,
         id: null, // any item that is not updatable will be created. so here we set id to null (in case a falsy value is passed)
       }));
@@ -185,4 +190,4 @@ class InvoiceUpdateService {
   }
 }
 
-export default Object.freeze(new InvoiceUpdateService());
+export default InvoiceUpdateService;

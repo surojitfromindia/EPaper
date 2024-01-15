@@ -196,7 +196,7 @@ class AutoNumberGenerationService {
   }
 
   #formatNextNumber(number_start_at: number, number_zero_pad: number) {
-    return number_start_at.toString().padStart(number_zero_pad, "0");
+    return number_start_at.toString().padStart(number_zero_pad + 1, "0");
   }
 
   #formatNextTransactionNumber(prefix: string, next_number: string) {

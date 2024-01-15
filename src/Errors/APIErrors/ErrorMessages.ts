@@ -44,5 +44,16 @@ const AutoNumberSeriesServiceErrorMessages = {
   },
 };
 
-export { CodedErrorMessages, AutoNumberSeriesServiceErrorMessages };
+const InvoiceServiceErrorMessages = {
+  INVOICE_NUMBER_ALREADY_EXISTS: {
+    message: "Invoice number already exists",
+    code: "INVOICE.1",
+  },
+};
+
+export {
+  CodedErrorMessages,
+  AutoNumberSeriesServiceErrorMessages,
+  InvoiceServiceErrorMessages,
+};
 export type { ICodedError };

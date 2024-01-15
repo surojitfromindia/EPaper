@@ -112,10 +112,12 @@ class InvoiceDTO {
   }): InvoiceCreatableBasic & {
     lineItems: InvoiceLineItemCreatableBasic[];
     paymentTermId?: number;
+    autoNumberGroupId: number;
   } {
     return {
       contactId: invoice.contact_id,
-      invoiceNumber: invoice.invoice_number,
+      invoiceNumber: invoice.invoice_number ?? null,
+      autoNumberGroupId: invoice.auto_number_group_id,
       issueDate: invoice.issue_date,
       dueDate: invoice.due_date,
       referenceNumber: invoice.referenceNumber ?? null,
@@ -161,8 +163,9 @@ class InvoiceDTO {
   }
 }
 type ToInvoiceCreateType = ReturnType<typeof InvoiceDTO.toInvoiceCreate>;
+type ToInvoiceUpdateType = ReturnType<typeof InvoiceDTO.toInvoiceUpdate>;
 export { InvoiceDTO };
-export type { ToInvoiceCreateType };
+export type { ToInvoiceCreateType, ToInvoiceUpdateType };
 
 class InvoiceSettingsDTO {
   static toFullInvoiceSettings({ invoice_settings }) {}

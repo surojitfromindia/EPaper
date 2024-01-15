@@ -56,9 +56,11 @@ class InvoiceEditPageService {
 
     // the invoice details
     if (invoice_id) {
-      invoiceDetails = await InvoiceService.getAnInvoice({
-        invoice_id,
+      const invoiceService = new InvoiceService({
         client_info,
+      });
+      invoiceDetails = await invoiceService.getAnInvoice({
+        invoice_id,
       });
       const contactService = new ContactService({
         client_info,
