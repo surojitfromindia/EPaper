@@ -1,5 +1,5 @@
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
-import { AutoNumberGroups, AutoNumbers } from "../../Models";
+import { AutoNumberGroupsModel, AutoNumbersModel } from "../../Models";
 import { IAutoNumberEntityTypes } from "../../Models/AutoNumberSeries/AutoNumber.model";
 import {
   IAutoNumberGroup,
@@ -49,7 +49,9 @@ class AutoNumberGroupDAO {
     const { auto_number_group } = create_params;
     const { transaction } = options || {};
 
-    return await AutoNumberGroups.create(auto_number_group, { transaction });
+    return await AutoNumberGroupsModel.create(auto_number_group, {
+      transaction,
+    });
   }
 
   /**
@@ -57,7 +59,7 @@ class AutoNumberGroupDAO {
    */
   async get(get_params: AutoNumberGroupGetParams) {
     const { auto_number_group_id } = get_params;
-    return await AutoNumberGroups.findOne({
+    return await AutoNumberGroupsModel.findOne({
       where: {
         id: auto_number_group_id,
         organizationId: this.organization_id,
@@ -65,7 +67,7 @@ class AutoNumberGroupDAO {
       },
       include: [
         {
-          model: AutoNumbers,
+          model: AutoNumbersModel,
           as: "AutoNumbers",
         },
       ],
@@ -82,7 +84,7 @@ class AutoNumberGroupDAO {
     const { auto_number_group_id, auto_number_group } = update_params;
     const { transaction } = options || {};
 
-    const {} = await AutoNumberGroups.update(auto_number_group, {
+    const {} = await AutoNumberGroupsModel.update(auto_number_group, {
       where: {
         id: auto_number_group_id,
         organizationId: this.organization_id,
@@ -97,14 +99,14 @@ class AutoNumberGroupDAO {
    * Get all auto number groups
    */
   async getAll() {
-    return await AutoNumberGroups.findAll({
+    return await AutoNumberGroupsModel.findAll({
       where: {
         organizationId: this.organization_id,
         status: AUTO_NUMBER_GRP_STATUS,
       },
       include: [
         {
-          model: AutoNumbers,
+          model: AutoNumbersModel,
           as: "AutoNumbers",
         },
       ],
@@ -116,14 +118,14 @@ class AutoNumberGroupDAO {
    */
   async getOfEntity(get_params: AutoNumberGroupGetAFoEntityParams) {
     const { entity_type } = get_params;
-    return await AutoNumberGroups.findAll({
+    return await AutoNumberGroupsModel.findAll({
       where: {
         organizationId: this.organization_id,
         status: AUTO_NUMBER_GRP_STATUS,
       },
       include: [
         {
-          model: AutoNumbers,
+          model: AutoNumbersModel,
           as: "AutoNumbers",
           where: {
             entityType: entity_type,

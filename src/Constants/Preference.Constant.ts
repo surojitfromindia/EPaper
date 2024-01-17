@@ -1,7 +1,3 @@
-/**
- * Default value for item preference
- * @type ItemPrefernceType
- */
 const ITEM_PREFERENCE = {
   quantityPrecision: 2,
   isItemNameDuplicationEnabled: true,
@@ -20,9 +16,14 @@ const FEATURES_PREFERENCE = {
   isMultipleBranchesActive: false,
 };
 
+const INVOICE_PREFERENCE = {
+  isAutoNumberEnabled: true,
+};
+
 const PREFERENCE_DEFAULTS = {
   ITEM_PREFERENCE,
   GENERAL_PREFERENCE,
   FEATURES_PREFERENCE,
+  INVOICE_PREFERENCE,
 };
 export { PREFERENCE_DEFAULTS };

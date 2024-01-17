@@ -6,8 +6,8 @@ import {
   AccountsOfTemplate,
   AccountTemplateDetails,
   AccountTypes,
-  AutoNumberGroups,
-  AutoNumbers,
+  AutoNumberGroupsModel,
+  AutoNumbersModel,
   ContactPerson,
   Contacts,
   CurrencyExchangeRate,
@@ -17,6 +17,7 @@ import {
   Invoice,
   InvoiceLineItem,
   InvoicePaymentTerm,
+  InvoicePreferencesModel,
   ItemPreference,
   ItemUnit,
   OrganizationBasic,
@@ -64,9 +65,10 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     CurrencyModel,
     CurrencyExchangeRate,
     ContactPerson,
-    AutoNumbers,
-    AutoNumberGroups,
+    AutoNumbersModel,
+    AutoNumberGroupsModel,
     FeaturesPreferenceModel,
+    InvoicePreferencesModel,
   ],
 });
 
@@ -83,8 +85,9 @@ async function syncModel() {
   // await AutoNumbers.sync({ alter, force });
   // await GeneralPreferenceModel.sync({ alter, force });
   // await FeaturesPreferenceModel.sync({ alter, force });
+  // await InvoicePreferencesModel.sync({ alter, force });
 }
 
-// syncModel().catch((err) => console.log(err));
+syncModel().catch((err) => console.log(err));
 
 export default sequelize;

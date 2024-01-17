@@ -20,9 +20,10 @@ import { InvoicePaymentTerm } from "./Invoice/InvoicePaymentTerms.model";
 import { CurrencyModel } from "./Currency/Currency.model";
 import { CurrencyExchangeRate } from "./Currency/CurrencyExchangeRate.model";
 import { ContactPerson } from "./ContactPerson/ContactPerson.model";
-import { AutoNumbers } from "./AutoNumberSeries/AutoNumber.model";
-import { AutoNumberGroups } from "./AutoNumberSeries/AutoNumberGroup.model";
+import { AutoNumbersModel } from "./AutoNumberSeries/AutoNumber.model";
+import { AutoNumberGroupsModel } from "./AutoNumberSeries/AutoNumberGroup.model";
 import { FeaturesPreferenceModel } from "./Preference/FeaturesPreference.model";
+import { InvoicePreferencesModel } from "./Preference/InvoicePreferencesModel";
 
 export {
   User,
@@ -47,7 +48,8 @@ export {
   CurrencyModel,
   CurrencyExchangeRate,
   ContactPerson,
-  AutoNumberGroups,
-  AutoNumbers,
+  AutoNumberGroupsModel,
+  AutoNumbersModel,
   FeaturesPreferenceModel,
+  InvoicePreferencesModel,
 };

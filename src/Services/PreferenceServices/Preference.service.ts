@@ -1,6 +1,7 @@
 import ItemPreferenceService from "./ItemPreference.service";
 import GeneralPreferenceService from "./GeneralPreference.service";
 import { FeaturesPreferenceService } from "./FeaturesPreference.service";
+import InvoicePreferenceService from "./InvoicePreference.service";
 
 class PreferenceService {
   async initAllDefaultPreferences({ organization_id }, { transaction }) {
@@ -9,6 +10,14 @@ class PreferenceService {
     await FeaturesPreferenceService.create(
       { organization_id },
       { transaction },
+    );
+    await InvoicePreferenceService.create(
+      {
+        organization_id,
+      },
+      {
+        transaction,
+      },
     );
     return true;
   }

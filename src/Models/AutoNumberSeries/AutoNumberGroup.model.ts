@@ -19,7 +19,7 @@ import {
   NonAttribute,
 } from "@sequelize/core";
 import { OrganizationBasic, User } from "./../index";
-import { AutoNumbers } from "./AutoNumber.model";
+import { AutoNumbersModel } from "./AutoNumber.model";
 
 @Table({
   underscored: true,
@@ -27,9 +27,9 @@ import { AutoNumbers } from "./AutoNumber.model";
   createdAt: false,
   updatedAt: false,
 })
-class AutoNumberGroups extends Model<
-  InferAttributes<AutoNumberGroups>,
-  InferCreationAttributes<AutoNumberGroups>
+class AutoNumberGroupsModel extends Model<
+  InferAttributes<AutoNumberGroupsModel>,
+  InferCreationAttributes<AutoNumberGroupsModel>
 > {
   @Attribute(DataTypes.INTEGER)
   @PrimaryKey
@@ -66,11 +66,12 @@ class AutoNumberGroups extends Model<
   declare CreatedBy?: NonAttribute<User>;
 
   // has many AutoNumbers
-  @HasMany(() => AutoNumbers, "autoNumberGroupId")
-  declare AutoNumbers?: NonAttribute<AutoNumbers[]>;
+  @HasMany(() => AutoNumbersModel, "autoNumberGroupId")
+  declare AutoNumbers?: NonAttribute<AutoNumbersModel[]>;
 }
 
-type IAutoNumberGroup = Attributes<AutoNumberGroups>;
-type IAutoNumberGroupCreationAttributes = CreationAttributes<AutoNumberGroups>;
-export { AutoNumberGroups };
+type IAutoNumberGroup = Attributes<AutoNumberGroupsModel>;
+type IAutoNumberGroupCreationAttributes =
+  CreationAttributes<AutoNumberGroupsModel>;
+export { AutoNumberGroupsModel };
 export type { IAutoNumberGroup, IAutoNumberGroupCreationAttributes };

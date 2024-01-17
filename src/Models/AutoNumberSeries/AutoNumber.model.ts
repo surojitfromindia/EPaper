@@ -19,9 +19,9 @@ import { User } from "../User/User.model";
 
 type IAutoNumberEntityTypes = "invoice" | "credit_note" | "customer_payment";
 
-class AutoNumbers extends Model<
-  InferAttributes<AutoNumbers>,
-  InferCreationAttributes<AutoNumbers>
+class AutoNumbersModel extends Model<
+  InferAttributes<AutoNumbersModel>,
+  InferCreationAttributes<AutoNumbersModel>
 > {
   @Attribute(DataTypes.INTEGER)
   @PrimaryKey
@@ -61,6 +61,6 @@ class AutoNumbers extends Model<
   declare CreatedBy?: NonAttribute<User>;
 }
 
-type IAutoNumber = Attributes<AutoNumbers>;
-export { AutoNumbers };
+type IAutoNumber = Attributes<AutoNumbersModel>;
+export { AutoNumbersModel };
 export type { IAutoNumber, IAutoNumberEntityTypes };
