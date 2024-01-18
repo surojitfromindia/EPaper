@@ -81,13 +81,13 @@ async function syncModel() {
   // await InvoiceLineItem.sync({ alter, force });
   // await Contacts.sync({ alter, force });
   // await ContactPerson.sync({ alter, force });
-  // await AutoNumberGroups.sync({ alter, force });
-  // await AutoNumbersModel.sync({ alter, force });
-  // await GeneralPreferenceModel.sync({ alter, force });
-  // await FeaturesPreferenceModel.sync({ alter, force });
-  // await InvoicePreferencesModel.sync({ alter, force });
+  await AutoNumberGroupsModel.sync({ alter, force });
+  await AutoNumbersModel.sync({ alter, force });
+  await GeneralPreferenceModel.sync({ alter, force });
+  await FeaturesPreferenceModel.sync({ alter, force });
+  await InvoicePreferencesModel.sync({ alter, force });
 }
 
-syncModel().catch((err) => console.log(err));
+// syncModel().catch((err) => console.log(err));
 
 export default sequelize;

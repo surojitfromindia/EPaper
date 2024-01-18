@@ -25,9 +25,9 @@ class ItemUnitService {
     const organizationId = organization_id;
     const userId = client_info.userId;
     let itemUnits = UNITS_DEFAULTS._OTHER_;
-    const countryItemUnits = UNITS_DEFAULTS[organization_country_code];
-    if (countryItemUnits) {
-      itemUnits = countryItemUnits.map((unit) => ({
+    itemUnits = UNITS_DEFAULTS[organization_country_code];
+    if (itemUnits) {
+      itemUnits = itemUnits.map((unit) => ({
         ...unit,
         organizationId,
         createdBy: userId,
@@ -55,6 +55,7 @@ class ItemUnitService {
     { transaction },
   ) {
     item_unit_details.organizationId = client_info.organizationId;
+    item_unit_details.createdBy = client_info.userId;
     return ItemUnitDao.create(
       {
         item_unit_details,
