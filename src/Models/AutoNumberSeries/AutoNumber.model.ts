@@ -13,12 +13,19 @@ import {
   BelongsTo,
   NotNull,
   PrimaryKey,
+  Table,
 } from "@sequelize/core/decorators-legacy";
 import { OrganizationBasic } from "../Organization/Organization.model";
 import { User } from "../User/User.model";
 
 type IAutoNumberEntityTypes = "invoice" | "credit_note" | "customer_payment";
 
+@Table({
+  underscored: true,
+  tableName: "AutoNumbers",
+  createdAt: false,
+  updatedAt: false,
+})
 class AutoNumbersModel extends Model<
   InferAttributes<AutoNumbersModel>,
   InferCreationAttributes<AutoNumbersModel>

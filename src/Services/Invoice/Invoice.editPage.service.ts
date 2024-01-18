@@ -5,7 +5,6 @@ import {
 } from "../SettingServices/Setting.service";
 import {
   AccountsOfOrganizationService,
-  AutoNumberSeriesService,
   ContactService,
   InvoiceService,
 } from "../index";
@@ -13,6 +12,7 @@ import { AccountsTree } from "../../Utils/AccoutsTree";
 import { InvoiceIdType } from "../../Models/Invoice/Invoices.model";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { ContactIdType } from "../../Models/Contact/Contacts.model";
+import { InvoicePreferenceService } from "../PreferenceServices/Preference.service";
 
 type InvoiceGetEdiPageProps = {
   invoice_id: InvoiceIdType;
@@ -95,18 +95,11 @@ class InvoiceEditPageService {
   }
 
   async #getEditPageInvoiceSettings() {
-    const autoNumberSeriesService = new AutoNumberSeriesService({
+    const invoicePreferenceService = new InvoicePreferenceService({
       client_info: this.clientInfo,
     });
-    const autoNumberGroups =
-      await autoNumberSeriesService.getAutoNumberGroupsOfEntity({
-        entity_type: "invoice",
-      });
-    const defaultAutoNumberGroup = autoNumberGroups.find((gp) => gp.isDefault);
-    return {
-      auto_number_groups: autoNumberGroups,
-      default_auto_number_group: defaultAutoNumberGroup,
-    };
+
+    return await invoicePreferenceService.get();
   }
 }
 

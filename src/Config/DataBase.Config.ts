@@ -82,7 +82,7 @@ async function syncModel() {
   // await Contacts.sync({ alter, force });
   // await ContactPerson.sync({ alter, force });
   // await AutoNumberGroups.sync({ alter, force });
-  // await AutoNumbers.sync({ alter, force });
+  // await AutoNumbersModel.sync({ alter, force });
   // await GeneralPreferenceModel.sync({ alter, force });
   // await FeaturesPreferenceModel.sync({ alter, force });
   // await InvoicePreferencesModel.sync({ alter, force });

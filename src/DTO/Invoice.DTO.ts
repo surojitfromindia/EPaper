@@ -180,7 +180,7 @@ class InvoiceSettingsDTO {
       );
     // we need only the first element of
     return {
-      is_auto_number_enabled: true,
+      is_auto_number_enabled: invoice_settings.is_auto_number_enabled,
       auto_number_groups,
       default_auto_number_group,
     };

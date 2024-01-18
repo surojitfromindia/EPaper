@@ -6,12 +6,11 @@ import { AutoNumberSeriesService } from "../SettingServices/AutoNumberSeries.ser
 import { InvoicePreferenceModelType } from "../../Models/Preference/InvoicePreferencesModel";
 import { AutoNumberGroupsModel } from "../../Models";
 
-interface InvoicePreference extends InvoicePreferenceModelType {
+interface InvoicePreference {
+  is_auto_number_enabled: InvoicePreferenceModelType["isAutoNumberEnabled"];
   auto_number_groups: AutoNumberGroupsModel[];
   default_auto_number_group: AutoNumberGroupsModel;
 }
-
-type InvoicePreferenceGetProps = {};
 
 class InvoicePreferenceService {
   private readonly _clientInfo: ClientInfo;
@@ -54,11 +53,11 @@ class InvoicePreferenceService {
       });
     const defaultAutoNumberGroup = autoNumberGroups.find((gp) => gp.isDefault);
     return {
-      ...preference,
+      is_auto_number_enabled: preference.isAutoNumberEnabled,
       auto_number_groups: autoNumberGroups,
       default_auto_number_group: defaultAutoNumberGroup,
     };
   }
 }
 
-export default InvoicePreferenceService;
+export { InvoicePreferenceService };

@@ -1,7 +1,7 @@
 import ItemPreferenceService from "./ItemPreference.service";
 import GeneralPreferenceService from "./GeneralPreference.service";
 import { FeaturesPreferenceService } from "./FeaturesPreference.service";
-import InvoicePreferenceService from "./InvoicePreference.service";
+import { InvoicePreferenceService } from "./InvoicePreference.service";
 
 class PreferenceService {
   async initAllDefaultPreferences({ organization_id }, { transaction }) {
@@ -28,4 +28,5 @@ export {
   ItemPreferenceService,
   GeneralPreferenceService,
   FeaturesPreferenceService,
+  InvoicePreferenceService,
 };
