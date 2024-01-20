@@ -14,6 +14,8 @@ import AccountsOfOrganizationService, {
 } from "./AccountsOfOrganization.service";
 import AppStateService from "./AppState.service";
 import PreferenceService, {
+  FeaturesPreferenceService,
+  InvoicePreferenceService,
   ItemPreferenceService,
 } from "./PreferenceServices/Preference.service";
 import InvoiceService from "./Invoice/Invoice.service";
@@ -49,4 +51,6 @@ export {
   CurrencyService,
   ContactEditPageService,
   AutoNumberSeriesService,
+  InvoicePreferenceService,
+  FeaturesPreferenceService,
 };

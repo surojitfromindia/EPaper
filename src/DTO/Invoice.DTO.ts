@@ -164,8 +164,6 @@ class InvoiceDTO {
 }
 type ToInvoiceCreateType = ReturnType<typeof InvoiceDTO.toInvoiceCreate>;
 type ToInvoiceUpdateType = ReturnType<typeof InvoiceDTO.toInvoiceUpdate>;
-export { InvoiceDTO };
-export type { ToInvoiceCreateType, ToInvoiceUpdateType };
 
 class InvoiceSettingsDTO {
   static toFullInvoiceSettings({ invoice_settings }) {}
@@ -185,4 +183,32 @@ class InvoiceSettingsDTO {
       default_auto_number_group,
     };
   }
+
+  static toAutoNumberUpdatePayload({ update_payload }) {
+    return {
+      isAutoNumberEnabled: update_payload.is_auto_number_enabled,
+      autoNumberGroupId: update_payload.auto_number_group_id,
+      nextNumber: update_payload.next_number,
+      prefixString: update_payload.prefix_string,
+    };
+  }
 }
+
+type ToInvoiceAutoNumberUpdatePayloadType = ReturnType<
+  typeof InvoiceSettingsDTO.toAutoNumberUpdatePayload
+>;
+type ToInvoiceEditPageInvoiceSettingsType = ReturnType<
+  typeof InvoiceSettingsDTO.toEditPageInvoiceSettings
+>;
+type ToInvoiceFullInvoiceSettingsType = ReturnType<
+  typeof InvoiceSettingsDTO.toFullInvoiceSettings
+>;
+
+export type { ToInvoiceCreateType, ToInvoiceUpdateType };
+export type {
+  ToInvoiceAutoNumberUpdatePayloadType,
+  ToInvoiceEditPageInvoiceSettingsType,
+  ToInvoiceFullInvoiceSettingsType,
+};
+
+export { InvoiceDTO, InvoiceSettingsDTO };
