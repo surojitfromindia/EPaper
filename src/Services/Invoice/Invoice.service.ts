@@ -185,17 +185,16 @@ class InvoiceService {
       );
     } else {
       // check if invoice number is already present
-      await InvoiceDao.isInvoiceNumberExists({
+      const result = await InvoiceDao.isInvoiceNumberExists({
         invoice_number: given_number,
         organization_id: this._organizationId,
-      }).then((result) => {
-        if (result) {
-          throw new CodedError(
-            InvoiceServiceErrorMessages.INVOICE_NUMBER_ALREADY_EXISTS,
-          );
-        }
-        return given_number;
       });
+      if (result) {
+        throw new CodedError(
+          InvoiceServiceErrorMessages.INVOICE_NUMBER_ALREADY_EXISTS,
+        );
+      }
+      return given_number;
     }
   }
 }
