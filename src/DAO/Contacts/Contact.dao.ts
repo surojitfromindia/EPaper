@@ -159,6 +159,14 @@ class ContactDao {
           as: "PaymentTerm",
           attributes: DEFAULT_CONTACT_PAYMENT_TERM_SELECTION,
         },
+        {
+          model: ContactPerson,
+          as: "ContactPersons",
+          attributes: DEFAULT_CONTACT_PERSON_SELECTION,
+          where: {
+            isPrimary: true,
+          },
+        },
       ],
       order: [["contactName", "ASC"]],
     });
