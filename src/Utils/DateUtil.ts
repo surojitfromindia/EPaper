@@ -12,6 +12,13 @@ class DateUtil {
   static parseFromStr(dateStr: string): Date {
     return DateTime.fromISO(dateStr).toJSDate();
   }
+
+  static daysBetween(date1: Date, date2: Date): number {
+    const luxonDate1 = DateTime.fromJSDate(date1);
+    const luxonDate2 = DateTime.fromJSDate(date2);
+    const diff = luxonDate2.diff(luxonDate1, "days");
+    return Math.round(diff.days);
+  }
 }
 
 class DateFormatter {

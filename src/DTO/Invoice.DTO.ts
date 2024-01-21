@@ -64,8 +64,16 @@ class InvoiceDTO {
       due_date_formatted: DateUtil.Formatter(invoice.dueDate).format(
         DEFAULT_DATE_FORMAT,
       ),
+      due_days: invoice.dueDays,
+      due_days_formatted: dueDaysFormatted(
+        invoice.dueDays,
+        invoice.transactionStatus,
+      ),
       contact_id: invoice.contactId,
       transaction_status: invoice.transactionStatus,
+      transaction_status_formatted: transactionStatusFormatted(
+        invoice.transactionStatus,
+      ),
       invoice_number: invoice.invoiceNumber,
       reference_number: invoice.referenceNumber,
       order_number: invoice.orderNumber,
@@ -212,3 +220,29 @@ export type {
 };
 
 export { InvoiceDTO, InvoiceSettingsDTO };
+
+const transactionStatusFormatted = (transaction_status: string) => {
+  switch (transaction_status) {
+    case "draft":
+      return "Draft";
+    case "sent":
+      return "Sent";
+    case "void":
+      return "Void";
+    default:
+      return "Draft";
+  }
+};
+const dueDaysFormatted = (due_days: number, transaction_status: string) => {
+  if (transaction_status !== "sent") {
+    return transactionStatusFormatted(transaction_status);
+  }
+
+  if (due_days > 0) {
+    return `due in ${due_days} days`;
+  } else if (due_days < 0) {
+    return `overdue ${Math.abs(due_days)} days ago`;
+  } else {
+    return "Sent";
+  }
+};

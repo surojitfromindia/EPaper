@@ -32,6 +32,7 @@ import {
   PrimaryKey,
   Table,
 } from "@sequelize/core/decorators-legacy";
+import { DateUtil } from "../../Utils/DateUtil";
 
 @Table({
   underscored: true,
@@ -60,6 +61,15 @@ class Invoice extends Model<
   @Attribute(DataTypes.DATEONLY)
   @NotNull
   declare dueDate: string;
+
+  @Attribute(DataTypes.VIRTUAL(DataTypes.INTEGER, ["dueDate"]))
+  get dueDays(): number {
+    const today = new Date();
+    const dueDate = this.dueDate;
+    // positive means not due yet
+    // negative means due
+    return DateUtil.daysBetween(today, DateUtil.parseFromStr(dueDate));
+  }
 
   @Attribute(DataTypes.INTEGER)
   @NotNull

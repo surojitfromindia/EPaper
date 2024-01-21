@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/EPaper.iml" filepath="$PROJECT_DIR$/.idea/EPaper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../React Applications/EPaper Client.iml" filepath="$PROJECT_DIR$/../../React Applications/EPaper Client.iml" />
     </modules>
   </component>
 </project>
