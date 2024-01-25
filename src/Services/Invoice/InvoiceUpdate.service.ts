@@ -21,12 +21,10 @@ type InvoiceUpdateProps = {
 class InvoiceUpdateService {
   private readonly _clientInfo: ClientInfo;
   private readonly _organizationId: number;
-  private readonly _userId: number;
 
   constructor({ client_info }: { client_info: ClientInfo }) {
     this._clientInfo = client_info;
     this._organizationId = client_info.organizationId;
-    this._userId = client_info.userId;
   }
 
   async update({ invoice_details, invoice_id }: InvoiceUpdateProps) {
@@ -34,12 +32,16 @@ class InvoiceUpdateService {
     const invoiceId = invoice_id;
     const contactId = invoice_details.contactId;
     const issueDate = invoice_details.issueDate;
-
     // these values are replaceable
     let dueDate = invoice_details.dueDate;
     let paymentTermId = invoice_details.paymentTermId;
     let currencyId = invoice_details.currencyId;
     let invoicePaymentTermId: number | null = null;
+
+    const oldInvoice = await InvoiceDao.getByIdWithLineItems({
+      invoice_id: invoiceId,
+      organization_id: organizationId,
+    });
 
     // new invoice body.
     const invoiceBody: InvoiceCreatable = {
@@ -176,7 +178,7 @@ class InvoiceUpdateService {
       );
 
       // update
-      return await InvoiceDao.update(
+      const updateInvoice = await InvoiceDao.update(
         {
           invoice_id: invoiceId,
           organization_id: organizationId,
@@ -186,7 +188,102 @@ class InvoiceUpdateService {
           transaction: t1,
         },
       );
+
+      // update the balance
+      await this.#balanceUpdate(
+        {
+          update_invoice: updateInvoice,
+          old_invoice: oldInvoice,
+        },
+        {
+          transaction: t1,
+        },
+      );
+
+      return updateInvoice;
     });
+  }
+
+  async #balanceUpdate({ update_invoice, old_invoice }, { transaction }) {
+    const oldInvoice = old_invoice;
+    const updateInvoice = update_invoice;
+    const newCurrencyId = updateInvoice.currencyId;
+    const oldCurrencyId = oldInvoice.currencyId;
+    const newContactId = updateInvoice.contactId;
+    const oldContactId = oldInvoice.contactId;
+    const newTransactionStatus = updateInvoice.transactionStatus;
+    const oldTransactionStatus = oldInvoice.transactionStatus;
+
+    const contactService = new ContactService({
+      client_info: this._clientInfo,
+    });
+    if (newTransactionStatus === "sent" && oldTransactionStatus === "draft") {
+      await contactService.updateBalanceOnInvoiceNotPaid(
+        {
+          contact_id: newContactId,
+          currency_id: newCurrencyId,
+          new_invoice_amount: updateInvoice.total,
+          old_invoice_amount: 0,
+          new_invoice_amount_bcy: updateInvoice.bcyTotal,
+          old_invoice_amount_bcy: 0,
+        },
+        {
+          transaction,
+        },
+      );
+    } else if (
+      newTransactionStatus === "sent" &&
+      oldTransactionStatus === "sent"
+    ) {
+      // we have two situations here.
+      // if contact has changed, then we need to update the balance of the previous contact also
+      // if contact has not changed, then we need to update the balance of the contact
+
+      if (oldContactId !== newContactId) {
+        // update the balance of the previous contact
+        await contactService.updateBalanceOnInvoiceNotPaid(
+          {
+            contact_id: oldContactId,
+            currency_id: oldCurrencyId,
+            new_invoice_amount: 0,
+            old_invoice_amount: oldInvoice.total,
+            new_invoice_amount_bcy: 0,
+            old_invoice_amount_bcy: oldInvoice.bcyTotal,
+          },
+          {
+            transaction,
+          },
+        );
+        // update the balance of the new contact
+        await contactService.updateBalanceOnInvoiceNotPaid(
+          {
+            contact_id: newContactId,
+            currency_id: newCurrencyId,
+            new_invoice_amount: updateInvoice.total,
+            old_invoice_amount: 0,
+            new_invoice_amount_bcy: updateInvoice.bcyTotal,
+            old_invoice_amount_bcy: 0,
+          },
+          {
+            transaction,
+          },
+        );
+      } else {
+        await contactService.updateBalanceOnInvoiceNotPaid(
+          {
+            contact_id: newContactId,
+            currency_id: newCurrencyId,
+            new_invoice_amount: updateInvoice.total,
+            old_invoice_amount: oldInvoice.total,
+            new_invoice_amount_bcy: updateInvoice.bcyTotal,
+            old_invoice_amount_bcy: oldInvoice.bcyTotal,
+          },
+          {
+            transaction,
+          },
+        );
+      }
+    }
   }
 }
 

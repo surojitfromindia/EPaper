@@ -8,6 +8,7 @@ import {
   NonAttribute,
 } from "@sequelize/core";
 import {
+  ContactBalancesModel,
   ContactPerson,
   CurrencyModel,
   OrganizationBasic,
@@ -55,6 +56,7 @@ class Contacts extends Model<
   @Attribute(DataTypes.ENUM("business", "individual"))
   declare contactSubType: "business" | "individual";
 
+  // this the contact's default currency
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare currencyId: number;
@@ -89,6 +91,9 @@ class Contacts extends Model<
 
   @HasMany(() => ContactPerson, "contactId")
   declare ContactPersons?: NonAttribute<ContactPerson>[];
+
+  @HasMany(() => ContactBalancesModel, "contactId")
+  declare Balances?: NonAttribute<ContactBalancesModel>[];
 }
 
 export { Contacts };
@@ -96,6 +101,7 @@ type ContactType = Attributes<Contacts> & {
   Currency?: NonAttribute<CurrencyModel>;
   PaymentTerm?: NonAttribute<PaymentTermModel>;
   ContactPersons?: NonAttribute<ContactPerson>[];
+  Balances?: NonAttribute<ContactBalancesModel>[];
 };
 type ContactIdType = number;
 

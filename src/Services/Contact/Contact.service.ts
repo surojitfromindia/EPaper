@@ -98,6 +98,41 @@ class ContactService {
     return contactDao.getContactDetails({ contact_id });
   }
 
+  updateBalanceOnInvoiceNotPaid = async (
+    {
+      contact_id,
+      currency_id,
+      new_invoice_amount,
+      old_invoice_amount,
+      new_invoice_amount_bcy,
+      old_invoice_amount_bcy,
+    },
+    { transaction },
+  ) => {
+    const contactDao = new ContactDao({
+      organization_id: this.clientInfo.organizationId,
+    });
+    await contactDao.updateBalances(
+      {
+        contact_id,
+        currency_id,
+        outstanding_credits_receivable_amount_change:
+          new_invoice_amount - old_invoice_amount,
+        outstanding_credits_receivable_amount_bcy_change:
+          new_invoice_amount_bcy - old_invoice_amount_bcy,
+        user_id: this.clientInfo.userId,
+      },
+      {
+        transaction,
+      },
+    );
+    return true;
+  };
+
+  /**
+   * this function handles the state of contact persons.
+   * contact persons can be created, deleted or updated
+   */
   #contactPersonStateHandle = async (
     {
       contact_id,

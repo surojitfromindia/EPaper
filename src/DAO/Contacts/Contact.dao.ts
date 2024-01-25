@@ -1,4 +1,5 @@
 import {
+  ContactBalancesModel,
   ContactPerson,
   Contacts,
   CurrencyModel,
@@ -6,6 +7,7 @@ import {
 } from "../../Models";
 import { FindAttributeOptions, Op } from "@sequelize/core";
 import { ContactPersonType } from "../../Models/ContactPerson/ContactPerson.model";
+import { ValidityUtil } from "../../Utils/ValidityUtil";
 
 const DEFAULT_CONTACT_CURRENCY_SELECTION = [
   "id",
@@ -35,19 +37,8 @@ type GetContactsAutoCompleteParamsType = {
   contactType: "customer" | "vendor";
   contactName?: string;
 };
-
-type ContactForInvoiceReturnType = {
-  id: number;
-  contactName: string;
-  currencyId: number;
-  Currency: {
-    id: number;
-    currencyName: string;
-    currencySymbol: string;
-  };
-};
 class ContactDao {
-  private organization_id: number;
+  private readonly organization_id: number;
 
   constructor({ organization_id }: { organization_id: number }) {
     this.organization_id = organization_id;
@@ -167,6 +158,10 @@ class ContactDao {
             isPrimary: true,
           },
         },
+        {
+          model: ContactBalancesModel,
+          as: "Balances",
+        },
       ],
       order: [["contactName", "ASC"]],
     });
@@ -179,6 +174,89 @@ class ContactDao {
       },
       attributes: DEFAULT_CONTACT_PERSON_SELECTION,
     });
+  }
+
+  async updateBalances(
+    {
+      user_id,
+      contact_id,
+      currency_id,
+      unused_credits_receivable_amount_change = 0,
+      unused_credits_receivable_amount_bcy_change = 0,
+      unused_credits_payable_amount_change = 0,
+      unused_credits_payable_amount_bcy_change = 0,
+      outstanding_credits_payable_amount_change = 0,
+      outstanding_credits_payable_amount_bcy_change = 0,
+      outstanding_credits_receivable_amount_change = 0,
+      outstanding_credits_receivable_amount_bcy_change = 0,
+    },
+    { transaction },
+  ) {
+    let balance = await ContactBalancesModel.findOne({
+      where: {
+        contactId: contact_id,
+        currencyId: currency_id,
+        organizationId: this.organization_id,
+      },
+    });
+
+    // if not found, create a new balance
+    if (ValidityUtil.isEmpty(balance)) {
+      const contact = await Contacts.findOne({
+        where: {
+          id: contact_id,
+          organizationId: this.organization_id,
+        },
+        attributes: ["id", "contactType", "currencyId"],
+      });
+      const isDefault = contact.currencyId === currency_id;
+      balance = await ContactBalancesModel.create(
+        {
+          contactId: contact_id,
+          currencyId: currency_id,
+          contactType: contact.contactType,
+          isDefault,
+          createdBy: user_id,
+          organizationId: this.organization_id,
+          unusedCreditsReceivableAmount: 0,
+          bcyUnusedCreditsReceivableAmount: 0,
+          unusedCreditsPayableAmount: 0,
+          bcyUnusedCreditsPayableAmount: 0,
+          outstandingCreditsPayableAmount: 0,
+          bcyOutstandingCreditsPayableAmount: 0,
+          outstandingCreditsReceivableAmount: 0,
+          bcyOutstandingCreditsReceivableAmount: 0,
+        },
+        {
+          transaction,
+        },
+      );
+    }
+
+    await balance.increment(
+      {
+        unusedCreditsReceivableAmount: unused_credits_receivable_amount_change,
+        bcyUnusedCreditsReceivableAmount:
+          unused_credits_receivable_amount_bcy_change,
+        unusedCreditsPayableAmount: unused_credits_payable_amount_change,
+        bcyUnusedCreditsPayableAmount: unused_credits_payable_amount_bcy_change,
+        outstandingCreditsPayableAmount:
+          outstanding_credits_payable_amount_change,
+        bcyOutstandingCreditsPayableAmount:
+          outstanding_credits_payable_amount_bcy_change,
+        outstandingCreditsReceivableAmount:
+          outstanding_credits_receivable_amount_change,
+        bcyOutstandingCreditsReceivableAmount:
+          outstanding_credits_receivable_amount_bcy_change,
+      },
+      {
+        where: {
+          contactId: contact_id,
+          currencyId: currency_id,
+        },
+        transaction,
+      },
+    );
   }
 }
 

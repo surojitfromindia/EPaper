@@ -35,6 +35,7 @@ class InvoiceService {
     const userId = this._userId;
     const contactId = invoice_details.contactId;
     const issueDate = invoice_details.issueDate;
+    const transactionStatus = invoice_details.transactionStatus;
 
     // these values are replaceable
     let dueDate = invoice_details.dueDate;
@@ -140,6 +141,28 @@ class InvoiceService {
           transaction: t1,
         },
       );
+
+      // update the contact balance
+      //  if the mark as sent is true, update the contact balance
+      if (transactionStatus === "sent") {
+        const contactService = new ContactService({
+          client_info: this._clientInfo,
+        });
+        await contactService.updateBalanceOnInvoiceNotPaid(
+          {
+            contact_id: contactId,
+            currency_id: currencyId,
+            new_invoice_amount: createdInvoice.total,
+            old_invoice_amount: 0,
+            new_invoice_amount_bcy: createdInvoice.bcyTotal,
+            old_invoice_amount_bcy: 0,
+          },
+          {
+            transaction: t1,
+          },
+        );
+      }
+
       return await this.getAnInvoice({
         invoice_id: invoiceId,
       });

@@ -9,6 +9,7 @@ import {
   ContactPersonDTO,
   ContactPersonUpdatePayload,
 } from "./ContactPerson.DTO";
+import { ContactBalancesModelType } from "../Models/Contact/ContactBalances.model";
 
 type ContactCreatePayload = {
   companyName: string;
@@ -85,6 +86,17 @@ class ContactDTO {
         ...PaymentTermsDTO.toPaymentTerm(contact_details.PaymentTerm),
       });
     }
+    if (ValidityUtil.isNotEmpty(contact_details.Balances)) {
+      const default_balance = contact_details.Balances.find((b) => b.isDefault);
+      if (default_balance) {
+        Object.assign(basic_payload, {
+          ...ContactDTO.#toContactBalance(default_balance),
+        });
+      }
+      Object.assign(basic_payload, {
+        balances: contact_details.Balances.map(ContactDTO.#toContactBalance),
+      });
+    }
     return basic_payload;
   }
 
@@ -131,6 +143,31 @@ class ContactDTO {
     }
 
     return basic_data;
+  }
+
+  static #toContactBalance(contact_balance: ContactBalancesModelType) {
+    return {
+      currency_id: contact_balance.currencyId,
+      is_default: contact_balance.isDefault,
+      unused_credits_receivable_amount:
+        contact_balance.unusedCreditsReceivableAmount,
+      unused_credits_receivable_amount_bcy:
+        contact_balance.bcyUnusedCreditsReceivableAmount,
+
+      unused_credits_payable_amount: contact_balance.unusedCreditsPayableAmount,
+      unused_credits_payable_amount_bcy:
+        contact_balance.bcyUnusedCreditsPayableAmount,
+
+      outstanding_credits_receivable_amount:
+        contact_balance.outstandingCreditsReceivableAmount,
+      outstanding_credits_receivable_amount_bcy:
+        contact_balance.bcyOutstandingCreditsReceivableAmount,
+
+      outstanding_credits_payable_amount:
+        contact_balance.outstandingCreditsPayableAmount,
+      outstanding_credits_payable_amount_bcy:
+        contact_balance.bcyOutstandingCreditsPayableAmount,
+    };
   }
 }
 
