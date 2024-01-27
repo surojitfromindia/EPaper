@@ -74,9 +74,23 @@ const updateContactController = SuccessErrorWrapper(
   200,
 );
 
+const getContact = async (req: Request) => {
+  const clientInfo = req.clientInfo;
+  const contactId = Number(req.params.contact_id);
+  const contactService = new ContactService({
+    client_info: clientInfo,
+  });
+  const contactDetails = await contactService.getContactById({
+    contact_id: contactId,
+  });
+  return { contact: ContactDTO.toContact(contactDetails) };
+};
+const getContactController = SuccessErrorWrapper(getContact, "done", 200);
+
 export {
   createContactController,
   getAllContactDetailsController,
   getContactEditPageController,
   updateContactController,
+  getContactController,
 };

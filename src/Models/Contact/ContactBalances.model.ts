@@ -152,6 +152,5 @@ export { ContactBalancesModel };
 type ContactBalancesModelType = Attributes<ContactBalancesModel> & {
   Currency?: NonAttribute<CurrencyModel>;
 };
-type ContactBalancesModelIdType = number;
 
-export type { ContactBalancesModelType, ContactBalancesModelIdType };
+export type { ContactBalancesModelType };
