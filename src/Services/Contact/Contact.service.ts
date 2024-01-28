@@ -58,6 +58,16 @@ class ContactService {
         { transaction: t1 },
       );
 
+      // generate a zero-value balance for the contact
+      await contactDao.createEmptyBalances(
+        {
+          contact_id: createdContact.id,
+          currency_id: contact_details.currencyId,
+          user_id: this.clientInfo.userId,
+        },
+        { transaction: t1 },
+      );
+
       return createdContact;
     });
     return contactDao.getContactDetails({ contact_id: createdContact.id });

@@ -146,7 +146,7 @@ class ContactDTO {
   }
 
   static #toContactBalance(contact_balance: ContactBalancesModelType) {
-    return {
+    const basic_payload: any = {
       currency_id: contact_balance.currencyId,
       is_default: contact_balance.isDefault,
       unused_credits_receivable_amount:
@@ -168,6 +168,13 @@ class ContactDTO {
       outstanding_credits_payable_amount_bcy:
         contact_balance.bcyOutstandingCreditsPayableAmount,
     };
+
+    if (ValidityUtil.isNotEmpty(contact_balance.Currency)) {
+      Object.assign(basic_payload, {
+        ...CurrencyDTO.toCurrency(contact_balance.Currency),
+      });
+    }
+    return basic_payload;
   }
 }
 

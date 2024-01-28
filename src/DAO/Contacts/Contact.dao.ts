@@ -95,6 +95,17 @@ class ContactDao {
           as: "ContactPersons",
           attributes: DEFAULT_CONTACT_PERSON_SELECTION,
         },
+        {
+          model: ContactBalancesModel,
+          as: "Balances",
+          include: [
+            {
+              model: CurrencyModel,
+              as: "Currency",
+              attributes: DEFAULT_CONTACT_CURRENCY_SELECTION,
+            },
+          ],
+        },
       ],
     });
   }
@@ -254,6 +265,42 @@ class ContactDao {
           contactId: contact_id,
           currencyId: currency_id,
         },
+        transaction,
+      },
+    );
+  }
+
+  async createEmptyBalances(
+    { contact_id, currency_id, user_id },
+    { transaction },
+  ) {
+    const contact = await Contacts.findOne({
+      where: {
+        id: contact_id,
+        organizationId: this.organization_id,
+      },
+      attributes: ["id", "contactType", "currencyId"],
+      transaction,
+    });
+    const isDefault = contact.currencyId === currency_id;
+    await ContactBalancesModel.create(
+      {
+        contactId: contact_id,
+        currencyId: currency_id,
+        contactType: contact.contactType,
+        isDefault,
+        createdBy: user_id,
+        organizationId: this.organization_id,
+        unusedCreditsReceivableAmount: 0,
+        bcyUnusedCreditsReceivableAmount: 0,
+        unusedCreditsPayableAmount: 0,
+        bcyUnusedCreditsPayableAmount: 0,
+        outstandingCreditsPayableAmount: 0,
+        bcyOutstandingCreditsPayableAmount: 0,
+        outstandingCreditsReceivableAmount: 0,
+        bcyOutstandingCreditsReceivableAmount: 0,
+      },
+      {
         transaction,
       },
     );
