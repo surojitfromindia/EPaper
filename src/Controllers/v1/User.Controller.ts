@@ -2,6 +2,7 @@ import { UserService } from "../../Services/index";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import { Request } from "express";
 import { UserCreatePayload } from "../../DTO/User.DTO";
+import OrganizationsUsersDTO from "../../DTO/OrganizationsUsers.DTO";
 
 let registerUser = async (req: Request) => {
   const body = req.clientInfo satisfies UserCreatePayload;
@@ -18,7 +19,7 @@ let getAllUsers = async () => {
   const users = await UserService.getAllUsers();
   return { users: users };
 };
-const getAllUserController = SuccessErrorWrapper(getAllUsers, "done", 200);
+SuccessErrorWrapper(getAllUsers, "done", 200);
 
 let getAnUser = async (req: Request) => {
   const userId = Number(req.params.userId);
@@ -30,4 +31,25 @@ let getAnUser = async (req: Request) => {
 };
 const getAnUserController = SuccessErrorWrapper(getAnUser, "done", 200);
 
-export { registerUserController, getAllUserController, getAnUserController };
+const getOrganizationsOfUser = async (req: Request) => {
+  const userId = Number(req.clientInfo.userId);
+  const organizations = await UserService.getOrganizationsOfUser({
+    user_id: userId,
+  });
+  return {
+    organizations: organizations.map((org) =>
+      OrganizationsUsersDTO.toOrganizationsUsers(org),
+    ),
+  };
+};
+const getOrganizationsOfUserController = SuccessErrorWrapper(
+  getOrganizationsOfUser,
+  "done",
+  200,
+);
+
+export {
+  registerUserController,
+  getAnUserController,
+  getOrganizationsOfUserController,
+};

@@ -1,12 +1,7 @@
 import { OrganizationDTO, UserDTO } from "./index";
 
 class OrganizationsUsersDTO {
-  /**
-   *
-   * @param {OrganizationUserDetailsType} organization_user
-   * @return {OrganizationUserDetailsTypeAsDTO}
-   */
-  static toOrganizationsUsers(organization_user) {
+  static toOrganizationsUsers(organization_user: any) {
     const return_dto: any = {
       id: organization_user.id,
       organization_id: organization_user.organizationId,

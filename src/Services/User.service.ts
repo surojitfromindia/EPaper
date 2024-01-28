@@ -1,6 +1,6 @@
 // here I handle business logic
 import sequelize from "../Config/DataBase.Config";
-import { UserDao } from "../DAO/index";
+import { OrganizationsUsersDao, UserDao } from "../DAO/index";
 import { UserDTO } from "../DTO/index";
 import { DataNotFoundError } from "../Errors/APIErrors/index";
 import { User } from "../Models";
@@ -50,6 +50,10 @@ class UserService {
       return UserDTO.toUser(user);
     }
     throw new DataNotFoundError("no user found");
+  }
+
+  async getOrganizationsOfUser({ user_id }) {
+    return await OrganizationsUsersDao.getAllOrganizationOfUser({ user_id });
   }
 }
 
