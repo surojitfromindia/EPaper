@@ -45,9 +45,23 @@ class InvoiceDTO {
     return basic_data;
   }
 
-  static toInvoiceEditPageFromContact({ contact }) {
+  static toInvoiceEditPageFromContact({
+    taxes,
+    units,
+    payment_terms,
+    line_item_accounts_list,
+    contact,
+    invoice_settings,
+  }) {
     return {
       contact: ContactDTO.toContact(contact),
+      taxes: taxes.map(TaxRateDTO.toTaxRate),
+      units: units.map(ItemUnitDTO.toItemUnit),
+      payment_terms: payment_terms.map(PaymentTermsDTO.toPaymentTerm),
+      line_item_accounts_list,
+      invoice_settings: InvoiceSettingsDTO.toEditPageInvoiceSettings({
+        invoice_settings,
+      }),
     };
   }
 

@@ -15,7 +15,7 @@ import { ContactIdType } from "../../Models/Contact/Contacts.model";
 import { InvoicePreferenceService } from "../PreferenceServices/Preference.service";
 
 type InvoiceGetEdiPageProps = {
-  invoice_id: InvoiceIdType;
+  invoice_id?: InvoiceIdType;
 };
 
 class InvoiceEditPageService {
@@ -84,12 +84,13 @@ class InvoiceEditPageService {
   }
 
   async getEditPageFromContact({ contact_id }: { contact_id: ContactIdType }) {
-    // todo: have different taxes
-    // todo: have different payment modes
     const client_info = this.clientInfo;
     const contactService = new ContactService({ client_info });
     const contact = await contactService.getContactById({ contact_id });
+
+    const other = await this.getEditPage({});
     return {
+      ...other,
       contact,
     };
   }
