@@ -81,5 +81,8 @@ class AccountsOfTemplate extends Model<
   declare createdBy: number;
   @BelongsTo(() => User, "createdBy")
   declare CreatedBy?: NonAttribute<User>;
+
+  @Attribute(DataTypes.STRING)
+  declare account_slug: string;
 }
 export { AccountsOfTemplate };

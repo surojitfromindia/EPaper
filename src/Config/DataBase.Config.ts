@@ -89,6 +89,7 @@ async function syncModel() {
   // await FeaturesPreferenceModel.sync({ alter, force });
   // await InvoicePreferencesModel.sync({ alter, force });
   // await ContactBalancesModel.sync({ alter, force });
+  // await AccountsOfTemplate.sync({ alter, force });
 }
 
 // syncModel().catch((err) => console.log(err));
