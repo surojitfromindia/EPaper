@@ -5,17 +5,6 @@ import {
 } from "../../Models";
 import { Op, sql } from "@sequelize/core";
 
-const DEFAULT_SELECTED_ATTRIBUTES = [
-  "id",
-  "name",
-  "code",
-  "accountParentId",
-  "accountTypeId",
-  "accountGroupId",
-  "description",
-  "status",
-  "depth",
-];
 const DEFAULT_ACCOUNT_PARENT_ATTRIBUTES = ["id", "name"];
 const DEFAULT_ACCOUNT_TYPE_ATTRIBUTES = ["id", "name", "nameFormatted"];
 const DEFAULT_ACCOUNT_GROUP_ATTRIBUTES = ["id", "name", "nameFormatted"];
@@ -160,7 +149,6 @@ class AccountsOfOrganizationDao {
     account_types: string[];
   }) {
     return await AccountsOfOrganization.findAll({
-      // attributes: DEFAULT_SELECTED_ATTRIBUTES,
       where: {
         organizationId: organization_id,
         status: "active",

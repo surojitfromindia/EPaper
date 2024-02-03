@@ -64,7 +64,6 @@ class AccountTemplateDetails extends Model<
   declare CreatedBy?: NonAttribute<User>;
 
   @Attribute(DataTypes.INTEGER)
-  @NotNull
   declare originTemplateId: number;
   @BelongsTo(() => AccountTemplateDetails, "originTemplateId")
   declare OriginTemplate?: NonAttribute<AccountTemplateDetails>;

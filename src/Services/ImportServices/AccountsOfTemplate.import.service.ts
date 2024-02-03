@@ -1,5 +1,4 @@
 import * as XLSX from "xlsx";
-import { readFileSync } from "node:fs";
 import {
   AccountsConfigDao,
   AccountsOfTemplateDao,
@@ -8,6 +7,7 @@ import {
 } from "../../DAO/index";
 import sequelize from "../../Config/DataBase.Config";
 import ld from "lodash";
+import { FileUtil } from "../../Utils/FileUtil";
 
 // here I will use xlsx, read from xlsx and addAccount accounts that belong to a template
 class AccountsOfTemplateImportService {
@@ -15,7 +15,7 @@ class AccountsOfTemplateImportService {
     const createdBy = client_info.userId;
     const organizationId = client_info.organizationId;
     // load the file from temp folder
-    const workbook = XLSX.read(readFileSync(file_location));
+    const workbook = XLSX.read(FileUtil.readFromTempSync(file_location));
 
     const firstSheet = workbook.Sheets["Sheet3"];
     const rawEntries: any[] = XLSX.utils.sheet_to_json(firstSheet, {

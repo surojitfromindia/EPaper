@@ -21,7 +21,7 @@ import {
 
 @Table({
   underscored: true,
-  tableName: "AccountsConfig",
+  tableName: "AccountsConfigs",
 })
 class AccountsConfig extends Model<
   InferAttributes<AccountsConfig>,
@@ -31,10 +31,6 @@ class AccountsConfig extends Model<
   @PrimaryKey
   @AutoIncrement
   declare id: CreationOptional<number>;
-
-  @Attribute(DataTypes.STRING)
-  @NotNull
-  declare name: string;
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull

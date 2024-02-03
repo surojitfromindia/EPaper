@@ -22,7 +22,7 @@ const addAccountToTemplateController = SuccessErrorWrapper(
 
 const importAccountsToTemplate = async (req: Request) => {
   const clientInfo = req.clientInfo;
-  const localTemplateLocation = __dirname + "/temp/ListChartOfAccounts.xlsx";
+  const localTemplateLocation = "ListChartOfAccounts.xlsx";
   const accounts = await AccountsTemplateImportService.import({
     file_location: localTemplateLocation,
     client_info: clientInfo,

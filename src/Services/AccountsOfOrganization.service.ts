@@ -14,9 +14,6 @@ import { ClientInfo } from "../Middlewares/Authorization/Authorization.middlewar
 class AccountsOfOrganizationService {
   /**
    * Add a single account to organization
-   * @param {Object} account_details
-   * @param {ClientInfoType} client_info
-   * @returns {Promise<{account_id: *, code: *, depth: *, name: *}>}
    */
   async addAccount({ account_details, client_info }) {
     const organizationId = client_info.organizationId;
@@ -80,9 +77,6 @@ class AccountsOfOrganizationService {
 
   /**
    * @desc get chart of accounts
-   * @param {boolean} as_tree
-   * @param {ClientInfoType} client_info
-   * @return {Promise<*[]>}
    */
   async getAllAccounts({ as_tree, client_info }) {
     const organizationId = client_info.organizationId;
@@ -102,9 +96,6 @@ class AccountsOfOrganizationService {
 
   /**
    * @desc get edit page for account add or edit
-   * @param {ClientInfoType} client_info
-   * @param {number=} account_id provided an account id if fetching for edit.
-   * @return {Promise<{accounts_list: *, account_types: *}>}
    */
   async getEditPage({ client_info, account_id }) {
     const organizationId = client_info.organizationId;
@@ -135,9 +126,6 @@ class AccountsOfOrganizationService {
 
   /**
    * @desc Delete multiple accounts
-   * @param {ClientInfoType} client_info
-   * @param {number[]} account_ids
-   * @return {Promise<boolean>}
    */
   async deleteAccounts({ client_info, account_ids = [] }) {
     try {
@@ -154,12 +142,6 @@ class AccountsOfOrganizationService {
     }
   }
 
-  /**
-   * @param {object} options
-   * @param {ClientInfoType} options.client_info
-   * @param {number} options.account_id
-   * @return {Promise<any>}
-   */
   async getAccount({ client_info, account_id }) {
     const organizationId = client_info.organizationId;
     const account = await this.#getAccount({
@@ -171,12 +153,6 @@ class AccountsOfOrganizationService {
 
   /**
    * Remove a list of accounts
-   * @param {object} options
-   * @param {number} options.organization_id
-   * @param {Array.<number>} options.account_ids
-   * @param {object} options2
-   * @param {SequelizeTransaction} options2.transaction
-   * @return {Promise<{errors: *[]}>}} return array of errors.
    */
   async #markAccountsAsDeleted(
     { account_ids = [], organization_id },
@@ -216,12 +192,6 @@ class AccountsOfOrganizationService {
 
   /**
    * At time of organization creation we also create a set of accounts
-   * @param {number} organization_id
-   * @param {string} country_code
-   * @param {sector} sector
-   * @param {ClientInfoType} client_info
-   * @param {SequelizeTransaction} transaction
-   * @returns {Promise<void>}
    */
   async copyAccountsFromTemplateToOrganization(
     { organization_id, country_code, sector, client_info },
@@ -283,12 +253,6 @@ class AccountsOfOrganizationService {
   /**
    * copy accounts of a template to the accounts of organization table, this table only store accounts
    * that are used inside the organization
-   * @param {Array<Object>} template_accounts
-   * @param {number} new_account_template_id
-   * @param {number} organization_id
-   * @param {number} user_id
-   * @param {SequelizeTransaction} transaction
-   * @returns {Promise<void>}
    */
   async #createAccounts(
     { template_accounts, new_account_template_id, organization_id, user_id },
@@ -341,9 +305,6 @@ class AccountsOfOrganizationService {
 
   /**
    * @desc get account
-   * @param {ClientInfoType} client_info
-   * @param {number} account_id
-   * @return {Promise<any>}
    */
   async #getAccount({ account_id, organization_id }) {
     const account = await AccountsOfOrganizationDao.getById({
@@ -364,7 +325,7 @@ class AccountsOfOrganizationService {
   }
 
   /**
-   * get account related to invoice line item
+   * get an account related to invoice line item
    **/
   ofInvoiceLineItem({
     client_info,
@@ -380,8 +341,6 @@ export default Object.freeze(new AccountsOfOrganizationService());
 class AccountsOfOrganizationUtils {
   /**
    *  Link temporally created accounts with parent-child way and returned the updated accounts.
-   * @param {Array<Object>} new_temp_accounts
-   * @returns {Array<Object>}
    */
   static mapTempAccounts({ new_temp_accounts }) {
     // after creating the accounts, we replace the accountParentId, accountTypeId, accountGroupId
