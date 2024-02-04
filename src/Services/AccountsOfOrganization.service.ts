@@ -1,5 +1,6 @@
 import sequelize from "../Config/DataBase.Config";
 import {
+  AccountsConfigDao,
   AccountsOfOrganizationDao,
   AccountsOfTemplateDao,
   AccountsTemplateDetailsDao,
@@ -10,6 +11,7 @@ import { DataNotFoundError } from "../Errors/APIErrors/index";
 import ld from "lodash";
 import { AccountsTree } from "../Utils/AccoutsTree";
 import { ClientInfo } from "../Middlewares/Authorization/Authorization.middleware";
+import { AccountConfigCreatableType } from "../Models/Account/AccountsConfig.model";
 
 class AccountsOfOrganizationService {
   /**
@@ -237,7 +239,8 @@ class AccountsOfOrganizationService {
       { transaction },
     );
     const newAccountTemplateId = newAccountTemplate.id;
-    await this.#createAccounts(
+
+    const createdAccounts = await this.#createAccounts(
       {
         template_accounts: templateAccounts,
         new_account_template_id: newAccountTemplateId,
@@ -247,6 +250,42 @@ class AccountsOfOrganizationService {
       {
         transaction,
       },
+    );
+    // need to create account config for the organization
+    const accountSlugIndexed = ld.keyBy(createdAccounts, "accountSlug");
+    const accountConfig: AccountConfigCreatableType = {
+      accountTemplateId: newAccountTemplateId,
+      defaultAccountsPayableAccountId:
+        accountSlugIndexed["accounts_payable"]?.id ?? null,
+      defaultAccountsReceivableAccountId:
+        accountSlugIndexed["accounts_receivable"].id ?? null,
+      defaultBadDebtAccountId: accountSlugIndexed["bad_debit"]?.id ?? null,
+      defaultBankAccountId: accountSlugIndexed["petty_cash"]?.id ?? null,
+      defaultCostOfGoodsSoldAccountId:
+        accountSlugIndexed["cost_of_goods_sold"]?.id ?? null,
+      defaultDiscountAccountId: accountSlugIndexed["discount"]?.id ?? null,
+      defaultExchangeGainLossAccountId:
+        accountSlugIndexed["exchange_gain_or_loss"]?.id ?? null,
+      defaultInventoryAccountId:
+        accountSlugIndexed["inventory_asset"]?.id ?? null,
+      defaultOpeningBalanceOffsetAccountId:
+        accountSlugIndexed["opening_balance_offset"]?.id ?? null,
+      defaultOpeningBalanceAdjustmentsAccountId:
+        accountSlugIndexed["opening_balance_adjustments"]?.id ?? null,
+      defaultPurchaseAccountId:
+        accountSlugIndexed["cost_of_goods_sold"]?.id ?? null,
+      defaultPurchaseDiscountAccountId:
+        accountSlugIndexed["purchase_discount"]?.id ?? null,
+      defaultRetainedEarningsAccountId:
+        accountSlugIndexed["retained_earnings"]?.id ?? null,
+      defaultSalesAccountId: accountSlugIndexed["sales"]?.id ?? null,
+      defaultTaxAccountId: accountSlugIndexed["tax_payable"]?.id ?? null,
+      defaultUnearnedRevenueAccountId:
+        accountSlugIndexed["unearned_revenue"]?.id ?? null,
+    };
+    await AccountsConfigDao.create(
+      { accounts_config_details: accountConfig },
+      { transaction },
     );
   }
 
@@ -301,6 +340,7 @@ class AccountsOfOrganizationService {
         ],
       },
     );
+    return newCreatedAccounts;
   }
 
   /**

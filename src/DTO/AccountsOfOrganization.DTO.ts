@@ -1,19 +1,13 @@
 import { AccountTypesDTO } from "./index";
 
 class AccountsOfOrganizationDTO {
-  /**
-   *
-   * @param {COAType} account
-   * @returns {COATypeAsDTO}
-   */
-  static toAccountOfOrganization(account) {
+  static toAccountOfOrganization(account: any) {
     const account_dto: any = {
       account_id: account.id,
       account_name: account.name,
       account_code: account.code,
       depth: account.depth,
-      // account_type_id: account.accountTypeId,
-      // account_group_id: account.accountGroupId,
+      is_system_account: account.isSystemAccount ?? false,
     };
     if (account.accountParentId) {
       account_dto.account_parent_id = account.accountParentId;
@@ -34,7 +28,7 @@ class AccountsOfOrganizationDTO {
     return account_dto;
   }
 
-  static toAccountOfOrganizationCreate(account_creation_payload): any {
+  static toAccountOfOrganizationCreate(account_creation_payload: any): any {
     return {
       name: account_creation_payload.account_name,
       code: account_creation_payload.account_code,

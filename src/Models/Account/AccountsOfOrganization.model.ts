@@ -42,6 +42,12 @@ class AccountsOfOrganization extends Model<
   declare name: string;
 
   @Attribute(DataTypes.STRING)
+  declare accountSlug: string;
+
+  @Attribute(DataTypes.BOOLEAN)
+  declare isSystemAccount: boolean;
+
+  @Attribute(DataTypes.STRING)
   @NotNull
   declare code: string;
 
@@ -64,7 +70,6 @@ class AccountsOfOrganization extends Model<
   declare Organization?: NonAttribute<OrganizationBasic>;
 
   @Attribute(DataTypes.INTEGER)
-  @NotNull
   declare accountParentId: number;
   @BelongsTo(() => AccountsOfOrganization, "accountParentId")
   declare AccountParent?: NonAttribute<AccountsOfOrganization>;

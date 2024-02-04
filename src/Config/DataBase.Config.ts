@@ -90,8 +90,10 @@ async function syncModel() {
   // await InvoicePreferencesModel.sync({ alter, force });
   // await ContactBalancesModel.sync({ alter, force });
   // await AccountsOfTemplate.sync({ alter, force });
+  // await AccountsOfOrganization.sync({ alter, force: true });
+  // await AccountsConfig.sync({ alter, force: true });
 }
 
-// syncModel().catch((err) => console.log(err));
+syncModel().catch((err) => console.log(err));
 
 export default sequelize;

@@ -83,6 +83,9 @@ class AccountsOfTemplate extends Model<
   declare CreatedBy?: NonAttribute<User>;
 
   @Attribute(DataTypes.STRING)
-  declare account_slug: string;
+  declare accountSlug: string;
+
+  @Attribute(DataTypes.BOOLEAN)
+  declare isSystemAccount: boolean;
 }
 export { AccountsOfTemplate };
