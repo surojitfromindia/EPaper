@@ -1,5 +1,6 @@
 import sequelize from "../Config/DataBase.Config";
 import {
+  AccountConfigRedisDAO,
   AccountsConfigDao,
   AccountsOfOrganizationDao,
   AccountsOfTemplateDao,
@@ -86,6 +87,13 @@ class AccountsOfOrganizationService {
       organization_id: organizationId,
       depth: 0,
     });
+    const accountConfig = await AccountsConfigDao.get({
+      organization_id: organizationId,
+    });
+    // todo: update the redis
+    const accountConfigRedisDAO = new AccountConfigRedisDAO();
+    accountConfigRedisDAO.save(accountConfig).catch();
+
     const treeOfAccounts = AccountsTree.createTreeOfOrganizationAccountsAsDTO({
       accounts: accounts,
     });
@@ -254,6 +262,7 @@ class AccountsOfOrganizationService {
     // need to create account config for the organization
     const accountSlugIndexed = ld.keyBy(createdAccounts, "accountSlug");
     const accountConfig: AccountConfigCreatableType = {
+      organizationId: organization_id,
       accountTemplateId: newAccountTemplateId,
       defaultAccountsPayableAccountId:
         accountSlugIndexed["accounts_payable"]?.id ?? null,

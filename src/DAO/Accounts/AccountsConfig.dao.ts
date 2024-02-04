@@ -7,8 +7,10 @@ class AccountsConfigDao {
     });
   }
 
-  async get({ account_id }) {
-    return await AccountsConfig.findByPk(account_id);
+  async get({ organization_id }) {
+    return await AccountsConfig.findOne({
+      where: { organizationId: organization_id },
+    });
   }
 }
 

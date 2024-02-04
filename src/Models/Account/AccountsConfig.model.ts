@@ -162,10 +162,15 @@ class AccountsConfig extends Model<
     "defaultOpeningBalanceAdjustmentsAccountId",
   )
   declare DefaultOpeningBalanceAdjustmentsAccount?: NonAttribute<AccountsOfOrganization>;
+
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
+  declare organizationId: number;
 }
 
 type AccountConfigType = {
   id: number;
+  organizationId: number;
   status: "active" | "deleted";
   accountTemplateId: number;
   defaultTaxAccountId: number;

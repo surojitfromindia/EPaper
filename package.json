@@ -28,7 +28,9 @@
     "mathjs": "^11.9.1",
     "pg": "^8.11.1",
     "xlsx": "^0.18.5",
-    "luxon": "^3.4.3"
+    "luxon": "^3.4.3",
+    "redis-om": "^0.4.3",
+    "redis": "^4.6.12"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.4",

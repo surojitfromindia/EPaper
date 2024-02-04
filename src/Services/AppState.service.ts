@@ -9,6 +9,7 @@ class AppStateService {
     const organizationDetails = await OrganizationDao.getOrganizationById({
       organization_id: organizationId,
     });
+
     return AppStateDto.toAppState({
       userDetails,
       organizationDetails,

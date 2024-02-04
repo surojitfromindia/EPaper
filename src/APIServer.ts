@@ -5,6 +5,7 @@ import { errorHandlerMiddleware } from "./Errors/errorHandlerMiddleware";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import "./Config/DataBase.Config";
+import "./Config/Redis.Config";
 
 const expressApp = Express();
 expressApp.use(
