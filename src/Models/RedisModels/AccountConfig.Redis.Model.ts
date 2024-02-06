@@ -5,7 +5,6 @@ const AccountConfigRedisModel = new Schema(
   {
     defaultSalesAccountId: { type: "number" },
     defaultTaxAccountId: { type: "number" },
-
     organizationId: { type: "number" },
     defaultAccountsPayableAccountId: { type: "number" },
     defaultInventoryAccountId: { type: "number" },
@@ -27,4 +26,25 @@ const AccountConfigRedisModel = new Schema(
   },
 );
 
+type AccountConfigRedisType = {
+  defaultSalesAccountId: number;
+  defaultTaxAccountId: number;
+  organizationId: number;
+  defaultAccountsPayableAccountId: number;
+  defaultInventoryAccountId: number;
+  defaultCostOfGoodsSoldAccountId: number;
+  defaultBankAccountId: number;
+  defaultBadDebtAccountId: number;
+  defaultOpeningBalanceOffsetAccountId: number;
+  defaultRetainedEarningsAccountId: number;
+  defaultOpeningBalanceAdjustmentsAccountId: number;
+  defaultExchangeGainLossAccountId: number;
+  defaultUnearnedRevenueAccountId: number;
+  defaultAccountsReceivableAccountId: number;
+  defaultDiscountAccountId: number;
+  defaultPurchaseAccountId: number;
+  defaultPurchaseDiscountAccountId: number;
+};
+
 export { AccountConfigRedisModel };
+export type { AccountConfigRedisType };

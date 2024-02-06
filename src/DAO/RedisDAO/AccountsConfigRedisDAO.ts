@@ -1,13 +1,17 @@
 import { Repository } from "redis-om";
-import { AccountConfigRedisModel } from "../../Models/RedisModels/AccountConfig.Redis.Model";
+import {
+  AccountConfigRedisModel,
+  AccountConfigRedisType,
+} from "../../Models/RedisModels/AccountConfig.Redis.Model";
 import redis from "../../Config/Redis.Config";
+import { AccountsConfigDao } from "../index";
 
 const AccountConfigRedisRepository = new Repository(
   AccountConfigRedisModel,
   redis,
 );
 
-class AccountConfigRedisDAO {
+class AccountsConfigRedisDAO {
   async save(account_config: any) {
     const organizationId = account_config.organizationId;
     const accountConfig = {
@@ -42,12 +46,22 @@ class AccountConfigRedisDAO {
       organizationId.toString(),
       accountConfig,
     );
-    return this.get(organizationId);
   }
 
-  async get(organizationId: number) {
-    return AccountConfigRedisRepository.fetch(organizationId.toString());
+  async get(organizationId: number): Promise<AccountConfigRedisType> {
+    // try to fetch from redis first, if run the save method
+    const b = await AccountConfigRedisRepository.fetch(
+      organizationId.toString(),
+    );
+    if (b) {
+      return b as AccountConfigRedisType;
+    }
+    const accountConfig = await AccountsConfigDao.get({
+      organization_id: organizationId,
+    });
+    await this.save(accountConfig);
+    return this.get(organizationId);
   }
 }
 
-export { AccountConfigRedisDAO };
+export { AccountsConfigRedisDAO };

@@ -1,7 +1,7 @@
 import sequelize from "../Config/DataBase.Config";
 import {
-  AccountConfigRedisDAO,
   AccountsConfigDao,
+  AccountsConfigRedisDAO,
   AccountsOfOrganizationDao,
   AccountsOfTemplateDao,
   AccountsTemplateDetailsDao,
@@ -13,6 +13,7 @@ import ld from "lodash";
 import { AccountsTree } from "../Utils/AccoutsTree";
 import { ClientInfo } from "../Middlewares/Authorization/Authorization.middleware";
 import { AccountConfigCreatableType } from "../Models/Account/AccountsConfig.model";
+import { AccountTypes } from "Models";
 
 class AccountsOfOrganizationService {
   /**
@@ -83,17 +84,18 @@ class AccountsOfOrganizationService {
    */
   async getAllAccounts({ as_tree, client_info }) {
     const organizationId = client_info.organizationId;
+
+    // update the redis
+    const accountConfig = await AccountsConfigDao.get({
+      organization_id: organizationId,
+    });
+    const accountConfigRedisDAO = new AccountsConfigRedisDAO();
+    accountConfigRedisDAO.save(accountConfig).catch();
+
     const accounts = await AccountsOfOrganizationDao.getAccountsFromDepth({
       organization_id: organizationId,
       depth: 0,
     });
-    const accountConfig = await AccountsConfigDao.get({
-      organization_id: organizationId,
-    });
-    // todo: update the redis
-    const accountConfigRedisDAO = new AccountConfigRedisDAO();
-    accountConfigRedisDAO.save(accountConfig).catch();
-
     const treeOfAccounts = AccountsTree.createTreeOfOrganizationAccountsAsDTO({
       accounts: accounts,
     });
@@ -110,8 +112,8 @@ class AccountsOfOrganizationService {
   async getEditPage({ client_info, account_id }) {
     const organizationId = client_info.organizationId;
     let accountDetails = null;
-    let accountTypes;
-    let accountsListAsDTO;
+    let accountTypes: AccountTypes[];
+    let accountsListAsDTO: any[];
 
     // if account_id exists, we the account details
     if (account_id) {
@@ -399,7 +401,7 @@ class AccountsOfOrganizationUtils {
     // for each account of 'newCreatedAccounts' we find its (accountParentId, accountTypeId, accountGroupId)
     // from 'newAccountsDic' and use 'id' of that element (of newAccountsDic) to replace with
     // (accountParentId, accountTypeId, accountGroupId)
-    return new_temp_accounts.map((acc) => {
+    return new_temp_accounts.map((acc: any) => {
       const updateAccount = {
         ...acc,
         id: acc.id,
