@@ -1,6 +1,5 @@
 import * as XLSX from "xlsx";
 import {
-  AccountsConfigDao,
   AccountsOfTemplateDao,
   AccountsTemplateDetailsDao,
   AccountTypesDao,
@@ -17,7 +16,7 @@ class AccountsOfTemplateImportService {
     // load the file from temp folder
     const workbook = XLSX.read(FileUtil.readFromTempSync(file_location));
 
-    const firstSheet = workbook.Sheets["Sheet3"];
+    const firstSheet = workbook.Sheets["accounts"];
     const rawEntries: any[] = XLSX.utils.sheet_to_json(firstSheet, {
       blankrows: false,
     });
@@ -37,16 +36,6 @@ class AccountsOfTemplateImportService {
       );
       const newAccountTemplateId = newAccountTemplate.get("id");
 
-      // addAccount and account config belong to this template
-      await AccountsConfigDao.create(
-        {
-          accounts_config_details: {
-            accountTemplateId: newAccountTemplateId,
-          },
-        },
-        { transaction: t },
-      );
-
       const accountTypes = await AccountTypesDao.getAll();
       const accountTypesNameIndexed = ld.keyBy(accountTypes, "name");
 
@@ -54,13 +43,15 @@ class AccountsOfTemplateImportService {
       rawEntries
         .filter((acc) => acc.name)
         .forEach((acc) => {
-          const accountTypeCSV = acc.account_type;
-          const accountNameCSV = acc.name;
+          const accountTypeCSV = acc["account_type"];
+          const accountNameCSV = acc["name"];
           const parentCodeCSV =
             acc.parent_code?.toString().length > 0
               ? acc.parent_code?.toString()
               : null;
           const codeCSV = acc.code?.toString() ?? "";
+          const isSystemAccountCSV = acc["is_system_account"];
+          const accountSlugCSV = acc["account_slug"];
           all_accounts_details.push({
             name: accountNameCSV,
             code: codeCSV,
@@ -71,6 +62,8 @@ class AccountsOfTemplateImportService {
               accountTypesNameIndexed[accountTypeCSV].accountGroupId,
             createdBy,
             organizationId,
+            isSystemAccount: isSystemAccountCSV,
+            accountSlug: accountSlugCSV,
           });
         });
       await AccountsOfTemplateDao.dumpAccounts(
