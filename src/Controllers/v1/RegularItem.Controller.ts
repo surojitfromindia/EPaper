@@ -4,13 +4,15 @@ import RegularItemDTO from "../../DTO/RegularItem.DTO";
 import { RegularItemDto } from "../../DTO/index";
 import { Request } from "express";
 
-let createItem = async (req: Request) => {
+const createItem = async (req: Request) => {
   const clientInfo = req.clientInfo;
   const body = req.body;
   const itemDetailsFromPayload = RegularItemDto.toItemCreate(body);
-  const createdItem = await RegularItemService.create({
-    item_details: itemDetailsFromPayload,
+  const regularItemService = new RegularItemService({
     client_info: clientInfo,
+  });
+  const createdItem = await regularItemService.create({
+    item_details: itemDetailsFromPayload,
   });
   return { item: RegularItemDto.toItem(createdItem) };
 };
@@ -20,35 +22,43 @@ const createItemController = SuccessErrorWrapper(
   201,
 );
 
-let getAllItems = async (req: Request) => {
+const getAllItems = async (req: Request) => {
   const clientInfo = req.clientInfo;
-  const items = await RegularItemService.getAllItems({
+  const regularItemService = new RegularItemService({
     client_info: clientInfo,
   });
+
+  const items = await regularItemService.getAllItems();
   return { items: items.map((item) => RegularItemDto.toItem(item)) };
 };
 const getAllItemController = SuccessErrorWrapper(getAllItems, "done", 200);
 
-let getAnItem = async (req: Request) => {
+const getAnItem = async (req: Request) => {
   const clientInfo = req.clientInfo;
   const itemId = req.params.item_id;
-  const item = await RegularItemService.getAnItem({
-    item_id: itemId,
+  const regularItemService = new RegularItemService({
     client_info: clientInfo,
+  });
+
+  const item = await regularItemService.getAnItem({
+    item_id: itemId,
   });
   return { item: RegularItemDto.toItem(item) };
 };
 const getAnItemController = SuccessErrorWrapper(getAnItem, "done", 200);
 
-let updateAnItem = async (req: Request) => {
+const updateAnItem = async (req: Request) => {
   const clientInfo = req.clientInfo;
   const body = req.body;
   const itemId = req.params.item_id;
   const itemDetailsFromPayload = RegularItemDto.toItemUpdate(body);
-  const item = await RegularItemService.updateAnItem({
+  const regularItemService = new RegularItemService({
+    client_info: clientInfo,
+  });
+
+  const item = await regularItemService.updateAnItem({
     item_details: itemDetailsFromPayload,
     item_id: itemId,
-    client_info: clientInfo,
   });
   return { tax_rate: RegularItemDto.toItem(item) };
 };
@@ -58,12 +68,15 @@ const updateAnItemController = SuccessErrorWrapper(
   200,
 );
 
-let getItemEditPage = async (req: Request) => {
+const getItemEditPage = async (req: Request) => {
   const req_query = req?.query;
   const clientInfo = req.clientInfo;
   const itemId = req_query.item_id && Number(req_query.item_id);
+  const regularItemService = new RegularItemService({
+    client_info: clientInfo,
+  });
 
-  const editPage = await RegularItemService.getEditPage({
+  const editPage = await regularItemService.getEditPage({
     client_info: clientInfo,
     item_id: itemId,
   });

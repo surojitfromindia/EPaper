@@ -21,7 +21,14 @@ type ItemAutoCompleteType = AutoCompleteBasicType & {
 };
 
 class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
-  async create({ item_details, client_info }) {
+  clientInfo: ClientInfo;
+
+  constructor({ client_info }) {
+    this.clientInfo = client_info;
+  }
+
+  async create({ item_details }) {
+    const client_info = this.clientInfo;
     const organizationId = client_info.organizationId;
     const createdBy = client_info.userId;
     const newItem = this.#formatItemBody({ item_details });
@@ -46,7 +53,7 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
         createdBy,
       };
       itemDetails.unitId = await this.#createItemUnitIfNotExists(
-        { client_info, unit: itemDetails.unit },
+        { unit: itemDetails.unit },
         { transaction: t1 },
       );
 
@@ -57,15 +64,15 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     });
   }
 
-  async getAllItems({ client_info }) {
-    const organizationId = client_info.organizationId;
+  async getAllItems() {
+    const organizationId = this.clientInfo.organizationId;
     return await RegularItemDao.getAll({
       organization_id: organizationId,
     });
   }
 
-  async getAnItem({ item_id, client_info }) {
-    const organizationId = client_info.organizationId;
+  async getAnItem({ item_id }) {
+    const organizationId = this.clientInfo.organizationId;
     const item = await RegularItemDao.get({
       item_id,
       organization_id: organizationId,
@@ -76,10 +83,10 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     throw new DataNotFoundError();
   }
 
-  async updateAnItem({ item_id, item_details, client_info }) {
+  async updateAnItem({ item_id, item_details }) {
     const updateItemBody = this.#formatItemBody({ item_details });
     const accountIntegrity = new AccountIntegrity({
-      client_info,
+      client_info: this.clientInfo,
     });
     const { errors, valid: areAccountsValid } =
       await accountIntegrity.checkForItemAccounts({
@@ -94,7 +101,7 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     }
     const updatedItem = await sequelize.transaction(async (t1) => {
       updateItemBody.unitId = await this.#createItemUnitIfNotExists(
-        { client_info, unit: updateItemBody.unit },
+        { unit: updateItemBody.unit },
         { transaction: t1 },
       );
 
@@ -102,7 +109,7 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
         {
           item_details: updateItemBody,
           item_id,
-          organization_id: client_info.organizationId,
+          organization_id: this.clientInfo.organizationId,
         },
         { transaction: t1 },
       );
@@ -114,14 +121,7 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     throw new DataNotFoundError();
   }
 
-  /**
-   * @desc get edit page for item add or edit
-   * @param {object} param0
-   * @param {ClientInfoType} param0.client_info
-   * @param {number=} param0.item_id provided an item id if fetching for edit.
-   */
   async getEditPage({
-    client_info,
     item_id,
   }: {
     client_info: ClientInfo;
@@ -133,16 +133,20 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     if (item_id) {
       itemDetails = await this.getAnItem({
         item_id,
-        client_info,
       });
     }
     // fetch all taxes
-    taxes = await TaxRateService.getAllTaxRates({ client_info });
+    taxes = await TaxRateService.getAllTaxRates({
+      client_info: this.clientInfo,
+    });
+
     // fetch all units
-    itemUnits = await ItemUnitService.getAllItemUnits({ client_info });
+    itemUnits = await ItemUnitService.getAllItemUnits({
+      client_info: this.clientInfo,
+    });
     // fetch income accounts
     const accountsOfItem = AccountsOfOrganizationService.ofItem({
-      client_info,
+      client_info: this.clientInfo,
     });
     const {
       income_accounts_list,
@@ -186,12 +190,12 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     return item;
   }
 
-  async #createItemUnitIfNotExists({ client_info, unit }, { transaction }) {
+  async #createItemUnitIfNotExists({ unit }, { transaction }) {
     if (!unit) {
       return null;
     }
     const unitDetails = await ItemUnitService.getItemUnitByUnit({
-      client_info,
+      client_info: this.clientInfo,
       unit,
     });
     if (unitDetails) {
@@ -200,11 +204,15 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
     // else create a new unit
     const newItemUnit = {
       unit,
-      organizationId: client_info.organizationId,
-      createdBy: client_info.userId,
+      organizationId: this.clientInfo.organizationId,
+      createdBy: this.clientInfo.userId,
     };
     const createdItemUnit = await ItemUnitService.createWithTransaction(
-      { client_info, item_unit_details: newItemUnit },
+      {
+        client_info: this.clientInfo,
+
+        item_unit_details: newItemUnit,
+      },
       { transaction },
     );
     return createdItemUnit.id;
@@ -248,5 +256,5 @@ class RegularItemService implements IAutoCompleteAble<ItemAutoCompleteType> {
   }
 }
 
-export default Object.freeze(new RegularItemService());
+export default RegularItemService;
 export type { ItemAutoCompleteType };
