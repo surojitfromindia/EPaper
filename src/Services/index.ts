@@ -8,7 +8,8 @@ import SettingService, {
   PaymentTermService,
   TaxRateService,
 } from "./SettingServices/Setting.service";
-import RegularItemService from "./RegularItem.service";
+import RegularItemService from "./RegularItemServices/RegularItem.service";
+import { RegularItemEditPageService } from "./RegularItemServices/RegularItem.editPage.service";
 import AccountsOfOrganizationService, {
   AccountsOfItem,
 } from "./AccountsOfOrganization.service";
@@ -53,4 +54,5 @@ export {
   AutoNumberSeriesService,
   InvoicePreferenceService,
   FeaturesPreferenceService,
+  RegularItemEditPageService,
 };

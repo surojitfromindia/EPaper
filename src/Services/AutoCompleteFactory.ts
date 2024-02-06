@@ -1,6 +1,6 @@
 import { ContactAutoCompleteType } from "./Contact/Contact.service";
 import { AutoCompleteService } from "./AutoComplete.service";
-import { ItemAutoCompleteType } from "./RegularItem.service";
+import { ItemAutoCompleteType } from "./RegularItemServices/RegularItem.service";
 import { ContactAutoCompleteService, RegularItemService } from "./index";
 
 class AutoCompleteFactory {

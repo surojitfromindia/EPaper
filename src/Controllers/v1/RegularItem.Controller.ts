@@ -1,4 +1,7 @@
-import { RegularItemService } from "../../Services/index";
+import {
+  RegularItemEditPageService,
+  RegularItemService,
+} from "../../Services/index";
 import { SuccessErrorWrapper } from "../../Utils/SuccessErrorWrapper";
 import RegularItemDTO from "../../DTO/RegularItem.DTO";
 import { RegularItemDto } from "../../DTO/index";
@@ -72,12 +75,11 @@ const getItemEditPage = async (req: Request) => {
   const req_query = req?.query;
   const clientInfo = req.clientInfo;
   const itemId = req_query.item_id && Number(req_query.item_id);
-  const regularItemService = new RegularItemService({
+  const regularItemEditPageService = new RegularItemEditPageService({
     client_info: clientInfo,
   });
 
-  const editPage = await regularItemService.getEditPage({
-    client_info: clientInfo,
+  const editPage = await regularItemEditPageService.getEditPage({
     item_id: itemId,
   });
   return RegularItemDTO.toItemEditPage(editPage);
