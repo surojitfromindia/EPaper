@@ -168,7 +168,7 @@ class UtilServices {
     //-----------------end of removing fields according to itemFor-------------------
 
     //------------- units of item ----------------
-    if (ValidityUtil.isEmpty(item.unit)) {
+    if (ValidityUtil.isNotEmpty(item.unit)) {
       item.unitId = await this.createItemUnitIfNotExists(
         { unit: item.unit },
         { transaction },
