@@ -24,10 +24,10 @@ class ItemUnitService {
   ) {
     const organizationId = organization_id;
     const userId = client_info.userId;
-    let itemUnits = UNITS_DEFAULTS._OTHER_;
-    itemUnits = UNITS_DEFAULTS[organization_country_code];
+    let itemUnits =
+      UNITS_DEFAULTS[organization_country_code] ?? UNITS_DEFAULTS._OTHER_;
     if (itemUnits) {
-      itemUnits = itemUnits.map((unit) => ({
+      itemUnits = itemUnits.map((unit: any) => ({
         ...unit,
         organizationId,
         createdBy: userId,

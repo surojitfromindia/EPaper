@@ -1,7 +1,10 @@
-import { ContactAutoCompleteType } from "./Contact/Contact.service";
+import { ContactAutoCompleteType } from "./Contact/Contact.AutoComplete.service";
 import { AutoCompleteService } from "./AutoComplete.service";
-import { ItemAutoCompleteType } from "./RegularItemServices/RegularItem.service";
-import { ContactAutoCompleteService, RegularItemService } from "./index";
+import { ItemAutoCompleteType } from "./RegularItemServices/RegularItem.AutoComplete.service";
+import {
+  ContactAutoCompleteService,
+  RegularItemAutoCompleteService,
+} from "./index";
 
 class AutoCompleteFactory {
   private readonly organization_id: number;
@@ -26,7 +29,7 @@ class AutoCompleteFactory {
     return new AutoCompleteService<ItemAutoCompleteType, any>({
       organization_id: this.organization_id,
       limit_and_page: { limit: this.limit, page: this.current_page },
-      service: RegularItemService,
+      service: new RegularItemAutoCompleteService(),
     });
   }
 }

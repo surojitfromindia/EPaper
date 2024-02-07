@@ -32,7 +32,7 @@ class SettingService {
     const organizationCurrencyCode = organization_currency_code;
 
     // we return this fields to update the organization
-    let organizationCurrencyId: number = null;
+    let organizationCurrencyId: number;
 
     await ItemUnitService.initDefaultItemUnits(
       {

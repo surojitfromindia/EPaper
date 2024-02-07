@@ -90,9 +90,6 @@ class OrganizationService {
   }
 
   async getOrganizationById({ organization_id }) {
-    const organization = await OrganizationDao.getOrganizationById({
-      organization_id,
-    });
     return await OrganizationDao.getOrganizationById({
       organization_id,
     });

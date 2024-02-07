@@ -1,13 +1,8 @@
-import { AutoCompleteBasicType } from "../AutoComplete.service";
 import { ContactDao, ContactPersonDAO } from "../../DAO";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import sequelize from "../../Config/DataBase.Config";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { ContactCreatePayload } from "../../DTO/Contact.DTO";
-
-type ContactAutoCompleteType = AutoCompleteBasicType & {
-  contactName: string;
-};
 
 class ContactService {
   private clientInfo: ClientInfo;
@@ -200,10 +195,6 @@ class ContactService {
       creatableContactPersonsDetails[0].isPrimary = true;
     }
 
-    console.log("creatableContactPersons", creatableContactPersons);
-    console.log("deletableContactPersons", deletableContactPersons);
-    console.log("updatableContactPersons", updatableContactPersons);
-
     const contactPersonDao = new ContactPersonDAO({
       organization_id: this.clientInfo.organizationId,
     });
@@ -241,4 +232,3 @@ class ContactService {
 }
 
 export { ContactService };
-export type { ContactAutoCompleteType };

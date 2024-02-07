@@ -70,7 +70,7 @@ export class LineItemCalculation {
    * get current amount
    */
   getAmounts() {
-    let itemTotalTaxIncluded = 0;
+    let itemTotalTaxIncluded: number;
     if (this.#isTaxInclusive && this.#isDiscountPercentage) {
       itemTotalTaxIncluded =
         this.#publishedTotal *

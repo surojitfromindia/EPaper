@@ -21,7 +21,6 @@ class ContactEditPageService {
 
   async getEditPage({ contact_id }: ContactGetEdiPageProps) {
     const client_info = this.clientInfo;
-    let contactDetails = null;
     let contact = null;
 
     const paymentTerms = await PaymentTermService.getAllPaymentTerms({

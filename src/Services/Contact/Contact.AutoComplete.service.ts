@@ -43,3 +43,4 @@ class ContactAutoCompleteService
 }
 
 export { ContactAutoCompleteService };
+export type { ContactAutoCompleteType };
