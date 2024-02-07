@@ -1,4 +1,4 @@
-import { ContactAutoCompleteType } from "../Services/Contact/Contact.service";
+import { ContactAutoCompleteType } from "../Services/Contact/Contact.AutoComplete.service";
 import { ValidityUtil } from "../Utils/ValidityUtil";
 import { ContactType } from "../Models/Contact/Contacts.model";
 import { CurrencyDTO } from "./Currency.DTO";

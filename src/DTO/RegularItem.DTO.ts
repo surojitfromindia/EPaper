@@ -1,6 +1,6 @@
 import { AccountsOfOrganizationDTO, ItemUnitDTO, TaxRateDTO } from "./index";
 import { convertNullValueToString } from "../Utils/MathLib/NumberParser";
-import { ItemAutoCompleteType } from "../Services/RegularItemServices/RegularItem.service";
+import { ItemAutoCompleteType } from "../Services/RegularItemServices/RegularItem.AutoComplete.service";
 
 class RegularItemDTO {
   static toItem(item_details: any) {
