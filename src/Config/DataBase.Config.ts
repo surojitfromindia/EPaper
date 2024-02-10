@@ -96,4 +96,7 @@ async function syncModel() {
 
 syncModel().catch((err) => console.log(err));
 
+sequelize.authenticate().then(() => {
+  console.log("Postgres connected successfully");
+});
 export default sequelize;

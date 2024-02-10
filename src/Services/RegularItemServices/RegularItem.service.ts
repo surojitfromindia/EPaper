@@ -1,10 +1,11 @@
 import sequelize from "../../Config/DataBase.Config";
-import { AccountsConfigRedisDAO, RegularItemDao } from "../../DAO";
+import { RegularItemDao } from "../../DAO";
 import { DataNotFoundError, IntegrityErrors } from "../../Errors/APIErrors";
 import { ItemUnitService } from "../index";
 import { AccountIntegrity } from "../../IntegrityValidationServices";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
+import { AccountsConfigRedisDAO } from "../../RedisDAO";
 
 class RegularItemService {
   clientInfo: ClientInfo;

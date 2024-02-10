@@ -7,11 +7,8 @@ const redis = createClient({
     port: Number(process.env["REDIS_PORT"]),
   },
 });
-
-(async () => {
-  await redis.connect().then(() => {
-    console.log("Redis connected successfully");
-  });
-})();
+redis.connect().then(() => {
+  console.log("Redis connected successfully");
+});
 
 export default redis;

@@ -24,7 +24,6 @@ import {
   GeneralPreferenceDAO,
   ItemPreferenceDAO,
 } from "./Preference/index.dao.preference";
-import { AccountsConfigRedisDAO } from "./RedisDAO/AccountsConfigRedisDAO";
 
 export {
   UserDao,
@@ -53,7 +52,4 @@ export {
   GeneralPreferenceDAO,
   ItemPreferenceDAO,
   FeaturesPreferenceDAO,
-
-  //redis
-  AccountsConfigRedisDAO,
 };

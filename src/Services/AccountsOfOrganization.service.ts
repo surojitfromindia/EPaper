@@ -1,7 +1,6 @@
 import sequelize from "../Config/DataBase.Config";
 import {
   AccountsConfigDao,
-  AccountsConfigRedisDAO,
   AccountsOfOrganizationDao,
   AccountsOfTemplateDao,
   AccountsTemplateDetailsDao,
@@ -14,6 +13,7 @@ import { AccountsTree } from "../Utils/AccoutsTree";
 import { ClientInfo } from "../Middlewares/Authorization/Authorization.middleware";
 import { AccountConfigCreatableType } from "../Models/Account/AccountsConfig.model";
 import { AccountTypes } from "Models";
+import { AccountsConfigRedisDAO } from "../RedisDAO";
 
 class AccountsOfOrganizationService {
   /**

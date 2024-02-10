@@ -2,9 +2,9 @@ import { Repository } from "redis-om";
 import {
   AccountConfigRedisModel,
   AccountConfigRedisType,
-} from "../../Models/RedisModels/AccountConfig.Redis.Model";
-import redis from "../../Config/Redis.Config";
-import { AccountsConfigDao } from "../index";
+} from "../RedisModels/AccountConfig.Redis.Model";
+import redis from "../Config/Redis.Config";
+import { AccountsConfigDao } from "../DAO";
 
 const AccountConfigRedisRepository = new Repository(
   AccountConfigRedisModel,

@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import "./Config/DataBase.Config";
 import "./Config/Redis.Config";
+import "./Config/Mongodb.Config";
 
 const expressApp = Express();
 expressApp.use(
