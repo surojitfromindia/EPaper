@@ -15,6 +15,7 @@ import AccountsOfOrganizationService, {
 } from "./AccountsOfOrganization.service";
 import AppStateService from "./AppState.service";
 import PreferenceService, {
+  CustomViewPreferenceService,
   FeaturesPreferenceService,
   InvoicePreferenceService,
   ItemPreferenceService,
@@ -57,4 +58,5 @@ export {
   FeaturesPreferenceService,
   RegularItemEditPageService,
   RegularItemAutoCompleteService,
+  CustomViewPreferenceService,
 };

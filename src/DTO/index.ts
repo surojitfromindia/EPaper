@@ -14,6 +14,7 @@ import { ContactDTO } from "./Contact.DTO";
 import { CurrencyDTO } from "./Currency.DTO";
 import { ContactPersonDTO } from "./ContactPerson.DTO";
 import { AutoNumberSeriesDTO } from "./AutoNumberSeries.DTO";
+import { CustomViewDTO } from "./CustomView.DTO";
 
 export {
   UserDTO,
@@ -32,4 +33,5 @@ export {
   CurrencyDTO,
   ContactPersonDTO,
   AutoNumberSeriesDTO,
+  CustomViewDTO,
 };

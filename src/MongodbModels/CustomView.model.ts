@@ -29,9 +29,12 @@ const EntitySelectColumnSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  alias: {
+    type: [String],
+    required: false,
+  },
 });
 const EntityViewSchemaDefaultFilterSchema = new Schema({
-  header_and_sort_columns: [EntitySelectColumnSchema],
   title: {
     type: String,
     required: true,
@@ -60,14 +63,16 @@ const EntityViewSchemaDefaultFilterSchema = new Schema({
 const EntityViewSchema = new Schema({
   default_filters: [EntityViewSchemaDefaultFilterSchema],
 });
-
 const CustomViewSchema = new Schema({
   entity_select_columns: {
     invoice: [EntitySelectColumnSchema],
-    customer: [EntitySelectColumnSchema],
   },
   entity_views: {
     invoice: EntityViewSchema,
+  },
+  organization_id: {
+    type: Number,
+    required: true,
   },
 });
 
@@ -81,8 +86,3 @@ type CustomViewEntityViewSchemaDefaultFilterType = InferSchemaType<
 
 const CustomViewModel = model("Custom_View", CustomViewSchema);
 export { CustomViewModel };
-export type {
-  CustomViewType,
-  CustomViewEntitySelectColumnType,
-  CustomViewEntityViewSchemaDefaultFilterType,
-};
