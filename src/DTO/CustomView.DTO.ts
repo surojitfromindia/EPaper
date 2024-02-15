@@ -2,9 +2,11 @@ class CustomViewDTO {
   static toFullCustomView(data: any) {
     return {
       entity_select_columns: {
-        invoice: data.entity_select_columns.invoice.map(
-          this.#toEntitySelectColumn,
-        ),
+        invoice: data.entity_select_columns.invoice
+          .sort(
+            (a: any, b: any) => a.default_filter_order - b.default_filter_order,
+          )
+          .map(this.#toEntitySelectColumn),
       },
       entity_views: {
         invoice: {
@@ -26,6 +28,7 @@ class CustomViewDTO {
       key: col.key,
       is_sortable: col.is_sortable,
       alias: col.alias,
+      align: col.align,
     };
   }
 

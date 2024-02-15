@@ -121,8 +121,14 @@ class InvoiceDTO {
       });
     }
     if (ValidityUtil.isNotEmpty(invoice.Currency)) {
+      const currency = CurrencyDTO.toCurrency(invoice.Currency);
       Object.assign(return_data, {
-        ...CurrencyDTO.toCurrency(invoice.Currency),
+        ...currency,
+        total_formatted: `${currency.currency_symbol}${invoice.total}`,
+        sub_total_formatted: `${currency.currency_symbol}${invoice.subTotal}`,
+        tax_total_formatted: `${currency.currency_symbol}${invoice.taxTotal}`,
+        discount_total_formatted: `${currency.currency_symbol}${invoice.discountTotal}`,
+        exchange_rate_formatted: `${invoice.exchangeRate}`,
       });
     }
 

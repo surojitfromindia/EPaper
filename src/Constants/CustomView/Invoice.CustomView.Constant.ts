@@ -9,6 +9,7 @@ const invoiceCustomViewSelectionColumns = [
     value: "Date",
     key: "date",
     alias: ["invoice_date"],
+    align: "left",
   },
   // invoice number
   {
@@ -17,32 +18,34 @@ const invoiceCustomViewSelectionColumns = [
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
-    value: "Invoice number",
+    value: "Invoice#",
     key: "invoice_number",
     alias: [],
+    align: "left",
   },
-
-  // reference number
+  // due date
   {
     default_filter_order: 3,
-    is_mandatory: false,
+    is_mandatory: true,
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
-    value: "Reference number",
-    key: "reference_number",
+    value: "Due date",
+    key: "due_date",
     alias: [],
+    align: "left",
   },
-  // order number
+  // status
   {
     default_filter_order: 4,
-    is_mandatory: false,
+    is_mandatory: true,
     is_editable: true,
     is_default_select_column: true,
-    is_sortable: true,
-    value: "Order number",
-    key: "order_number",
+    is_sortable: false,
+    value: "Status",
+    key: "status",
     alias: [],
+    align: "left",
   },
   // contact
   {
@@ -51,57 +54,65 @@ const invoiceCustomViewSelectionColumns = [
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
-    value: "Customer_name",
+    value: "Customer name",
     key: "contact_name",
     alias: [],
-  },
-  // status
-  {
-    default_filter_order: 6,
-    is_mandatory: true,
-    is_editable: true,
-    is_default_select_column: true,
-    is_sortable: false,
-    value: "Status",
-    key: "status",
-    alias: [],
-  },
-  // due date
-  {
-    default_filter_order: 7,
-    is_mandatory: true,
-    is_editable: true,
-    is_default_select_column: true,
-    is_sortable: true,
-    value: "Due date",
-    key: "due_date",
-    alias: [],
-  },
-  // balance
-  {
-    default_filter_order: 8,
-    is_mandatory: true,
-    is_editable: true,
-    is_default_select_column: true,
-    is_sortable: true,
-    value: "Balance",
-    key: "balance",
-    alias: ["balance", "bcy_balance"],
+    align: "left",
   },
   // total
   {
-    default_filter_order: 9,
+    default_filter_order: 6,
     is_mandatory: true,
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
     value: "Total",
     key: "total",
-    alias: ["total", "bcy_total"],
+    alias: ["total"],
+    align: "right",
   },
+  // balance
+  {
+    default_filter_order: -1,
+    is_mandatory: true,
+    is_editable: true,
+    is_default_select_column: true,
+    is_sortable: true,
+    value: "Balance",
+    key: "balance",
+    alias: ["balance"],
+    align: "right",
+  },
+
+  // non-selected column
+  // reference number
+  {
+    default_filter_order: -1,
+    is_mandatory: false,
+    is_editable: true,
+    is_default_select_column: true,
+    is_sortable: true,
+    value: "Reference#",
+    key: "reference_number",
+    alias: [],
+    align: "left",
+  },
+  // order number
+  {
+    default_filter_order: -1,
+    is_mandatory: false,
+    is_editable: true,
+    is_default_select_column: true,
+    is_sortable: true,
+    value: "Order#",
+    key: "order_number",
+    alias: [],
+    align: "left",
+  },
+
   // "due days"
   {
-    default_filter_order: 10,
+    default_filter_order: -1,
     is_mandatory: true,
     is_editable: true,
     is_default_select_column: true,
@@ -109,17 +120,19 @@ const invoiceCustomViewSelectionColumns = [
     value: "Due days",
     key: "due_days",
     alias: [],
+    align: "right",
   },
   // sub total
   {
-    default_filter_order: 11,
+    default_filter_order: -1,
     is_mandatory: true,
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
     value: "Sub total",
     key: "sub_total",
-    alias: ["sub_total", "bcy_sub_total"],
+    alias: ["sub_total"],
+    align: "right",
   },
 ];
 

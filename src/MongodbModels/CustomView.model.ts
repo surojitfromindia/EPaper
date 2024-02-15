@@ -33,6 +33,10 @@ const EntitySelectColumnSchema = new Schema({
     type: [String],
     required: false,
   },
+  align: {
+    type: String,
+    required: true,
+  },
 });
 const EntityViewSchemaDefaultFilterSchema = new Schema({
   title: {
