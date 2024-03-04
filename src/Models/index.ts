@@ -25,6 +25,7 @@ import { AutoNumberGroupsModel } from "./AutoNumberSeries/AutoNumberGroup.model"
 import { FeaturesPreferenceModel } from "./Preference/FeaturesPreference.model";
 import { InvoicePreferencesModel } from "./Preference/InvoicePreferencesModel";
 import { ContactBalancesModel } from "./Contact/ContactBalances.model";
+import { InvoiceJournalModel } from "./Invoice/InvoiceJournal.model";
 
 export {
   User,
@@ -54,4 +55,5 @@ export {
   FeaturesPreferenceModel,
   InvoicePreferencesModel,
   ContactBalancesModel,
+  InvoiceJournalModel,
 };

@@ -81,19 +81,19 @@ class InvoiceJournalModel extends Model<
 
   @Attribute(DataTypes.DECIMAL(10, 2))
   @NotNull
-  declare debitBcy: number;
+  declare bcyDebit: number;
 
   @Attribute(DataTypes.DECIMAL(10, 2))
   @NotNull
-  declare creditBcy: number;
+  declare bcyCredit: number;
 
   @Attribute(DataTypes.DECIMAL(10, 2))
   @NotNull
-  declare debitFcy: number;
+  declare debit: number;
 
   @Attribute(DataTypes.DECIMAL(10, 2))
   @NotNull
-  declare creditFcy: number;
+  declare credit: number;
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
@@ -102,14 +102,31 @@ class InvoiceJournalModel extends Model<
   declare Organization?: NonAttribute<OrganizationBasic>;
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
+  @Default("active")
   @NotNull
   declare status: "active" | "deleted";
 
   @Attribute(DataTypes.ENUM("synced", "notSynced"))
-  @Default("synced")
+  @Default("notSynced")
   declare syncStatus: "synced" | "notSynced";
 }
 
-type InvoiceJournalCreatable = InferCreationAttributes<InvoiceJournalModel>;
+type InvoiceJournalCreatableRequired = {
+  contactId: number;
+  invoiceId: number;
+  lineItemId: number;
+  accountSlug:
+    | "item_account"
+    | "tax_account"
+    | "discount_account"
+    | "sales_account";
+  accountId: number;
+  bcyDebit: number;
+  bcyCredit: number;
+  debit: number;
+  credit: number;
+  organizationId: number;
+};
+
 export { InvoiceJournalModel };
-export type { InvoiceJournalCreatable };
+export type { InvoiceJournalCreatableRequired };

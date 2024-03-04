@@ -24,6 +24,7 @@ import {
   GeneralPreferenceDAO,
   ItemPreferenceDAO,
 } from "./Preference/index.dao.preference";
+import { InvoiceJournalDAO } from "./Invoices/InvoiceJournal.dao";
 
 export {
   UserDao,
@@ -39,10 +40,7 @@ export {
   AccountTypesDao,
   AccountGroupsDao,
   ItemUnitDao,
-  InvoiceDao,
-  InvoiceLineItemDao,
   PaymentTermDao,
-  InvoicePaymentTermDao,
   ContactDao,
   CurrencyDAO,
   ContactPersonDAO,
@@ -52,4 +50,10 @@ export {
   GeneralPreferenceDAO,
   ItemPreferenceDAO,
   FeaturesPreferenceDAO,
+
+  //invoice
+  InvoiceJournalDAO,
+  InvoiceDao,
+  InvoiceLineItemDao,
+  InvoicePaymentTermDao,
 };

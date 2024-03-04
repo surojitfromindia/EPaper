@@ -6,7 +6,7 @@ import {
 } from "../../Models/Invoice/Invoices.model";
 import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
-import { InvoiceCalculation } from "./InvoiceCalculation";
+import { InvoiceLineCalculation } from "./InvoiceLineCalculation";
 import { ToInvoiceUpdateType } from "../../DTO/Invoice.DTO";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { InvoiceUtil } from "./InvoiceUtil";
@@ -69,7 +69,7 @@ class InvoiceUpdateService {
 
     return await sequelize.transaction(async (t1): Promise<Invoice> => {
       // do the calculation
-      const invoiceCalculation = await InvoiceCalculation.init({
+      const invoiceCalculation = await InvoiceLineCalculation.init({
         client_info: this._clientInfo,
         is_inclusive_tax: invoiceBody.isInclusiveTax,
         exchange_rate: invoiceBody.exchangeRate,

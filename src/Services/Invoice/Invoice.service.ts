@@ -3,7 +3,7 @@ import { InvoiceIdType } from "../../Models/Invoice/Invoices.model";
 import sequelize from "../../Config/DataBase.Config";
 import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
 import { DataNotFoundError } from "../../Errors/APIErrors";
-import { InvoiceCalculation } from "./InvoiceCalculation";
+import { InvoiceLineCalculation } from "./InvoiceLineCalculation";
 import { ToInvoiceCreateType } from "../../DTO/Invoice.DTO";
 import { InvoiceUtil } from "./InvoiceUtil";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
@@ -12,6 +12,7 @@ import { AutoNumberGenerationService } from "../SettingServices/AutoNumberSeries
 import CodedError from "../../Errors/APIErrors/CodedError";
 import { InvoiceServiceErrorMessages } from "../../Errors/APIErrors/ErrorMessages";
 import { Transaction } from "@sequelize/core";
+import { InvoiceJournalService } from "./InvoiceJournal.service";
 
 type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -90,7 +91,7 @@ class InvoiceService {
       }
 
       // line item and gross data calculation
-      const invoiceCalculation = await InvoiceCalculation.init({
+      const invoiceCalculation = await InvoiceLineCalculation.init({
         client_info: this._clientInfo,
         is_inclusive_tax: invoiceBody.isInclusiveTax,
         exchange_rate: invoiceBody.exchangeRate,
@@ -133,7 +134,7 @@ class InvoiceService {
         }),
       );
 
-      await InvoiceLineItemDao.bulkCreate(
+      const line_items = await InvoiceLineItemDao.bulkCreate(
         {
           invoice_line_items: newLineItemsWithInvoiceId,
         },
@@ -161,6 +162,19 @@ class InvoiceService {
             transaction: t1,
           },
         );
+
+        // create journal entries
+        const invoiceJournalService = new InvoiceJournalService({
+          organization_id: organizationId,
+        });
+        const journalFactory = invoiceJournalService.getCreatableCalculation({
+          line_items,
+          invoice_id: invoiceId,
+          contact_id: contactId,
+        });
+        await journalFactory.create({
+          transaction: t1,
+        });
       }
 
       return await this.getAnInvoice({

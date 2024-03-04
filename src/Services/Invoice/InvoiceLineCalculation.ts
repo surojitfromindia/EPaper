@@ -30,7 +30,7 @@ type InvoiceCalculationInitProps = {
   client_info: ClientInfo;
 };
 
-class InvoiceCalculation {
+class InvoiceLineCalculation {
   readonly lineItems: InvoiceLineItemCreatable[];
   readonly taxRoundingType: GeneralPreference["taxRoundingType"];
   readonly discountType: GeneralPreference["discountType"];
@@ -63,7 +63,7 @@ class InvoiceCalculation {
     const generalPreference = await GeneralPreferenceService.get({
       client_info,
     });
-    return new InvoiceCalculation({
+    return new InvoiceLineCalculation({
       isInclusiveTax: is_inclusive_tax,
       exchangeRate: exchange_rate,
       line_items,
@@ -131,4 +131,4 @@ class InvoiceCalculation {
   }
 }
 
-export { InvoiceCalculation };
+export { InvoiceLineCalculation };

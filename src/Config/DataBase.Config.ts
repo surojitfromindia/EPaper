@@ -16,6 +16,7 @@ import {
   FeaturesPreferenceModel,
   GeneralPreferenceModel,
   Invoice,
+  InvoiceJournalModel,
   InvoiceLineItem,
   InvoicePaymentTerm,
   InvoicePreferencesModel,
@@ -71,6 +72,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     FeaturesPreferenceModel,
     InvoicePreferencesModel,
     ContactBalancesModel,
+    InvoiceJournalModel,
   ],
 });
 
@@ -92,6 +94,7 @@ async function syncModel() {
   // await AccountsOfTemplate.sync({ alter, force });
   // await AccountsOfOrganization.sync({ alter, force: true });
   // await AccountsConfig.sync({ alter, force: true });
+  // await InvoiceJournalModel.sync({ alter });
 }
 
 syncModel().catch((err) => console.log(err));
