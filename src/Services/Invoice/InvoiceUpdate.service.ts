@@ -12,6 +12,7 @@ import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { InvoiceUtil } from "./InvoiceUtil";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
 import { ContactService } from "../Contact/Contact.service";
+import { InvoiceJournalService } from "./InvoiceJournal.service";
 
 type InvoiceUpdateProps = {
   invoice_details: ToInvoiceUpdateType;
@@ -160,7 +161,7 @@ class InvoiceUpdateService {
       );
 
       // update the line items that are in the invoice.
-      await InvoiceLineItemDao.bulkUpdateByInvoiceId(
+      const updatedLineItems = await InvoiceLineItemDao.bulkUpdateByInvoiceId(
         {
           invoice_line_items: updatableLineItems,
         },
@@ -168,7 +169,7 @@ class InvoiceUpdateService {
       );
 
       // create the line items that are not in the invoice.
-      await InvoiceLineItemDao.bulkCreate(
+      const createdLineItems = await InvoiceLineItemDao.bulkCreate(
         {
           invoice_line_items: creatableLineItems,
         },
@@ -183,6 +184,27 @@ class InvoiceUpdateService {
           invoice_id: invoiceId,
           organization_id: organizationId,
           invoice_details: invoiceBody,
+        },
+        {
+          transaction: t1,
+        },
+      );
+
+      // create journal entries
+      const invoiceJournalService = new InvoiceJournalService({
+        organization_id: organizationId,
+      });
+      const journalFactory =
+        await invoiceJournalService.getCreatableCalculation({
+          invoice_id: invoiceId,
+          contact_id: contactId,
+        });
+      await journalFactory.update(
+        {
+          invoice_id: invoiceId,
+          line_items_id_to_delete: lineItemIdsToDelete,
+          line_items_to_be_created: createdLineItems,
+          line_items_to_be_updated: updatedLineItems,
         },
         {
           transaction: t1,

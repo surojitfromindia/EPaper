@@ -41,10 +41,15 @@ const bulkUpdateAllowedFields: Required<keyof BulkUpdateAllowedFields>[] = [
   "taxId",
   "discountPercentage",
   "discountAmount",
+  "bcyDiscountAmount",
   "taxPercentage",
   "taxAmount",
+  "bcyTaxAmount",
   "itemTotal",
+  "bcyItemTotal",
   "itemTotalTaxIncluded",
+  "bcyItemTotalTaxIncluded",
+  "accountId",
 ];
 
 class InvoiceLineItemDao {

@@ -112,6 +112,7 @@ class InvoiceJournalModel extends Model<
 }
 
 type InvoiceJournalCreatableRequired = {
+  id?: number;
   contactId: number;
   invoiceId: number;
   lineItemId: number;
@@ -127,6 +128,14 @@ type InvoiceJournalCreatableRequired = {
   credit: number;
   organizationId: number;
 };
+
+interface InvoiceJournal extends InvoiceJournalCreatableRequired {
+  id: number;
+  status: "active" | "deleted";
+  syncStatus: "synced" | "notSynced";
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export { InvoiceJournalModel };
 export type { InvoiceJournalCreatableRequired };

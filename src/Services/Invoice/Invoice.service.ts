@@ -134,7 +134,7 @@ class InvoiceService {
         }),
       );
 
-      const line_items = await InvoiceLineItemDao.bulkCreate(
+      const created_line_items = await InvoiceLineItemDao.bulkCreate(
         {
           invoice_line_items: newLineItemsWithInvoiceId,
         },
@@ -167,14 +167,19 @@ class InvoiceService {
         const invoiceJournalService = new InvoiceJournalService({
           organization_id: organizationId,
         });
-        const journalFactory = invoiceJournalService.getCreatableCalculation({
-          line_items,
-          invoice_id: invoiceId,
-          contact_id: contactId,
-        });
-        await journalFactory.create({
-          transaction: t1,
-        });
+        const journalFactory =
+          await invoiceJournalService.getCreatableCalculation({
+            invoice_id: invoiceId,
+            contact_id: contactId,
+          });
+        await journalFactory.create(
+          {
+            line_items: created_line_items,
+          },
+          {
+            transaction: t1,
+          },
+        );
       }
 
       return await this.getAnInvoice({
