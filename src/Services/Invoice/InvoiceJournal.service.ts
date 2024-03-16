@@ -6,6 +6,24 @@ import ld from "lodash";
 import { AccountConfigRedisType } from "../../RedisModels/AccountConfig.Redis.Model";
 import { InvoiceLineItemCreatable } from "../../Models/Invoice/InvoiceLineItems.model";
 
+class InvoiceJournalService {
+  private readonly organization_id: number;
+
+  constructor({ organization_id }) {
+    this.organization_id = organization_id;
+  }
+
+  async getCreatableCalculation({ invoice_id, contact_id }) {
+    return InvoiceJournalCalculation.init({
+      organization_id: this.organization_id,
+      invoice_id,
+      contact_id,
+    });
+  }
+}
+
+export { InvoiceJournalService };
+
 class InvoiceJournalCalculation {
   private readonly organization_id: number;
   private readonly invoice_id: number;
@@ -45,7 +63,7 @@ class InvoiceJournalCalculation {
       line_items: InvoiceLineItemCreatable[];
     },
     { transaction },
-  ) {
+  ): Promise<boolean> {
     const accountConfigFromRedis = this.accountConfigFromRedis;
     const taxAccountId = accountConfigFromRedis.defaultTaxAccountId;
     const discountAccountId = accountConfigFromRedis.defaultDiscountAccountId;
@@ -126,6 +144,7 @@ class InvoiceJournalCalculation {
         transaction,
       },
     );
+    return true;
   }
 
   async update(
@@ -136,7 +155,7 @@ class InvoiceJournalCalculation {
       line_items_id_to_delete,
     },
     { transaction },
-  ) {
+  ): Promise<boolean> {
     const journalDao = new InvoiceJournalDAO({
       organization_id: this.organization_id,
     });
@@ -297,23 +316,18 @@ class InvoiceJournalCalculation {
         { transaction },
       );
     }
+
+    return true;
+  }
+
+  /**
+   * @description Delete all the journal lines by invoice id.
+   */
+  async delete({ invoice_id }, { transaction }): Promise<boolean> {
+    await this.journalDao.bulkDeleteByInvoiceId(
+      { invoice_id },
+      { transaction },
+    );
+    return true;
   }
 }
-
-class InvoiceJournalService {
-  private readonly organization_id: number;
-
-  constructor({ organization_id }) {
-    this.organization_id = organization_id;
-  }
-
-  async getCreatableCalculation({ invoice_id, contact_id }) {
-    return InvoiceJournalCalculation.init({
-      organization_id: this.organization_id,
-      invoice_id,
-      contact_id,
-    });
-  }
-}
-
-export { InvoiceJournalService };

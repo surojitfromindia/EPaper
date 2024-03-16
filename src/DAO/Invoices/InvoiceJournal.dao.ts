@@ -41,6 +41,14 @@ interface InvoiceJournalBulkUpdateByInvoiceIdOptions {
   transaction: Transaction;
 }
 
+interface InvoiceJournalBulkDeleteByInvoiceIdProps {
+  invoice_id: number;
+}
+
+interface InvoiceJournalBulkDeleteByInvoiceIdOptions {
+  transaction: Transaction;
+}
+
 class InvoiceJournalDAO {
   private readonly organization_id: number;
 
@@ -122,6 +130,26 @@ class InvoiceJournalDAO {
       ],
       transaction,
     });
+  }
+
+  async bulkDeleteByInvoiceId(
+    { invoice_id }: InvoiceJournalBulkDeleteByInvoiceIdProps,
+    { transaction }: InvoiceJournalBulkDeleteByInvoiceIdOptions,
+  ) {
+    return await InvoiceJournalModel.update(
+      {
+        status: "deleted",
+        syncStatus: "notSynced",
+      },
+      {
+        where: {
+          status: "active",
+          invoiceId: invoice_id,
+          organizationId: this.organization_id,
+        },
+        transaction,
+      },
+    );
   }
 }
 
