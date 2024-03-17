@@ -13,6 +13,8 @@ import CodedError from "../../Errors/APIErrors/CodedError";
 import { InvoiceServiceErrorMessages } from "../../Errors/APIErrors/ErrorMessages";
 import { Transaction } from "@sequelize/core";
 import { InvoiceJournalService } from "./InvoiceJournal.service";
+import { InvoiceGetAllQueryParsedFields } from "../FilterAndPaginationServices/InvoiceFilter.service";
+import { PageContextService } from "../FilterAndPaginationServices/PageContext.service";
 
 type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -20,6 +22,9 @@ type InvoiceCreateProps = {
 type InvoiceGetProps = {
   invoice_id: InvoiceIdType;
 };
+
+interface InvoiceGetAllProps extends InvoiceGetAllQueryParsedFields {}
+
 class InvoiceService {
   private readonly _clientInfo: ClientInfo;
   private readonly _organizationId: number;
@@ -200,11 +205,32 @@ class InvoiceService {
     throw new DataNotFoundError();
   }
 
-  getAllInvoice() {
+  async getAllInvoice({
+    filter_by,
+    skip,
+    limit,
+    sort_column,
+    sort_order,
+  }: InvoiceGetAllProps) {
     const organizationId = this._organizationId;
-    return InvoiceDao.getAll({
+    const invoices = await InvoiceDao.getAll({
       organization_id: organizationId,
     });
+    const pageContextService = new PageContextService({
+      limit: limit,
+      skip: skip,
+      current_count: invoices.length,
+    });
+    const pageContext = pageContextService.get("invoice")({
+      sort_column,
+      sort_order,
+      filter_by,
+    });
+
+    return {
+      invoices,
+      page_context: pageContext,
+    };
   }
 
   async #invoiceNumberValidityAndGeneration(

@@ -29,6 +29,9 @@ import { ContactService } from "./Contact/Contact.service";
 import { ContactEditPageService } from "./Contact/Contact.editPage.service";
 import { AutoNumberSeriesService } from "./SettingServices/AutoNumberSeries.service";
 import { RegularItemAutoCompleteService } from "./RegularItemServices/RegularItem.AutoComplete.service";
+import { PageContextService } from "./FilterAndPaginationServices/PageContext.service";
+
+import { InvoiceFilterService } from "./FilterAndPaginationServices";
 
 export {
   UserService,
@@ -59,4 +62,6 @@ export {
   RegularItemEditPageService,
   RegularItemAutoCompleteService,
   CustomViewPreferenceService,
+  PageContextService,
+  InvoiceFilterService,
 };

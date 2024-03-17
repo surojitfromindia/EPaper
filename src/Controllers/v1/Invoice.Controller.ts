@@ -1,6 +1,7 @@
 import { Request } from "express";
 import {
   InvoiceEditPageService,
+  InvoiceFilterService,
   InvoiceService,
   InvoiceUpdateService,
 } from "../../Services";
@@ -80,9 +81,13 @@ const getAllInvoice = async (req: Request) => {
   const invoiceService = new InvoiceService({
     client_info: clientInfo,
   });
-  const invoices = await invoiceService.getAllInvoice();
+  const query = req.query as Record<string, string>;
+  const parsedFields = InvoiceFilterService.parseQuery(query);
+  const { invoices, page_context } =
+    await invoiceService.getAllInvoice(parsedFields);
   return {
     invoices: invoices.map((invoice) => InvoiceDTO.toInvoice({ invoice })),
+    page_context,
   };
 };
 const getAllInvoiceController = SuccessErrorWrapper(getAllInvoice, "done", 200);

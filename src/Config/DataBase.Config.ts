@@ -42,7 +42,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
   dialectOptions: {
     ssl,
   },
-  logging: (message) => console.log(message, "\n\n"),
+  logging: false, // (message) => console.log(message, "\n\n"),
   logQueryParameters: true,
   models: [
     User,
