@@ -213,9 +213,14 @@ class InvoiceService {
     sort_order,
   }: InvoiceGetAllProps) {
     const organizationId = this._organizationId;
-    const invoices = await InvoiceDao.getAll({
+    const getAllDAO = await InvoiceDao.getAllDAO({
       organization_id: organizationId,
     });
+    const invoices = await getAllDAO
+      .applyFilterBy(filter_by)
+      .applySortBy(sort_column, sort_order === "D" ? "DESC" : "ASC")
+      .getAll(skip, limit);
+
     const pageContextService = new PageContextService({
       limit: limit,
       skip: skip,

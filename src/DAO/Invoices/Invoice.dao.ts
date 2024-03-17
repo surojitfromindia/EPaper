@@ -1,4 +1,4 @@
-import { Includeable, Transaction } from "@sequelize/core";
+import { Includeable, Op, Transaction } from "@sequelize/core";
 import {
   AccountsOfOrganization,
   Contacts,
@@ -41,6 +41,7 @@ const INVOICE_CURRENCY_DEFAULT_ATTRIBUTES = [
   "currencySymbol",
   "currencyCode",
 ];
+
 type GetByIdFullOptions = {
   invoice_id: InvoiceIdType;
   organization_id: number;
@@ -64,6 +65,11 @@ type InvoiceCreateProps = {
 
 type InvoiceListProps = {
   organization_id: OrganizationBasicIdType;
+  sort_column?: string;
+  sort_order?: "DESC" | "ASC";
+  limit?: number;
+  skip?: number;
+  filter_by?: string;
 };
 
 class InvoiceDao {
@@ -83,29 +89,8 @@ class InvoiceDao {
     );
   }
 
-  async getAll({ organization_id }: InvoiceListProps) {
-    return await Invoice.findAll({
-      where: {
-        organizationId: organization_id,
-        status: "active",
-      },
-      include: [
-        {
-          model: Contacts,
-          as: "Contact",
-          attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
-        },
-        {
-          model: CurrencyModel,
-          as: "Currency",
-          attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
-        },
-      ],
-      order: [
-        ["issue_date", "DESC"],
-        ["id", "DESC"],
-      ],
-    });
+  async getAllDAO({ organization_id }: InvoiceListProps) {
+    return new InvoiceGetAllDAO({ organization_id });
   }
 
   async update(
@@ -211,3 +196,78 @@ class InvoiceDao {
 }
 
 export default Object.freeze(new InvoiceDao());
+
+class InvoiceGetAllDAO {
+  private readonly _organizationId: OrganizationBasicIdType;
+
+  private readonly query: Record<string, any> = {
+    status: "active",
+  };
+  private order: [string, "DESC" | "ASC"][] = [
+    ["issue_date", "DESC"],
+    ["id", "DESC"],
+  ];
+
+  constructor({ organization_id }) {
+    this._organizationId = organization_id;
+    this.query = {
+      organizationId: organization_id,
+    };
+  }
+
+  applyFilterBy(filter_by: string) {
+    switch (filter_by) {
+      case "Status.All": {
+        break;
+      }
+      case "Status.Draft": {
+        this.query.transaction_status = "draft";
+        break;
+      }
+      case "Status.Overdue":
+        {
+          this.query.transaction_status = "sent";
+          // and due date is less than today
+          this.query.dueDate = {
+            [Op.lt]: new Date(),
+          };
+        }
+        break;
+      default: {
+        this.query.status = "active";
+      }
+    }
+    return this;
+  }
+
+  applySortBy(sort_column: string, sort_order: "DESC" | "ASC") {
+    this.order = [
+      [sort_column, sort_order],
+      ["id", "DESC"],
+    ];
+    return this;
+  }
+
+  async getAll(skip: number, limit: number) {
+    return await Invoice.findAll({
+      where: this.query,
+      include: [
+        {
+          model: Contacts,
+          as: "Contact",
+          attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
+        },
+        {
+          model: CurrencyModel,
+          as: "Currency",
+          attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
+        },
+      ],
+      order: this.order,
+      offset: skip,
+      limit,
+    });
+  }
+}
+
+export { InvoiceGetAllDAO };

@@ -20,10 +20,11 @@ function parseCommonQueryFields(
     sort_order: undefined,
   };
   if ("per_page" in query) {
-    basic.limit = Number(query.per_page);
+    basic.limit = parseInt(query.per_page);
   }
   if ("page" in query) {
-    basic.skip = (Number(query.page) - 1) * basic.limit;
+    let page = parseInt(query.page) <= 0 ? 1 : parseInt(query.page);
+    basic.skip = (page - 1) * basic.limit;
   }
   if ("sort_column" in query) {
     basic.sort_column = query.sort_column;
