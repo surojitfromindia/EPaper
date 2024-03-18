@@ -77,11 +77,8 @@ class PageContextService {
     };
   }
 
-  recordCount(count: number) {
-    this.record_count = count;
-    // update has_more_page
-    this.basic_page_context.has_more_page =
-      this.record_count > this.per_page * this.page;
+  setHasMorePage(has_more_page: boolean) {
+    this.basic_page_context.has_more_page = has_more_page;
     return this;
   }
 

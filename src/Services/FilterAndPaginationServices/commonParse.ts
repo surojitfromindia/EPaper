@@ -2,6 +2,7 @@ import {
   allowedInvoiceFilters,
   defaultInvoiceFilter,
 } from "./InvoiceFilter.service";
+import { DEFAULT_PAGE_SIZE } from "../../Constants/Pagination.Constants";
 
 type CommonQueryParsedFields = {
   limit: number;
@@ -14,8 +15,8 @@ function parseCommonQueryFields(
   query: Record<string, string>,
 ): CommonQueryParsedFields {
   const basic: CommonQueryParsedFields = {
-    limit: 200,
-    skip: 1,
+    limit: DEFAULT_PAGE_SIZE,
+    skip: 0,
     sort_column: undefined,
     sort_order: undefined,
   };

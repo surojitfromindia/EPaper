@@ -215,17 +215,21 @@ class InvoiceService {
     const organizationId = this._organizationId;
     const getAllDAO = await InvoiceDao.getAllDAO({
       organization_id: organizationId,
+      skip,
+      limit,
     });
-    const invoices = await getAllDAO
+    const dao = getAllDAO
       .applyFilterBy(filter_by)
-      .applySortBy(sort_column, sort_order === "D" ? "DESC" : "ASC")
-      .getAll(skip, limit);
+      .applySortBy(sort_column, sort_order === "D" ? "DESC" : "ASC");
+
+    const invoices = await dao.getAll();
+    const hasMorePage = await dao.hasMore();
 
     const pageContextService = new PageContextService({
       limit: limit,
       skip: skip,
       current_count: invoices.length,
-    });
+    }).setHasMorePage(hasMorePage);
     const pageContext = pageContextService.get("invoice")({
       sort_column,
       sort_order,

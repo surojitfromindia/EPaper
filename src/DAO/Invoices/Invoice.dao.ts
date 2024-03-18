@@ -67,8 +67,8 @@ type InvoiceListProps = {
   organization_id: OrganizationBasicIdType;
   sort_column?: string;
   sort_order?: "DESC" | "ASC";
-  limit?: number;
-  skip?: number;
+  limit: number;
+  skip: number;
   filter_by?: string;
 };
 
@@ -89,8 +89,8 @@ class InvoiceDao {
     );
   }
 
-  async getAllDAO({ organization_id }: InvoiceListProps) {
-    return new InvoiceGetAllDAO({ organization_id });
+  async getAllDAO({ organization_id, limit, skip }: InvoiceListProps) {
+    return new InvoiceGetAllDAO({ organization_id, limit, skip });
   }
 
   async update(
@@ -207,9 +207,16 @@ class InvoiceGetAllDAO {
     ["issue_date", "DESC"],
     ["id", "DESC"],
   ];
+  private readonly limit: number;
+  private readonly skip: number;
 
-  constructor({ organization_id }) {
+  private isDataFetched: boolean = false;
+  private _filterInvoicesAndExtra: Invoice[] = [];
+
+  constructor({ organization_id, limit, skip }) {
     this._organizationId = organization_id;
+    this.limit = limit;
+    this.skip = skip;
     this.query = {
       organizationId: organization_id,
     };
@@ -248,25 +255,47 @@ class InvoiceGetAllDAO {
     return this;
   }
 
-  async getAll(skip: number, limit: number) {
-    return await Invoice.findAll({
-      where: this.query,
-      include: [
-        {
-          model: Contacts,
-          as: "Contact",
-          attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
-        },
-        {
-          model: CurrencyModel,
-          as: "Currency",
-          attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
-        },
-      ],
-      order: this.order,
-      offset: skip,
-      limit,
-    });
+  async hasMore() {
+    if (this.isDataFetched) {
+      return this._filterInvoicesAndExtra.length > this.limit;
+    }
+    // if data is not fetched yet
+    this.getAll().then(this.hasMore);
+  }
+
+  async getAll() {
+    let filterInvoicesAndExtra = [];
+    if (this.isDataFetched) {
+      filterInvoicesAndExtra = [...this._filterInvoicesAndExtra];
+    } else {
+      filterInvoicesAndExtra = await Invoice.findAll({
+        where: this.query,
+        include: [
+          {
+            model: Contacts,
+            as: "Contact",
+            attributes: INVOICE_CONTACT_DEFAULT_ATTRIBUTES,
+          },
+          {
+            model: CurrencyModel,
+            as: "Currency",
+            attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
+          },
+        ],
+        order: this.order,
+        offset: this.skip,
+        limit: this.limit + 1,
+      });
+      this.isDataFetched = true;
+      this._filterInvoicesAndExtra = [...filterInvoicesAndExtra];
+    }
+
+    // remove the last element from the array and return the rest
+    // if the length of the array is greater than the limit
+    if (filterInvoicesAndExtra.length > this.limit) {
+      filterInvoicesAndExtra.pop();
+    }
+    return filterInvoicesAndExtra;
   }
 }
 
