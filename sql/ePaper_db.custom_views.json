@@ -1,0 +1,217 @@
+[
+  {
+    "_id": {
+      "$oid": "65ce18db15c26fdbdb9ef4c3"
+    },
+    "entity_select_columns": {
+      "invoice": [
+        {
+          "default_filter_order": 1,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Date",
+          "key": "date",
+          "is_sortable": true,
+          "alias": [
+            "invoice_date"
+          ],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4c4"
+          }
+        },
+        {
+          "default_filter_order": 2,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Invoice#",
+          "key": "invoice_number",
+          "is_sortable": true,
+          "alias": [],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4c5"
+          }
+        },
+        {
+          "default_filter_order": 3,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Due date",
+          "key": "due_date",
+          "is_sortable": true,
+          "alias": [],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4c6"
+          }
+        },
+        {
+          "default_filter_order": 4,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Status",
+          "key": "status",
+          "is_sortable": false,
+          "alias": [],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4c7"
+          }
+        },
+        {
+          "default_filter_order": 5,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Customer name",
+          "key": "contact_name",
+          "is_sortable": true,
+          "alias": [],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4c8"
+          }
+        },
+        {
+          "default_filter_order": 6,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Total",
+          "key": "total",
+          "is_sortable": true,
+          "alias": [
+            "total"
+          ],
+          "align": "right",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4c9"
+          }
+        },
+        {
+          "default_filter_order": -1,
+          "is_mandatory": false,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Reference#",
+          "key": "reference_number",
+          "is_sortable": true,
+          "alias": [],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4ca"
+          }
+        },
+        {
+          "default_filter_order": -1,
+          "is_mandatory": false,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Order#",
+          "key": "order_number",
+          "is_sortable": true,
+          "alias": [],
+          "align": "left",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4cb"
+          }
+        },
+        {
+          "default_filter_order": -1,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Balance",
+          "key": "balance",
+          "is_sortable": true,
+          "alias": [
+            "balance"
+          ],
+          "align": "right",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4cc"
+          }
+        },
+        {
+          "default_filter_order": -1,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Due days",
+          "key": "due_days",
+          "is_sortable": true,
+          "alias": [],
+          "align": "right",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4cd"
+          }
+        },
+        {
+          "default_filter_order": -1,
+          "is_mandatory": true,
+          "is_editable": true,
+          "is_default_select_column": true,
+          "value": "Sub total",
+          "key": "sub_total",
+          "is_sortable": true,
+          "alias": [
+            "sub_total"
+          ],
+          "align": "right",
+          "_id": {
+            "$oid": "65ce18db15c26fdbdb9ef4ce"
+          }
+        }
+      ]
+    },
+    "entity_views": {
+      "invoice": {
+        "default_filters": [
+          {
+            "title": "All Invoices",
+            "value": "Status.All",
+            "key": "all",
+            "is_default": true,
+            "empty_msg": "No invoices found",
+            "status": "active",
+            "_id": {
+              "$oid": "65ce18db15c26fdbdb9ef4d0"
+            }
+          },
+          {
+            "title": "Draft",
+            "value": "Status.Draft",
+            "key": "draft",
+            "is_default": false,
+            "empty_msg": "No draft invoices found",
+            "status": "active",
+            "_id": {
+              "$oid": "65ce18db15c26fdbdb9ef4d1"
+            }
+          },
+          {
+            "title": "Overdue",
+            "value": "Status.Overdue",
+            "key": "overdue",
+            "is_default": false,
+            "empty_msg": "No overdue invoices found",
+            "status": "active",
+            "_id": {
+              "$oid": "65ce18db15c26fdbdb9ef4d2"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "65ce18db15c26fdbdb9ef4cf"
+        }
+      }
+    },
+    "organization_id": 172,
+    "__v": 0
+  }
+]
