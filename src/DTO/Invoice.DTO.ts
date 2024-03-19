@@ -254,6 +254,7 @@ const transactionStatusFormatted = (transaction_status: string) => {
   }
 };
 const dueDaysFormatted = (due_days: number, transaction_status: string) => {
+  // if transaction status is not sent, this due day does not matter
   if (transaction_status !== "sent") {
     return transactionStatusFormatted(transaction_status);
   }
@@ -263,6 +264,6 @@ const dueDaysFormatted = (due_days: number, transaction_status: string) => {
   } else if (due_days < 0) {
     return `overdue ${Math.abs(due_days)} days ago`;
   } else {
-    return "Sent";
+    return "due today";
   }
 };

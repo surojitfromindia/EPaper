@@ -14,7 +14,12 @@ class DateUtil {
   }
 
   static daysBetween(date1: Date, date2: Date): number {
-    const luxonDate1 = DateTime.fromJSDate(date1);
+    const luxonDate1 = DateTime.fromJSDate(date1).set({
+      hour: 0,
+      minute: 0,
+      millisecond: 0,
+      second: 0,
+    });
     const luxonDate2 = DateTime.fromJSDate(date2);
     const diff = luxonDate2.diff(luxonDate1, "days");
     return Math.round(diff.days);
