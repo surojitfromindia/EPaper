@@ -1,0 +1,29 @@
+# API Server
+PORT=5020
+
+
+
+# Postgres
+API_DB_NAME=ePaper_db
+API_DB_USER=your_user_name
+API_DB_USER_PASSWORD=your_password
+API_DB_HOST=localhost
+SSL=false
+
+
+# Redis
+REDIS_HOST=redis-xxxx.xxxx.com
+REDIS_PASSWORD=xxxxxx
+REDIS_PORT=17774
+
+
+# Mongo
+MONGO_DB_HOST=localhost:27017/ePaper_db
+MONGO_PROTOCOL=mongodb 
+
+
+
+# Auth Server
+AUTH_SERVER_HOST=http://localhost:5010
+AUTH_SERVER_ENDPOINT=/v1/tokens/introspect
+AUTH_SERVER_PORT=5010

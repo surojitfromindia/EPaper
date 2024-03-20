@@ -2,3 +2,5 @@
 .env
 /dist
 /.idea
+*.code-workspace
+*.iml
