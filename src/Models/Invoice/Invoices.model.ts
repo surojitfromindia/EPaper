@@ -250,7 +250,37 @@ type InvoiceType = Attributes<Invoice> & {
 };
 type InvoiceIdType = number;
 
-export { Invoice };
+const InvoiceColumnNamesRaw = {
+  id: "id",
+  issueDate: "issue_date",
+  dueDate: "due_date",
+  contactId: "contact_id",
+  currencyId: "currency_id",
+  invoiceNumber: "invoice_number",
+  referenceNumber: "reference_number",
+  orderNumber: "order_number",
+  terms: "terms",
+  notes: "notes",
+  isInclusiveTax: "is_inclusive_tax",
+  transactionStatus: "transaction_status",
+  organizationId: "organization_id",
+  createdBy: "created_by",
+  discountTotal: "discount_total",
+  taxTotal: "tax_total",
+  subTotal: "sub_total",
+  total: "total",
+  bcyDiscountTotal: "bcy_discount_total",
+  bcyTaxTotal: "bcy_tax_total",
+  bcySubTotal: "bcy_sub_total",
+  bcyTotal: "bcy_total",
+  invoicePaymentTermId: "invoice_payment_term_id",
+  status: "status",
+  syncStatus: "sync_status",
+  exchangeRate: "exchange_rate",
+};
+const InvoiceTableName = "Invoices";
+
+export { Invoice, InvoiceColumnNamesRaw, InvoiceTableName };
 export type {
   InvoiceIdType,
   InvoiceCreatable,

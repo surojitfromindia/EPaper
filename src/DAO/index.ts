@@ -11,7 +11,10 @@ import AccountsOfOrganizationDao from "./Accounts/AccountsOfOrganization.dao";
 import AccountTypesDao from "./Accounts/AccountTypes.dao";
 import AccountGroupsDao from "./Accounts/AccountGroups.dao";
 import ItemUnitDao from "./Settings/ItemUnit.dao";
-import InvoiceDao from "./Invoices/Invoice.dao";
+import InvoiceDao, {
+  InvoiceDashboardDAO,
+  InvoiceGetAllDAO,
+} from "./Invoices/Invoice.dao";
 import InvoiceLineItemDao from "./Invoices/InvoiceLineItem.dao";
 import PaymentTermDao from "./Settings/PaymentTerm.dao";
 import InvoicePaymentTermDao from "./Invoices/InvoicePaymentTerm.dao";
@@ -56,4 +59,6 @@ export {
   InvoiceDao,
   InvoiceLineItemDao,
   InvoicePaymentTermDao,
+  InvoiceDashboardDAO,
+  InvoiceGetAllDAO,
 };

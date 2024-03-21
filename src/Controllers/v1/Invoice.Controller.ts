@@ -1,5 +1,6 @@
 import { Request } from "express";
 import {
+  InvoiceDashboardService,
   InvoiceEditPageService,
   InvoiceFilterService,
   InvoiceService,
@@ -111,6 +112,20 @@ const getInvoiceEditPageFromContactController = SuccessErrorWrapper(
   200,
 );
 
+const getInvoiceDashboardData = async (req: Request) => {
+  const clientInfo = req.clientInfo;
+  const invoiceService = new InvoiceDashboardService({
+    client_info: clientInfo,
+  });
+  const dashboardData = await invoiceService.getInvoiceDashboardData();
+  return { dashboardData };
+};
+const getInvoiceDashboardDataController = SuccessErrorWrapper(
+  getInvoiceDashboardData,
+  "done",
+  200,
+);
+
 export {
   createInvoiceController,
   getAnInvoiceController,
@@ -118,4 +133,5 @@ export {
   updateInvoiceController,
   getAllInvoiceController,
   getInvoiceEditPageFromContactController,
+  getInvoiceDashboardDataController,
 };

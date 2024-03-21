@@ -1,4 +1,4 @@
-import { Includeable, Op, Transaction } from "@sequelize/core";
+import { Includeable, Op, sql, Transaction } from "@sequelize/core";
 import {
   AccountsOfOrganization,
   Contacts,
@@ -9,12 +9,15 @@ import {
   TaxRates,
 } from "../../Models";
 import {
+  InvoiceColumnNamesRaw,
   InvoiceCreatable,
   InvoiceIdType,
+  InvoiceTableName,
 } from "../../Models/Invoice/Invoices.model";
 import { AllowArray } from "@sequelize/core/_non-semver-use-at-your-own-risk_/utils/types.d.ts";
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
+import sequelize from "../../Config/DataBase.Config";
 
 const INVOICE_CONTACT_DEFAULT_ATTRIBUTES = ["contactName"];
 const INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES = [
@@ -299,4 +302,32 @@ class InvoiceGetAllDAO {
   }
 }
 
-export { InvoiceGetAllDAO };
+class InvoiceDashboardDAO {
+  private readonly _organizationId: number;
+
+  constructor({ organization_id }: { organization_id: number }) {
+    this._organizationId = organization_id;
+  }
+
+  async getDueOverview() {
+    // need to get due today
+    // due within 30 days
+    // total overdue
+    const query_string = sql`
+      SELECT COALESCE(SUM(CASE WHEN ${InvoiceColumnNamesRaw.dueDate} = CURRENT_DATE THEN ${InvoiceColumnNamesRaw.bcyTotal} ELSE 0 END), 0) AS due_today,
+             COALESCE(SUM(CASE
+                            WHEN ${InvoiceColumnNamesRaw.dueDate} > CURRENT_DATE AND ${InvoiceColumnNamesRaw.dueDate} <= CURRENT_DATE + INTERVAL '30 days'
+                              THEN ${InvoiceColumnNamesRaw.bcyTotal}
+                            ELSE 0 END),
+                      0)                                                                                                                   AS due_within_30_days,
+             COALESCE(SUM(CASE WHEN ${InvoiceColumnNamesRaw.dueDate} < CURRENT_DATE THEN ${InvoiceColumnNamesRaw.bcyTotal} ELSE 0 END), 0) AS total_overdue
+      FROM ${InvoiceTableName}
+      where ${InvoiceColumnNamesRaw.organizationId} = ${this._organizationId}
+        AND ${InvoiceColumnNamesRaw.status} = 'active'
+        AND ${InvoiceColumnNamesRaw.transactionStatus} = 'sent'
+    `;
+    return await sequelize.query(query_string, {});
+  }
+}
+
+export { InvoiceGetAllDAO, InvoiceDashboardDAO };

@@ -6,6 +6,7 @@ const invoiceRoute = Router();
 invoiceRoute
   .post("/", InvoiceController.createInvoiceController)
   .get("/", InvoiceController.getAllInvoiceController)
+  .get("/dashboard", InvoiceController.getInvoiceDashboardDataController)
   .get(
     "/edit_page/from_contact",
     InvoiceController.getInvoiceEditPageFromContactController,

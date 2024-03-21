@@ -32,6 +32,7 @@ import { RegularItemAutoCompleteService } from "./RegularItemServices/RegularIte
 import { PageContextService } from "./FilterAndPaginationServices/PageContext.service";
 
 import { InvoiceFilterService } from "./FilterAndPaginationServices";
+import { InvoiceDashboardService } from "./Invoice/InvoiceDashBoard.service";
 
 export {
   UserService,
@@ -64,4 +65,5 @@ export {
   CustomViewPreferenceService,
   PageContextService,
   InvoiceFilterService,
+  InvoiceDashboardService,
 };
