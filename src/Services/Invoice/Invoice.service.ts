@@ -209,8 +209,8 @@ class InvoiceService {
     filter_by,
     skip,
     limit,
-    sort_column,
-    sort_order,
+    sort_columns,
+    sort_orders,
   }: InvoiceGetAllProps) {
     const organizationId = this._organizationId;
     const getAllDAO = await InvoiceDao.getAllDAO({
@@ -220,7 +220,7 @@ class InvoiceService {
     });
     const dao = getAllDAO
       .applyFilterBy(filter_by)
-      .applySortBy(sort_column, sort_order === "D" ? "DESC" : "ASC");
+      .applySortBy(sort_columns[0], sort_orders[0] === "D" ? "DESC" : "ASC");
 
     const invoices = await dao.getAll();
     const hasMorePage = await dao.hasMore();
@@ -231,8 +231,8 @@ class InvoiceService {
       current_count: invoices.length,
     }).setHasMorePage(hasMorePage);
     const pageContext = pageContextService.get("invoice")({
-      sort_column,
-      sort_order,
+      sort_column: sort_columns[0], // sort_columns[0] is the first column
+      sort_order: sort_orders[0], // sort_orders[0] is the first order
       filter_by,
     });
 

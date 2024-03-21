@@ -24,6 +24,10 @@ class MathLib {
   getDecimalFromPercentage(number: number) {
     return MathLib.getDecimalFromPercentage(this.precision, number);
   }
+
+  static parseNumber(number: number | string) {
+    return MathJs.number(number);
+  }
 }
 
 export { MathLib };

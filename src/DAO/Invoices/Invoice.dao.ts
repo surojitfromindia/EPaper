@@ -1,4 +1,4 @@
-import { Includeable, Op, sql, Transaction } from "@sequelize/core";
+import { Includeable, Op, QueryTypes, sql, Transaction } from "@sequelize/core";
 import {
   AccountsOfOrganization,
   Contacts,
@@ -314,20 +314,43 @@ class InvoiceDashboardDAO {
     // due within 30 days
     // total overdue
     const query_string = sql`
-      SELECT COALESCE(SUM(CASE WHEN ${InvoiceColumnNamesRaw.dueDate} = CURRENT_DATE THEN ${InvoiceColumnNamesRaw.bcyTotal} ELSE 0 END), 0) AS due_today,
+      SELECT COALESCE(SUM(CASE WHEN ${idn(
+        InvoiceColumnNamesRaw.dueDate,
+      )} = CURRENT_DATE THEN ${idn(
+        InvoiceColumnNamesRaw.bcyTotal,
+      )} ELSE 0 END), 0)                                                                                                                   AS due_today,
              COALESCE(SUM(CASE
-                            WHEN ${InvoiceColumnNamesRaw.dueDate} > CURRENT_DATE AND ${InvoiceColumnNamesRaw.dueDate} <= CURRENT_DATE + INTERVAL '30 days'
-                              THEN ${InvoiceColumnNamesRaw.bcyTotal}
+                            WHEN ${idn(
+                              InvoiceColumnNamesRaw.dueDate,
+                            )} > CURRENT_DATE AND ${idn(
+                              InvoiceColumnNamesRaw.dueDate,
+                            )} <= CURRENT_DATE + INTERVAL '30 days'
+                              THEN ${idn(InvoiceColumnNamesRaw.bcyTotal)}
                             ELSE 0 END),
                       0)                                                                                                                   AS due_within_30_days,
-             COALESCE(SUM(CASE WHEN ${InvoiceColumnNamesRaw.dueDate} < CURRENT_DATE THEN ${InvoiceColumnNamesRaw.bcyTotal} ELSE 0 END), 0) AS total_overdue
-      FROM ${InvoiceTableName}
-      where ${InvoiceColumnNamesRaw.organizationId} = ${this._organizationId}
-        AND ${InvoiceColumnNamesRaw.status} = 'active'
-        AND ${InvoiceColumnNamesRaw.transactionStatus} = 'sent'
+             COALESCE(SUM(CASE WHEN ${idn(
+               InvoiceColumnNamesRaw.dueDate,
+             )} < CURRENT_DATE THEN ${idn(
+               InvoiceColumnNamesRaw.bcyTotal,
+             )} ELSE 0 END), 0)                                                                                                            AS total_overdue
+      FROM ${idn(InvoiceTableName)}
+      where ${idn(InvoiceColumnNamesRaw.organizationId)} = ${
+        this._organizationId
+      }
+        AND ${idn(InvoiceColumnNamesRaw.status)} = 'active'
+        AND ${idn(InvoiceColumnNamesRaw.transactionStatus)} = 'sent'
     `;
-    return await sequelize.query(query_string, {});
+    const raw_data = (await sequelize.query(query_string, {
+      type: QueryTypes.SELECT,
+    })) as any[];
+    return {
+      due_today: raw_data[0].due_today as string,
+      due_within_30_days: raw_data[0].due_within_30_days as string,
+      total_overdue: raw_data[0].total_overdue as string,
+    };
   }
 }
 
 export { InvoiceGetAllDAO, InvoiceDashboardDAO };
+
+const idn = (v: string) => sql.identifier(v);

@@ -4,9 +4,9 @@ import * as InvoiceController from "../../Controllers/v1/Invoice.Controller";
 const invoiceRoute = Router();
 
 invoiceRoute
+  .get("/dashboard", InvoiceController.getInvoiceDashboardDataController)
   .post("/", InvoiceController.createInvoiceController)
   .get("/", InvoiceController.getAllInvoiceController)
-  .get("/dashboard", InvoiceController.getInvoiceDashboardDataController)
   .get(
     "/edit_page/from_contact",
     InvoiceController.getInvoiceEditPageFromContactController,

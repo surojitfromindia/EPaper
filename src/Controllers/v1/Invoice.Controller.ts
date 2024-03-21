@@ -118,7 +118,11 @@ const getInvoiceDashboardData = async (req: Request) => {
     client_info: clientInfo,
   });
   const dashboardData = await invoiceService.getInvoiceDashboardData();
-  return { dashboardData };
+  return {
+    dash_board_data: InvoiceDTO.toInvoiceDashboard({
+      dash_board_data: dashboardData,
+    }),
+  };
 };
 const getInvoiceDashboardDataController = SuccessErrorWrapper(
   getInvoiceDashboardData,
