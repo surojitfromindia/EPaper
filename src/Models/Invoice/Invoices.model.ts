@@ -103,10 +103,6 @@ class Invoice extends Model<
   @NotNull
   declare isInclusiveTax: boolean;
 
-  @Attribute(DataTypes.ENUM("sent", "draft", "void"))
-  @NotNull
-  declare transactionStatus: "sent" | "draft" | "void";
-
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare organizationId: number;
@@ -199,6 +195,25 @@ class Invoice extends Model<
     }
     return value;
   }
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get balance(): number {
+    const value = this.getDataValue("balance");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
+
+  @Attribute(DataTypes.DECIMAL)
+  @NotNull
+  get bcyBalance(): number {
+    const value = this.getDataValue("bcyBalance");
+    if (value) {
+      return MathLib.getWithPrecision(MAXIMUM_NUMERIC_PRECISION, value);
+    }
+    return value;
+  }
 
   @HasMany(() => InvoiceLineItem, "invoiceId")
   declare LineItems: NonAttribute<InvoiceLineItem[]>;
@@ -208,6 +223,14 @@ class Invoice extends Model<
   declare invoicePaymentTermId: number;
   @BelongsTo(() => InvoicePaymentTerm, "invoicePaymentTermId")
   declare InvoicePaymentTerm?: NonAttribute<InvoicePaymentTerm>;
+
+  @Attribute(DataTypes.ENUM("sent", "draft", "void"))
+  @NotNull
+  declare transactionStatus: "sent" | "draft" | "void";
+
+  @Attribute(DataTypes.ENUM("paid", "not_paid", "partially_paid"))
+  @NotNull
+  declare paymentStatus: "paid" | "not_paid" | "partially_paid";
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
@@ -277,6 +300,9 @@ const InvoiceColumnNamesRaw = {
   status: "status",
   syncStatus: "sync_status",
   exchangeRate: "exchange_rate",
+  balance: "balance",
+  bcyBalance: "bcy_balance",
+  paymentStatus: "payment_status",
 };
 const InvoiceTableName = "Invoices";
 

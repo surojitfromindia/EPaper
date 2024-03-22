@@ -73,12 +73,12 @@ const invoiceCustomViewSelectionColumns = [
   },
   // balance
   {
-    default_filter_order: -1,
+    default_filter_order: 7,
     is_mandatory: true,
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
-    value: "Balance",
+    value: "Balance due",
     key: "balance",
     alias: ["balance"],
     align: "right",
