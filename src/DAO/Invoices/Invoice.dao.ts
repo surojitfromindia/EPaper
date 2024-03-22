@@ -314,31 +314,37 @@ class InvoiceDashboardDAO {
     // due within 30 days
     // total overdue
     const query_string = sql`
-      SELECT COALESCE(SUM(CASE WHEN ${idn(
-        InvoiceColumnNamesRaw.dueDate,
-      )} = CURRENT_DATE THEN ${idn(
-        InvoiceColumnNamesRaw.bcyBalance,
-      )} ELSE 0 END), 0)                                                                                                                   AS due_today,
-             COALESCE(SUM(CASE
-                            WHEN ${idn(
-                              InvoiceColumnNamesRaw.dueDate,
-                            )} >= CURRENT_DATE AND ${idn(
-                              InvoiceColumnNamesRaw.dueDate,
-                            )} <= CURRENT_DATE + INTERVAL '30 days'
-                              THEN ${idn(InvoiceColumnNamesRaw.bcyBalance)}
-                            ELSE 0 END),
-                      0)                                                                                                                   AS due_within_30_days,
-             COALESCE(SUM(CASE WHEN ${idn(
-               InvoiceColumnNamesRaw.dueDate,
-             )} < CURRENT_DATE THEN ${idn(
-               InvoiceColumnNamesRaw.bcyBalance,
-             )} ELSE 0 END), 0)                                                                                                            AS total_overdue
-      FROM ${idn(InvoiceTableName)}
-      where ${idn(InvoiceColumnNamesRaw.organizationId)} = ${
-        this._organizationId
-      }
-        AND ${idn(InvoiceColumnNamesRaw.status)} = 'active'
-        AND ${idn(InvoiceColumnNamesRaw.transactionStatus)} = 'sent'
+        SELECT COALESCE(SUM(CASE WHEN ${idn(
+          InvoiceColumnNamesRaw.dueDate,
+        )} = CURRENT_DATE THEN ${idn(
+          InvoiceColumnNamesRaw.bcyBalance,
+        )} ELSE 0 END), 0)        AS due_today,
+               COALESCE(SUM(CASE
+                                WHEN ${idn(
+                                  InvoiceColumnNamesRaw.dueDate,
+                                )} >= CURRENT_DATE AND ${idn(
+                                  InvoiceColumnNamesRaw.dueDate,
+                                )} <= CURRENT_DATE + INTERVAL '30 days'
+                                    THEN ${idn(
+                                      InvoiceColumnNamesRaw.bcyBalance,
+                                    )}
+                                ELSE 0 END),
+                        0)        AS due_within_30_days,
+               COALESCE(SUM(CASE WHEN ${idn(
+                 InvoiceColumnNamesRaw.dueDate,
+               )} < CURRENT_DATE THEN ${idn(
+                 InvoiceColumnNamesRaw.bcyBalance,
+               )} ELSE 0 END), 0) AS total_overdue,
+
+               SUM(${idn(
+                 InvoiceColumnNamesRaw.bcyBalance,
+               )})                AS total_outstanding
+        FROM ${idn(InvoiceTableName)}
+        where ${idn(InvoiceColumnNamesRaw.organizationId)} = ${
+          this._organizationId
+        }
+          AND ${idn(InvoiceColumnNamesRaw.status)} = 'active'
+          AND ${idn(InvoiceColumnNamesRaw.transactionStatus)} = 'sent'
     `;
     const raw_data = (await sequelize.query(query_string, {
       type: QueryTypes.SELECT,
@@ -347,6 +353,7 @@ class InvoiceDashboardDAO {
       due_today: raw_data[0].due_today as string,
       due_within_30_days: raw_data[0].due_within_30_days as string,
       total_overdue: raw_data[0].total_overdue as string,
+      total_outstanding: raw_data[0].total_outstanding as string,
     };
   }
 }

@@ -202,6 +202,7 @@ class InvoiceDTO {
       due_today: dash_board_data.due_today,
       due_within_30_days: dash_board_data.due_within_30_days,
       total_overdue: dash_board_data.total_overdue,
+      total_outstanding: dash_board_data.total_outstanding,
     };
     if (ValidityUtil.isNotEmpty(dash_board_data.Currency)) {
       const currency = CurrencyDTO.toCurrency(dash_board_data.Currency);
@@ -210,6 +211,7 @@ class InvoiceDTO {
         due_today_formatted: `${currency.currency_symbol}${dash_board_data.due_today}`,
         due_within_30_days_formatted: `${currency.currency_symbol}${dash_board_data.due_within_30_days}`,
         total_overdue_formatted: `${currency.currency_symbol}${dash_board_data.total_overdue}`,
+        total_outstanding_formatted: `${currency.currency_symbol}${dash_board_data.total_outstanding}`,
       });
     }
     return basic_data;

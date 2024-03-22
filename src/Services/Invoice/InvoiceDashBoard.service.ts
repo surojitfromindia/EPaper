@@ -8,6 +8,7 @@ type InvoiceDashboardData = {
   due_today: number;
   due_within_30_days: number;
   total_overdue: number;
+  total_outstanding: number;
   Currency: CurrencyType;
 };
 
@@ -33,6 +34,7 @@ class InvoiceDashboardService {
       due_today: MathLib.parseNumber(data.due_today),
       due_within_30_days: MathLib.parseNumber(data.due_within_30_days),
       total_overdue: MathLib.parseNumber(data.total_overdue),
+      total_outstanding: MathLib.parseNumber(data.total_outstanding),
       Currency: organization.Currency,
     };
   }
