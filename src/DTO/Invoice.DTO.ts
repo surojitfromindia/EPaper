@@ -100,6 +100,7 @@ class InvoiceDTO {
       sub_total: invoice.subTotal,
       total: invoice.total,
       exchange_rate: invoice.exchangeRate,
+      balance: invoice.balance,
     });
     if (invoice.Contact) {
       const contact = ContactDTO.toTransactionContact(invoice.Contact);
@@ -130,6 +131,7 @@ class InvoiceDTO {
         tax_total_formatted: `${currency.currency_symbol}${invoice.taxTotal}`,
         discount_total_formatted: `${currency.currency_symbol}${invoice.discountTotal}`,
         exchange_rate_formatted: `${invoice.exchangeRate}`,
+        balance_formatted: `${currency.currency_symbol}${invoice.balance}`,
       });
     }
 

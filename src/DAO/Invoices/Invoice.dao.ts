@@ -317,21 +317,21 @@ class InvoiceDashboardDAO {
       SELECT COALESCE(SUM(CASE WHEN ${idn(
         InvoiceColumnNamesRaw.dueDate,
       )} = CURRENT_DATE THEN ${idn(
-        InvoiceColumnNamesRaw.bcyTotal,
+        InvoiceColumnNamesRaw.bcyBalance,
       )} ELSE 0 END), 0)                                                                                                                   AS due_today,
              COALESCE(SUM(CASE
                             WHEN ${idn(
                               InvoiceColumnNamesRaw.dueDate,
-                            )} > CURRENT_DATE AND ${idn(
+                            )} >= CURRENT_DATE AND ${idn(
                               InvoiceColumnNamesRaw.dueDate,
                             )} <= CURRENT_DATE + INTERVAL '30 days'
-                              THEN ${idn(InvoiceColumnNamesRaw.bcyTotal)}
+                              THEN ${idn(InvoiceColumnNamesRaw.bcyBalance)}
                             ELSE 0 END),
                       0)                                                                                                                   AS due_within_30_days,
              COALESCE(SUM(CASE WHEN ${idn(
                InvoiceColumnNamesRaw.dueDate,
              )} < CURRENT_DATE THEN ${idn(
-               InvoiceColumnNamesRaw.bcyTotal,
+               InvoiceColumnNamesRaw.bcyBalance,
              )} ELSE 0 END), 0)                                                                                                            AS total_overdue
       FROM ${idn(InvoiceTableName)}
       where ${idn(InvoiceColumnNamesRaw.organizationId)} = ${

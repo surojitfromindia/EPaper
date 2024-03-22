@@ -122,6 +122,10 @@ class InvoiceUpdateService {
         bcySubTotal: invoiceCalculateReturn.bcySubTotal,
         bcyTaxTotal: invoiceCalculateReturn.bcyTaxTotal,
         bcyTotal: invoiceCalculateReturn.bcyTotal,
+        // todo: after customer payment is done we need to update this code as well.
+        balance: invoiceCalculateReturn.total,
+        bcyBalance: invoiceCalculateReturn.bcyTotal,
+        paymentStatus: "not_paid",
       });
 
       // only a few line items will be updated, we separate them by identifying a key "id."

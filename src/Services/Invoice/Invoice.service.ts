@@ -118,6 +118,10 @@ class InvoiceService {
         bcySubTotal: invoiceCalculateReturn.bcySubTotal,
         bcyTaxTotal: invoiceCalculateReturn.bcyTaxTotal,
         bcyTotal: invoiceCalculateReturn.bcyTotal,
+        // on create balances should be the same as total
+        balance: invoiceCalculateReturn.total,
+        bcyBalance: invoiceCalculateReturn.bcyTotal,
+        paymentStatus: "not_paid",
       });
 
       // create the invoice
