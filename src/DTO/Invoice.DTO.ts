@@ -289,7 +289,7 @@ const dueDaysFormatted = (due_days: number, transaction_status: string) => {
   if (due_days > 0) {
     return `due in ${due_days} days`;
   } else if (due_days < 0) {
-    return `overdue ${Math.abs(due_days)} days ago`;
+    return `due ${Math.abs(due_days)} days ago`;
   } else {
     return "due today";
   }
