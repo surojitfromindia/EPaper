@@ -228,9 +228,9 @@ class Invoice extends Model<
   @NotNull
   declare transactionStatus: "sent" | "draft" | "void";
 
-  @Attribute(DataTypes.ENUM("paid", "not_paid", "partially_paid"))
+  @Attribute(DataTypes.ENUM("paid", "not_paid", "partial_paid"))
   @NotNull
-  declare paymentStatus: "paid" | "not_paid" | "partially_paid";
+  declare paymentStatus: "paid" | "not_paid" | "partial_paid";
 
   @Attribute(DataTypes.ENUM("active", "deleted"))
   @NotNull
