@@ -203,17 +203,34 @@ class InvoiceUpdateService {
           invoice_id: invoiceId,
           contact_id: contactId,
         });
-      await journalFactory.update(
-        {
-          invoice_id: invoiceId,
-          line_items_id_to_delete: lineItemIdsToDelete,
-          line_items_to_be_created: createdLineItems,
-          line_items_to_be_updated: updatedLineItems,
-        },
-        {
-          transaction: t1,
-        },
-      );
+      // if old invoice status is "draft" and new is "sent" we create the journal entries
+      if (
+        oldInvoice.transactionStatus === "draft" &&
+        updateInvoice.transactionStatus === "sent"
+      ) {
+        if (oldInvoice.transactionStatus === "draft") {
+          await journalFactory.create(
+            {
+              line_items: createdLineItems,
+            },
+            {
+              transaction: t1,
+            },
+          );
+        } else {
+          await journalFactory.update(
+            {
+              invoice_id: invoiceId,
+              line_items_id_to_delete: lineItemIdsToDelete,
+              line_items_to_be_created: createdLineItems,
+              line_items_to_be_updated: updatedLineItems,
+            },
+            {
+              transaction: t1,
+            },
+          );
+        }
+      }
 
       // update the balance
       await this.#balanceUpdate(
