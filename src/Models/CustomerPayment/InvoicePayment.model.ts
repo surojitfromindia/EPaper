@@ -111,4 +111,18 @@ class InvoicePaymentModel extends Model<
   }
 }
 
-export { InvoicePaymentModel };
+const InvoicePaymentsColumnNamesRaw = {
+  id: "id",
+  applyDate: "apply_date",
+  paymentId: "payment_id",
+  invoiceId: "invoice_id",
+  organizationId: "organization_id",
+  status: "status",
+  syncStatus: "sync_status",
+  paymentType: "payment_type",
+  appliedAmount: "applied_amount",
+  bcyAppliedAmount: "bcy_applied_amount",
+  exchangeGainLoss: "exchange_gain_loss",
+  bcyExchangeGainLoss: "bcy_exchange_gain_loss",
+};
+export { InvoicePaymentModel, InvoicePaymentsColumnNamesRaw };

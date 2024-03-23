@@ -196,6 +196,10 @@ class InvoiceDao {
     });
     return ValidityUtil.isNotEmpty(invoice);
   }
+
+  async getLatestBalance({ invoice_id, organization_id }) {
+    // todo:
+  }
 }
 
 export default Object.freeze(new InvoiceDao());
@@ -255,6 +259,13 @@ class InvoiceGetAllDAO {
       [sort_column, sort_order],
       ["id", "DESC"],
     ];
+    return this;
+  }
+
+  ofContacts(contactIds: number[]) {
+    this.query.contactId = {
+      [Op.in]: contactIds,
+    };
     return this;
   }
 
