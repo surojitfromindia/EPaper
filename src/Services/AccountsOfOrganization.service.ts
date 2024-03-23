@@ -293,6 +293,8 @@ class AccountsOfOrganizationService {
       defaultTaxAccountId: accountSlugIndexed["tax_payable"]?.id ?? null,
       defaultUnearnedRevenueAccountId:
         accountSlugIndexed["unearned_revenue"]?.id ?? null,
+      defaultBankFeeAndChargesAccountId:
+        accountSlugIndexed["bank_fees_and_charges"]?.id ?? null,
     };
     await AccountsConfigDao.create(
       { accounts_config_details: accountConfig },

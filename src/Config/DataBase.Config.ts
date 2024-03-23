@@ -13,17 +13,20 @@ import {
   Contacts,
   CurrencyExchangeRate,
   CurrencyModel,
+  CustomerPaymentModel,
   FeaturesPreferenceModel,
   GeneralPreferenceModel,
   Invoice,
   InvoiceJournalModel,
   InvoiceLineItem,
+  InvoicePaymentModel,
   InvoicePaymentTerm,
   InvoicePreferencesModel,
   ItemPreference,
   ItemUnit,
   OrganizationBasic,
   OrganizationsUsers,
+  PaymentModeModel,
   PaymentTermModel,
   RegularItems,
   TaxRates,
@@ -73,6 +76,9 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     InvoicePreferencesModel,
     ContactBalancesModel,
     InvoiceJournalModel,
+    PaymentModeModel,
+    CustomerPaymentModel,
+    InvoicePaymentModel,
   ],
 });
 
@@ -81,7 +87,7 @@ async function syncModel() {
   const force = false;
   // await Currency.sync({ alter, force });
   // await CurrencyExchangeRate.sync({ alter, force });
-  // await Invoice.sync({ alter, force });
+  // await InvoiceServices.sync({ alter, force });
   // await InvoiceLineItem.sync({ alter, force });
   // await Contacts.sync({ alter, force });
   // await ContactPerson.sync({ alter, force });
@@ -92,9 +98,12 @@ async function syncModel() {
   // await InvoicePreferencesModel.sync({ alter, force });
   // await ContactBalancesModel.sync({ alter, force });
   // await AccountsOfTemplate.sync({ alter, force });
-  // await AccountsOfOrganization.sync({ alter, force: true });
-  // await AccountsConfig.sync({ alter, force: true });
+  // await AccountsOfOrganization.sync({ alter, force });
+  // await AccountsConfig.sync({ alter, force });
   // await InvoiceJournalModel.sync({ alter });
+  // await PaymentModeModel.sync({ alter, force });
+  // await CustomerPaymentModel.sync({ alter, force });
+  // await InvoicePaymentModel.sync({ alter, force });
 }
 
 syncModel().catch((err) => console.log(err));

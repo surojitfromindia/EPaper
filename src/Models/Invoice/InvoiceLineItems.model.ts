@@ -231,7 +231,6 @@ type InvoiceLineItemCreatableBasic = Omit<
   | "discountAmount"
   | "itemTotal"
   | "itemTotalTaxIncluded"
-  | "createdBy"
   | "organizationId"
   | "status"
   | "invoiceId"

@@ -18,7 +18,7 @@ const invoiceCustomViewSelectionColumns = [
     is_editable: true,
     is_default_select_column: true,
     is_sortable: true,
-    value: "Invoice#",
+    value: "InvoiceServices#",
     key: "invoice_number",
     alias: [],
     align: "left",

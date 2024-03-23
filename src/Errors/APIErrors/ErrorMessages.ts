@@ -31,7 +31,7 @@ const AutoNumberSeriesServiceErrorMessages = {
     code: "AUTO_NUMBER_GROUP.3",
   },
   INVOICE_NUMBER_ALREADY_EXISTS: {
-    message: "Invoice number already exists",
+    message: "InvoiceServices number already exists",
     code: "AUTO_NUMBER_GROUP.4",
   },
   CREDIT_NOTE_NUMBER_ALREADY_EXISTS: {
@@ -46,7 +46,7 @@ const AutoNumberSeriesServiceErrorMessages = {
 
 const InvoiceServiceErrorMessages = {
   INVOICE_NUMBER_ALREADY_EXISTS: {
-    message: "Invoice number already exists",
+    message: "InvoiceServices number already exists",
     code: "INVOICE.1",
   },
 };

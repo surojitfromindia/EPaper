@@ -26,6 +26,9 @@ import { FeaturesPreferenceModel } from "./Preference/FeaturesPreference.model";
 import { InvoicePreferencesModel } from "./Preference/InvoicePreferencesModel";
 import { ContactBalancesModel } from "./Contact/ContactBalances.model";
 import { InvoiceJournalModel } from "./Invoice/InvoiceJournal.model";
+import { PaymentModeModel } from "./PaymentMode/PaymentMode.model";
+import { CustomerPaymentModel } from "./CustomerPayment/CustomerPayment.model";
+import { InvoicePaymentModel } from "./CustomerPayment/InvoicePayment.model";
 
 export {
   User,
@@ -56,4 +59,7 @@ export {
   InvoicePreferencesModel,
   ContactBalancesModel,
   InvoiceJournalModel,
+  InvoicePaymentModel,
+  CustomerPaymentModel,
+  PaymentModeModel,
 };

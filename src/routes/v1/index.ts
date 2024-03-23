@@ -15,6 +15,7 @@ import invoiceRoute from "./Invoice.route";
 import autoCompleteRoute from "./AutoComplete.route";
 import contactRoute from "./Contact.route";
 import customViewRoute from "./CustomView.route";
+import customerPaymentRoute from "./CustomerPayment.route";
 
 const v1Router = Router();
 v1Router.use(authorizeClient); // check the validity of user/client
@@ -31,4 +32,5 @@ v1Router.use("/invoices", invoiceRoute);
 v1Router.use("/auto_complete", autoCompleteRoute);
 v1Router.use("/contacts", contactRoute);
 v1Router.use("/custom_views", customViewRoute);
+v1Router.use("/customer_payments", customerPaymentRoute);
 export default v1Router;

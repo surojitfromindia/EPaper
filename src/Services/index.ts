@@ -20,10 +20,10 @@ import PreferenceService, {
   InvoicePreferenceService,
   ItemPreferenceService,
 } from "./PreferenceServices/Preference.service";
-import InvoiceService from "./Invoice/Invoice.service";
+import InvoiceService from "././InvoiceServices/Invoice.service";
 import { AutoCompleteService } from "./AutoComplete.service";
-import InvoiceUpdateService from "./Invoice/InvoiceUpdate.service";
-import { InvoiceEditPageService } from "./Invoice/Invoice.editPage.service";
+import InvoiceUpdateService from "././InvoiceServices/InvoiceUpdate.service";
+import { InvoiceEditPageService } from "./InvoiceServices/Invoice.editPage.service";
 import { ContactAutoCompleteService } from "./Contact/Contact.AutoComplete.service";
 import { ContactService } from "./Contact/Contact.service";
 import { ContactEditPageService } from "./Contact/Contact.editPage.service";
@@ -32,7 +32,8 @@ import { RegularItemAutoCompleteService } from "./RegularItemServices/RegularIte
 import { PageContextService } from "./FilterAndPaginationServices/PageContext.service";
 
 import { InvoiceFilterService } from "./FilterAndPaginationServices";
-import { InvoiceDashboardService } from "./Invoice/InvoiceDashBoard.service";
+import { InvoiceDashboardService } from "./InvoiceServices/InvoiceDashBoard.service";
+import { CustomerPaymentService } from "./CustomerPaymentServices/CustomerPayment.service";
 
 export {
   UserService,
@@ -66,4 +67,5 @@ export {
   PageContextService,
   InvoiceFilterService,
   InvoiceDashboardService,
+  CustomerPaymentService,
 };

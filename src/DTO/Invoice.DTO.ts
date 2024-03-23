@@ -15,7 +15,7 @@ import { InvoiceLineItemCreatableBasic } from "../Models/Invoice/InvoiceLineItem
 import { DateUtil } from "../Utils/DateUtil";
 import { DEFAULT_DATE_FORMAT } from "../Constants/DateFormat.Constant";
 import { ValidityUtil } from "../Utils/ValidityUtil";
-import { InvoiceDashboardData } from "../Services/Invoice/InvoiceDashBoard.service";
+import { InvoiceDashboardData } from "../Services/./InvoiceServices/InvoiceDashBoard.service";
 
 class InvoiceDTO {
   static toInvoiceEditPage({

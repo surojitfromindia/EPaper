@@ -61,6 +61,7 @@ class AccountsConfig extends Model<
   // 14. opening balance account
   // 15. retained earnings account
   // 16. opening balance adjustment account
+  // 17. default bank fee and charges account
   @Attribute(DataTypes.INTEGER)
   @NotNull
   declare defaultTaxAccountId: number;
@@ -165,6 +166,12 @@ class AccountsConfig extends Model<
 
   @Attribute(DataTypes.INTEGER)
   @NotNull
+  declare defaultBankFeeAndChargesAccountId: number;
+  @BelongsTo(() => AccountsOfOrganization, "defaultBankFeeAndChargesAccountId")
+  declare DefaultBankFeeAndChargesAccount?: NonAttribute<AccountsOfOrganization>;
+
+  @Attribute(DataTypes.INTEGER)
+  @NotNull
   declare organizationId: number;
 }
 
@@ -189,6 +196,7 @@ type AccountConfigType = {
   defaultOpeningBalanceOffsetAccountId: number;
   defaultRetainedEarningsAccountId: number;
   defaultOpeningBalanceAdjustmentsAccountId: number;
+  defaultBankFeeAndChargesAccountId: number;
 };
 type AccountConfigCreatableType = Omit<AccountConfigType, "id" | "status">;
 
