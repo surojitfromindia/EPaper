@@ -1,10 +1,18 @@
-import { Includeable, Op, QueryTypes, sql, Transaction } from "@sequelize/core";
+import {
+  Includeable,
+  Lock,
+  Op,
+  QueryTypes,
+  sql,
+  Transaction,
+} from "@sequelize/core";
 import {
   AccountsOfOrganization,
   Contacts,
   CurrencyModel,
   Invoice,
   InvoiceLineItem,
+  InvoicePaymentModel,
   InvoicePaymentTerm,
   TaxRates,
 } from "../../Models";
@@ -18,6 +26,10 @@ import { AllowArray } from "@sequelize/core/_non-semver-use-at-your-own-risk_/ut
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
 import sequelize from "../../Config/DataBase.Config";
+import {
+  InvoicePaymentsColumnNamesRaw,
+  InvoicePaymentsTableName,
+} from "../../Models/CustomerPayment/InvoicePayment.model";
 
 const INVOICE_CONTACT_DEFAULT_ATTRIBUTES = ["contactName"];
 const INVOICE_LINE_ITEM_DEFAULT_ATTRIBUTES = [
@@ -68,11 +80,7 @@ type InvoiceCreateProps = {
 
 type InvoiceListProps = {
   organization_id: OrganizationBasicIdType;
-  sort_column?: string;
-  sort_order?: "DESC" | "ASC";
-  limit: number;
   skip: number;
-  filter_by?: string;
 };
 
 class InvoiceDao {
@@ -92,8 +100,8 @@ class InvoiceDao {
     );
   }
 
-  async getAllDAO({ organization_id, limit, skip }: InvoiceListProps) {
-    return new InvoiceGetAllDAO({ organization_id, limit, skip });
+  async getAllDAO({ organization_id, skip }: InvoiceListProps) {
+    return new InvoiceGetAllDAO({ organization_id, skip });
   }
 
   async update(
@@ -124,6 +132,67 @@ class InvoiceDao {
       organization_id,
       include_line_items: true,
     });
+  }
+
+  async isInvoiceNumberExists({ organization_id, invoice_number }) {
+    const invoice = await Invoice.findOne({
+      where: {
+        organizationId: organization_id,
+        invoiceNumber: invoice_number,
+      },
+      attributes: ["id", "invoiceNumber"],
+    });
+    return ValidityUtil.isNotEmpty(invoice);
+  }
+
+  async getLatestBalanceForUpdate(
+    { invoice_id, organization_id },
+    { transaction },
+  ) {
+    // todo: need a work around here.
+    const lock_rows_query = await InvoicePaymentModel.findAll({
+      where: {
+        invoiceId: invoice_id,
+        organizationId: organization_id,
+        status: "active",
+      },
+      attributes: ["id"],
+      lock: Lock.UPDATE,
+      transaction,
+    });
+    const query_string = sql`
+      select ${idn(
+        InvoicePaymentsColumnNamesRaw.invoiceId,
+      )}         as invoice_id,
+             sum(${idn(
+               InvoicePaymentsColumnNamesRaw.appliedAmount,
+             )}) as total_applied_amount,
+             sum(${idn(
+               InvoicePaymentsColumnNamesRaw.bcyAppliedAmount,
+             )}) as total_bcy_applied_amount
+      from ${idn(InvoicePaymentsTableName)}
+      where ${idn(InvoicePaymentsColumnNamesRaw.invoiceId)} = ${invoice_id}
+        and ${idn(
+          InvoicePaymentsColumnNamesRaw.organizationId,
+        )} = ${organization_id}
+        and ${idn(InvoicePaymentsColumnNamesRaw.status)} = 'active'
+      group by ${idn(InvoicePaymentsColumnNamesRaw.invoiceId)}
+    `;
+    const raw_data = (await sequelize.query(query_string, {
+      raw: true,
+      transaction,
+      type: QueryTypes.SELECT,
+    })) as any[];
+    if (ValidityUtil.isEmpty(raw_data)) {
+      return {
+        total_applied_amount: "0",
+        total_bcy_applied_amount: "0",
+      };
+    }
+    return {
+      total_applied_amount: raw_data[0].total_applied_amount as string,
+      total_bcy_applied_amount: raw_data[0].total_bcy_applied_amount as string,
+    };
   }
 
   async #getInvoiceById({
@@ -185,21 +254,6 @@ class InvoiceDao {
       ],
     });
   }
-
-  async isInvoiceNumberExists({ organization_id, invoice_number }) {
-    const invoice = await Invoice.findOne({
-      where: {
-        organizationId: organization_id,
-        invoiceNumber: invoice_number,
-      },
-      attributes: ["id", "invoiceNumber"],
-    });
-    return ValidityUtil.isNotEmpty(invoice);
-  }
-
-  async getLatestBalance({ invoice_id, organization_id }) {
-    // todo:
-  }
 }
 
 export default Object.freeze(new InvoiceDao());
@@ -207,6 +261,7 @@ export default Object.freeze(new InvoiceDao());
 class InvoiceGetAllDAO {
   private readonly _organizationId: OrganizationBasicIdType;
 
+  private readonly skip: number;
   private readonly query: Record<string, any> = {
     status: "active",
   };
@@ -214,19 +269,22 @@ class InvoiceGetAllDAO {
     ["issue_date", "DESC"],
     ["id", "DESC"],
   ];
-  private readonly limit: number;
-  private readonly skip: number;
+  private limit: number;
 
   private isDataFetched: boolean = false;
   private _filterInvoicesAndExtra: Invoice[] = [];
 
-  constructor({ organization_id, limit, skip }) {
+  constructor({ organization_id, skip }) {
     this._organizationId = organization_id;
-    this.limit = limit;
     this.skip = skip;
     this.query = {
       organizationId: organization_id,
     };
+  }
+
+  applyLimit(limit: number) {
+    this.limit = limit;
+    return this;
   }
 
   applyFilterBy(filter_by: string) {
@@ -235,12 +293,16 @@ class InvoiceGetAllDAO {
         break;
       }
       case "Status.Draft": {
-        this.query.transaction_status = "draft";
+        this.query.transactionStatus = "draft";
+        break;
+      }
+      case "Status.Sent": {
+        this.query.transactionStatus = "sent";
         break;
       }
       case "Status.Overdue":
         {
-          this.query.transaction_status = "sent";
+          this.query.transactionStatus = "sent";
           // and due date is less than today
           this.query.dueDate = {
             [Op.lt]: new Date(),
@@ -269,6 +331,13 @@ class InvoiceGetAllDAO {
     return this;
   }
 
+  ofInvoiceIds(invoiceIds: number[]) {
+    this.query.id = {
+      [Op.in]: invoiceIds,
+    };
+    return this;
+  }
+
   async hasMore() {
     if (this.isDataFetched) {
       return this._filterInvoicesAndExtra.length > this.limit;
@@ -278,11 +347,11 @@ class InvoiceGetAllDAO {
   }
 
   async getAll() {
-    let filterInvoicesAndExtra = [];
+    let filterInvoicesAndExtra: Invoice[] = [];
     if (this.isDataFetched) {
       filterInvoicesAndExtra = [...this._filterInvoicesAndExtra];
     } else {
-      filterInvoicesAndExtra = await Invoice.findAll({
+      const findAllQ: any = {
         where: this.query,
         include: [
           {
@@ -298,8 +367,12 @@ class InvoiceGetAllDAO {
         ],
         order: this.order,
         offset: this.skip,
-        limit: this.limit + 1,
-      });
+      };
+      if (ValidityUtil.isNotEmpty(this.limit)) {
+        findAllQ.limit = this.limit + 1;
+      }
+      filterInvoicesAndExtra = await Invoice.findAll(findAllQ);
+
       this.isDataFetched = true;
       this._filterInvoicesAndExtra = [...filterInvoicesAndExtra];
     }
@@ -325,37 +398,35 @@ class InvoiceDashboardDAO {
     // due within 30 days
     // total overdue
     const query_string = sql`
-        SELECT COALESCE(SUM(CASE WHEN ${idn(
-          InvoiceColumnNamesRaw.dueDate,
-        )} = CURRENT_DATE THEN ${idn(
-          InvoiceColumnNamesRaw.bcyBalance,
-        )} ELSE 0 END), 0)        AS due_today,
-               COALESCE(SUM(CASE
-                                WHEN ${idn(
-                                  InvoiceColumnNamesRaw.dueDate,
-                                )} >= CURRENT_DATE AND ${idn(
-                                  InvoiceColumnNamesRaw.dueDate,
-                                )} <= CURRENT_DATE + INTERVAL '30 days'
-                                    THEN ${idn(
-                                      InvoiceColumnNamesRaw.bcyBalance,
-                                    )}
-                                ELSE 0 END),
-                        0)        AS due_within_30_days,
-               COALESCE(SUM(CASE WHEN ${idn(
-                 InvoiceColumnNamesRaw.dueDate,
-               )} < CURRENT_DATE THEN ${idn(
-                 InvoiceColumnNamesRaw.bcyBalance,
-               )} ELSE 0 END), 0) AS total_overdue,
+      SELECT COALESCE(SUM(CASE WHEN ${idn(
+        InvoiceColumnNamesRaw.dueDate,
+      )} = CURRENT_DATE THEN ${idn(
+        InvoiceColumnNamesRaw.bcyBalance,
+      )} ELSE 0 END), 0)        AS due_today,
+             COALESCE(SUM(CASE
+                            WHEN ${idn(
+                              InvoiceColumnNamesRaw.dueDate,
+                            )} >= CURRENT_DATE AND ${idn(
+                              InvoiceColumnNamesRaw.dueDate,
+                            )} <= CURRENT_DATE + INTERVAL '30 days'
+                              THEN ${idn(InvoiceColumnNamesRaw.bcyBalance)}
+                            ELSE 0 END),
+                      0)        AS due_within_30_days,
+             COALESCE(SUM(CASE WHEN ${idn(
+               InvoiceColumnNamesRaw.dueDate,
+             )} < CURRENT_DATE THEN ${idn(
+               InvoiceColumnNamesRaw.bcyBalance,
+             )} ELSE 0 END), 0) AS total_overdue,
 
-               SUM(${idn(
-                 InvoiceColumnNamesRaw.bcyBalance,
-               )})                AS total_outstanding
-        FROM ${idn(InvoiceTableName)}
-        where ${idn(InvoiceColumnNamesRaw.organizationId)} = ${
-          this._organizationId
-        }
-          AND ${idn(InvoiceColumnNamesRaw.status)} = 'active'
-          AND ${idn(InvoiceColumnNamesRaw.transactionStatus)} = 'sent'
+             SUM(${idn(
+               InvoiceColumnNamesRaw.bcyBalance,
+             )})                AS total_outstanding
+      FROM ${idn(InvoiceTableName)}
+      where ${idn(InvoiceColumnNamesRaw.organizationId)} = ${
+        this._organizationId
+      }
+        AND ${idn(InvoiceColumnNamesRaw.status)} = 'active'
+        AND ${idn(InvoiceColumnNamesRaw.transactionStatus)} = 'sent'
     `;
     const raw_data = (await sequelize.query(query_string, {
       type: QueryTypes.SELECT,

@@ -7,6 +7,8 @@ import { IAutoNumberEntityTypes } from "../../Models/AutoNumberSeries/AutoNumber
 import { AutoNumberSeriesServiceErrorMessages } from "../../Errors/APIErrors/ErrorMessages";
 import CodedError from "../../Errors/APIErrors/CodedError";
 import { Transaction } from "@sequelize/core";
+import { ValidityUtil } from "../../Utils/ValidityUtil";
+import { AutoNumberGroupsModel } from "Models";
 
 class AutoNumberSeriesService {
   private readonly _organizationId: OrganizationBasicIdType;
@@ -79,7 +81,7 @@ class AutoNumberSeriesService {
 
 type GenerateNextNumberProps = {
   entity_type: IAutoNumberEntityTypes;
-  auto_number_group_id: number;
+  auto_number_group_id?: number;
 };
 type GenerateNextNumberOptions = {
   transaction: Transaction;
@@ -109,9 +111,15 @@ class AutoNumberGenerationService {
     { transaction }: GenerateNextNumberOptions,
   ): Promise<string | never> {
     // get the usable number from a group
-    const autoNumberGroup = await this._autoNumberGroupDAO.get({
-      auto_number_group_id,
-    });
+    let autoNumberGroup: AutoNumberGroupsModel;
+    if (ValidityUtil.isEmpty(auto_number_group_id)) {
+      autoNumberGroup = await this._autoNumberGroupDAO.getDefault();
+    } else {
+      autoNumberGroup = await this._autoNumberGroupDAO.get({
+        auto_number_group_id,
+      });
+    }
+
     // find the correct entity type
     const autoNumber = autoNumberGroup.AutoNumbers.find(
       (autoNumber) => autoNumber.entityType === entity_type,

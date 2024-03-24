@@ -220,9 +220,9 @@ class InvoiceService {
     const getAllDAO = await InvoiceDao.getAllDAO({
       organization_id: organizationId,
       skip,
-      limit,
     });
     const dao = getAllDAO
+      .applyLimit(limit)
       .applyFilterBy(filter_by)
       .applySortBy(sort_columns[0], sort_orders[0] === "D" ? "DESC" : "ASC");
 

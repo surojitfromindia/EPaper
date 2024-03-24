@@ -51,9 +51,21 @@ const InvoiceServiceErrorMessages = {
   },
 };
 
+const CustomerPaymentServiceErrorMessages = {
+  CUSTOMER_PAYMENT_NUMBER_ALREADY_EXISTS: {
+    message: "Customer payment number already exists",
+    code: "CUSTOMER_PAYMENT.1",
+  },
+  NEGATIVE_UNUSED_CREDIT_OF_PAYMENT: {
+    message: "Negative unused credit of payment",
+    code: "CUSTOMER_PAYMENT.2",
+  },
+};
+
 export {
   CodedErrorMessages,
   AutoNumberSeriesServiceErrorMessages,
   InvoiceServiceErrorMessages,
+  CustomerPaymentServiceErrorMessages,
 };
 export type { ICodedError };

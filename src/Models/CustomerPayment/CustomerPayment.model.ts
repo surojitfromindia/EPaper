@@ -189,7 +189,7 @@ type CustomerPaymentCreatable = {
   autoNumberGroupId: number;
   issueDate: string;
   amount: number;
-  usedAmount: number;
+  unusedAmount: number;
   bankCharges: number;
   bcyAmount: number;
   bcyBankCharges: number;

@@ -91,17 +91,6 @@ class InvoicePaymentModel extends Model<
   @Attribute(DataTypes.DECIMAL)
   @NotNull
   @Default(0)
-  get exchangeGainLoss(): number {
-    const value = this.getDataValue("exchangeGainLoss");
-    if (value) {
-      return MathLib.getWithPrecision(MAXIMUM_EXCHANGE_RATE_PRECISION, value);
-    }
-    return value;
-  }
-
-  @Attribute(DataTypes.DECIMAL)
-  @NotNull
-  @Default(0)
   get bcyExchangeGainLoss(): number {
     const value = this.getDataValue("bcyExchangeGainLoss");
     if (value) {
@@ -122,7 +111,11 @@ const InvoicePaymentsColumnNamesRaw = {
   paymentType: "payment_type",
   appliedAmount: "applied_amount",
   bcyAppliedAmount: "bcy_applied_amount",
-  exchangeGainLoss: "exchange_gain_loss",
   bcyExchangeGainLoss: "bcy_exchange_gain_loss",
 };
-export { InvoicePaymentModel, InvoicePaymentsColumnNamesRaw };
+const InvoicePaymentsTableName = "InvoicePayments";
+export {
+  InvoicePaymentModel,
+  InvoicePaymentsColumnNamesRaw,
+  InvoicePaymentsTableName,
+};

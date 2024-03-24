@@ -74,6 +74,22 @@ class AutoNumberGroupDAO {
     });
   }
 
+  async getDefault() {
+    return await AutoNumberGroupsModel.findOne({
+      where: {
+        organizationId: this.organization_id,
+        status: AUTO_NUMBER_GRP_STATUS,
+        isDefault: true,
+      },
+      include: [
+        {
+          model: AutoNumbersModel,
+          as: "AutoNumbers",
+        },
+      ],
+    });
+  }
+
   /**
    * Update auto number group
    */

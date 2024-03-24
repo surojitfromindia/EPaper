@@ -17,16 +17,16 @@ class MathLib {
     return MathLib.getWithPrecision(precision, percentage_value / 100);
   }
 
-  getWithPrecision(number: number) {
+  static parseNumber(number: number | string): number {
+    return MathJs.number(number);
+  }
+
+  getWithPrecision(number: number): number {
     return MathLib.getWithPrecision(this.precision, number);
   }
 
-  getDecimalFromPercentage(number: number) {
+  getDecimalFromPercentage(number: number): number {
     return MathLib.getDecimalFromPercentage(this.precision, number);
-  }
-
-  static parseNumber(number: number | string) {
-    return MathJs.number(number);
   }
 }
 
