@@ -145,9 +145,9 @@ class InvoiceDao {
     return ValidityUtil.isNotEmpty(invoice);
   }
 
-  async getLatestBalanceForUpdate(
+  async getLatestAppliedAmountForUpdate(
     { invoice_id, organization_id },
-    { transaction },
+    { transaction },  
   ) {
     // todo: need a work around here.
     const lock_rows_query = await InvoicePaymentModel.findAll({

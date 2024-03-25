@@ -102,7 +102,7 @@ class CustomerPaymentService {
 
         // --- get the latest balance of the invoice
         const latestBalanceOfInvoice =
-          await InvoiceDao.getLatestBalanceForUpdate(
+          await InvoiceDao.getLatestAppliedAmountForUpdate(
             {
               invoice_id: invoice.invoiceId,
               organization_id: organizationId,
