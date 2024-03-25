@@ -127,7 +127,7 @@ class InvoiceDao {
   }
 
   async getByIdWithLineItems({ invoice_id, organization_id }: GetByIdOptions) {
-    return this.#getInvoiceById({
+    return this.getInvoiceByIdRaw({
       invoice_id,
       organization_id,
       include_line_items: true,
@@ -195,7 +195,28 @@ class InvoiceDao {
     };
   }
 
-  async #getInvoiceById({
+  async updateBalance(
+    { invoice_id, organization_id, balance, bcy_balance, payment_status },
+    { transaction },
+  ) {
+    return await Invoice.update(
+      {
+        balance,
+        bcyBalance: bcy_balance,
+        paymentStatus: payment_status,
+      },
+      {
+        where: {
+          organizationId: organization_id,
+          id: invoice_id,
+          status: "active",
+        },
+        transaction,
+      },
+    );
+  }
+
+  async getInvoiceByIdRaw({
     invoice_id,
     organization_id,
     include_line_items,

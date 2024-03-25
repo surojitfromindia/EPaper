@@ -9,18 +9,24 @@ import { ValidityUtil } from "../../Utils/ValidityUtil";
 import { AutoNumberGenerationService } from "../SettingServices/AutoNumberSeries.service";
 import CodedError from "../../Errors/APIErrors/CodedError";
 import { CustomerPaymentServiceErrorMessages } from "../../Errors/APIErrors/ErrorMessages";
-import { CustomerPaymentDAO } from "../../DAO";
+import { CustomerPaymentDAO, InvoicePaymentDAO } from "../../DAO";
 import { CustomerPaymentCreatable } from "../../Models/CustomerPayment/CustomerPayment.model";
+import { InvoicePaymentCreatable } from "../../Models/CustomerPayment/InvoicePayment.model";
+import InvoiceService from "../InvoiceServices/Invoice.service";
 
 class CustomerPaymentService {
   private readonly _organizationId: number;
   private readonly _clientInfo: ClientInfo;
   private readonly _customerPaymentDAO: CustomerPaymentDAO;
+  private readonly _invoicePaymentDAO: InvoicePaymentDAO;
 
   constructor({ client_info }: { client_info: ClientInfo }) {
     this._organizationId = client_info.organizationId;
     this._clientInfo = client_info;
     this._customerPaymentDAO = new CustomerPaymentDAO({
+      organization_id: this._organizationId,
+    });
+    this._invoicePaymentDAO = new InvoicePaymentDAO({
       organization_id: this._organizationId,
     });
   }
@@ -35,6 +41,7 @@ class CustomerPaymentService {
 
     // -- data are taken from payload
     const contactId = newCustomerPayment.contactId;
+    const paymentDate = newCustomerPayment.issueDate;
     const paymentExchangeRate = newCustomerPayment.exchangeRate ?? 1;
     const applyToInvoices = newCustomerPayment.invoices;
     const applyToInvoicesIds = applyToInvoices.map(
@@ -66,17 +73,16 @@ class CustomerPaymentService {
 
       // for each invoice we might need exchange rate and latest due of the invoice.
       const invoiceIdAndBalanceRecord: {
-        [invoiceId: number]: {
-          invoice_id: number;
-          prev_applied_amount: number;
-          prev_applied_amount_bcy: number;
-          applicable_amount: number;
-          applicable_amount_bcy: number;
-          exchange_gain_loss: number;
-          new_balance: number;
-          new_balance_bcy: number;
-        };
-      } = {};
+        invoice_id: number;
+        prev_applied_amount: number;
+        prev_applied_amount_bcy: number;
+        applicable_amount: number;
+        applicable_amount_bcy: number;
+        exchange_gain_loss: number;
+        new_balance: number;
+        new_balance_bcy: number;
+        total: number;
+      }[] = [];
       // note actually how much of the payment is used to pay the invoices
       let usedCreditOfPayment = 0;
       let totalExchangeGainLoss = 0;
@@ -137,7 +143,7 @@ class CustomerPaymentService {
         // --- end of calculating the new balance of the invoice
 
         // update the "invoiceIdAndBalanceRecord"
-        invoiceIdAndBalanceRecord[invoice.invoiceId] = {
+        invoiceIdAndBalanceRecord.push({
           invoice_id: invoice.invoiceId,
           prev_applied_amount: prevAppliedAmount,
           prev_applied_amount_bcy: preBcyAppliedAmount,
@@ -146,7 +152,8 @@ class CustomerPaymentService {
           exchange_gain_loss: bcyExchangeGainLoss,
           new_balance: newInvoiceBalance,
           new_balance_bcy: newInvoiceBalanceBcy,
-        };
+          total: invoiceTotal,
+        });
       }
 
       // unused credit of payment is the amount that is not used to pay the invoices
@@ -168,21 +175,75 @@ class CustomerPaymentService {
         unusedAmount: unusedCreditOfPayment,
         bcyUnusedAmount: unusedCreditOfPayment * paymentExchangeRate,
         contactId: newCustomerPayment.contactId,
-        createdBy: userId,
         currencyId: newCustomerPayment.currencyId,
         exchangeRate: paymentExchangeRate,
         issueDate: newCustomerPayment.issueDate,
         notes: newCustomerPayment.notes,
-        organizationId: organizationId,
         paymentModeId: newCustomerPayment.paymentModeId,
         paymentNumber: paymentNumber,
         referenceNumber: newCustomerPayment.referenceNumber,
+        createdBy: userId,
+        organizationId: organizationId,
       };
 
-      console.log("exchange gain loss", totalExchangeGainLoss);
-      console.log("customerPaymentBody", customerPaymentBody);
+      const createdPayment = await this._customerPaymentDAO.create(
+        {
+          customer_payment_details: customerPaymentBody,
+        },
+        {
+          transaction: t1,
+        },
+      );
 
-      throw new Error("Not implemented");
+      // todo: ------ need to work on this
+      const paymentType =
+        invoiceIdAndBalanceRecord.length > 1
+          ? "invoice_payment"
+          : "customer_payment";
+
+      // --- create the invoice payments lines
+      const invoicePaymentsLine: InvoicePaymentCreatable[] = [];
+      for (const inv of invoiceIdAndBalanceRecord) {
+        const invPayment: InvoicePaymentCreatable = {
+          appliedAmount: inv.applicable_amount,
+          bcyAppliedAmount: inv.applicable_amount_bcy,
+          applyDate: paymentDate,
+          bcyExchangeGainLoss: inv.exchange_gain_loss,
+          invoiceId: inv.invoice_id,
+          organizationId: organizationId,
+          paymentId: createdPayment.id,
+          paymentType: paymentType,
+        };
+        invoicePaymentsLine.push(invPayment);
+      }
+      await this._invoicePaymentDAO.bulkCreate(
+        {
+          invoice_payments: invoicePaymentsLine,
+        },
+        {
+          transaction: t1,
+        },
+      );
+      // --- update balance of each invoice
+      const invoiceService = new InvoiceService({
+        client_info: this._clientInfo,
+      });
+
+      for await (const inv of invoiceIdAndBalanceRecord) {
+        await invoiceService.updateInvoiceBalance(
+          {
+            invoice_id: inv.invoice_id,
+            new_balance: inv.new_balance,
+            new_balance_bcy: inv.new_balance_bcy,
+            total: inv.total,
+          },
+          {
+            transaction: t1,
+          },
+        );
+      }
+
+      return true;
     });
   }
 

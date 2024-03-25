@@ -100,6 +100,17 @@ class InvoicePaymentModel extends Model<
   }
 }
 
+type InvoicePaymentCreatable = {
+  applyDate: string;
+  paymentId: number;
+  invoiceId: number;
+  paymentType: "customer_payment" | "invoice_payment";
+  appliedAmount: number;
+  bcyAppliedAmount: number;
+  bcyExchangeGainLoss: number;
+  organizationId: number;
+};
+
 const InvoicePaymentsColumnNamesRaw = {
   id: "id",
   applyDate: "apply_date",
@@ -119,3 +130,4 @@ export {
   InvoicePaymentsColumnNamesRaw,
   InvoicePaymentsTableName,
 };
+export type { InvoicePaymentCreatable };

@@ -278,6 +278,41 @@ class InvoiceService {
       return given_number;
     }
   }
+
+  async updateInvoiceBalance(
+    { invoice_id, total, new_balance, new_balance_bcy },
+    {
+      transaction,
+    }: {
+      transaction: Transaction;
+    },
+  ) {
+    return await InvoiceDao.updateBalance(
+      {
+        organization_id: this._organizationId,
+        balance: new_balance,
+        bcy_balance: new_balance_bcy,
+        invoice_id,
+        payment_status: this.#generatePaymentStatus({
+          total,
+          new_balance,
+        }),
+      },
+      {
+        transaction,
+      },
+    );
+  }
+
+  #generatePaymentStatus = ({ total, new_balance }) => {
+    if (new_balance === 0) {
+      return "paid";
+    }
+    if (new_balance < total) {
+      return "partial_paid";
+    }
+    return "not_paid";
+  };
 }
 
 export default InvoiceService;

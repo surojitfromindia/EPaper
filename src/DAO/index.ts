@@ -29,6 +29,7 @@ import {
 } from "./Preference/index.dao.preference";
 import { InvoiceJournalDAO } from "./Invoices/InvoiceJournal.dao";
 import { CustomerPaymentDAO } from "./CustomerPayments/CustomerPayment.dao";
+import { InvoicePaymentDAO } from "./CustomerPayments/InvoicePayment.dao";
 
 export {
   UserDao,
@@ -65,4 +66,5 @@ export {
 
   // customer payment
   CustomerPaymentDAO,
+  InvoicePaymentDAO,
 };
