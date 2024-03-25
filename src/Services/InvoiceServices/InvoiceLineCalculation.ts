@@ -76,7 +76,7 @@ class InvoiceLineCalculation {
     let invoiceDiscountTotal = 0;
     let invoiceTaxTotal = 0;
     let invoiceSubTotal = 0;
-    let invoiceTotal: number;
+    let invoiceTotal = 0; // tax included total
 
     // now time to loop over each line item.
     const updatedLineItems = [];
@@ -115,8 +115,10 @@ class InvoiceLineCalculation {
         invoiceDiscountTotal + discountAmount,
       );
       invoiceSubTotal = mathLib.getWithPrecision(invoiceSubTotal + itemTotal);
+      invoiceTotal = mathLib.getWithPrecision(
+        invoiceTotal + itemTotalTaxIncluded,
+      );
     }
-    invoiceTotal = mathLib.getWithPrecision(invoiceTaxTotal + invoiceSubTotal);
     return {
       taxTotal: invoiceTaxTotal,
       discountTotal: invoiceDiscountTotal,
