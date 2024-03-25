@@ -158,7 +158,7 @@ class InvoiceService {
         const contactService = new ContactService({
           client_info: this._clientInfo,
         });
-        await contactService.updateBalanceOnInvoiceNotPaid(
+        await contactService.updateBalanceOnInvoiceCreateAsSent(
           {
             contact_id: contactId,
             currency_id: currencyId,

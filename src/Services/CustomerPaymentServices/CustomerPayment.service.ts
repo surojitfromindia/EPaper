@@ -6,13 +6,16 @@ import { MathLib } from "../../Utils/MathLib/mathLib";
 import { ExchangeGainLoss } from "../helpers/ExchangeGainLoss";
 import { Transaction } from "@sequelize/core";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
-import { AutoNumberGenerationService } from "../SettingServices/AutoNumberSeries.service";
 import CodedError from "../../Errors/APIErrors/CodedError";
 import { CustomerPaymentServiceErrorMessages } from "../../Errors/APIErrors/ErrorMessages";
 import { CustomerPaymentDAO, InvoicePaymentDAO } from "../../DAO";
 import { CustomerPaymentCreatable } from "../../Models/CustomerPayment/CustomerPayment.model";
 import { InvoicePaymentCreatable } from "../../Models/CustomerPayment/InvoicePayment.model";
-import InvoiceService from "../InvoiceServices/Invoice.service";
+import {
+  AutoNumberGenerationService,
+  ContactService,
+  InvoiceService,
+} from "../index";
 
 class CustomerPaymentService {
   private readonly _organizationId: number;
@@ -47,6 +50,7 @@ class CustomerPaymentService {
     const applyToInvoicesIds = applyToInvoices.map(
       (invoice) => invoice.invoiceId,
     );
+    const paymentCurrencyId = newCustomerPayment.currencyId;
     // -- end of data taken from payload
     /*
      for each of the invoices, we first must ensure we are not overpaying
@@ -156,9 +160,12 @@ class CustomerPaymentService {
         });
       }
 
-      // unused credit of payment is the amount that is not used to pay the invoices
+      // unused credit of payment is the amount not used to pay the invoices
       const unusedCreditOfPayment =
         newCustomerPayment.amount - usedCreditOfPayment;
+      const bcyUnusedCreditOfPayment =
+        unusedCreditOfPayment * paymentExchangeRate;
+      const bcyUsedCreditOfPayment = usedCreditOfPayment * paymentExchangeRate;
       if (unusedCreditOfPayment < 0) {
         throw new CodedError(
           CustomerPaymentServiceErrorMessages.NEGATIVE_UNUSED_CREDIT_OF_PAYMENT,
@@ -173,7 +180,7 @@ class CustomerPaymentService {
         bcyAmount: newCustomerPayment.amount * paymentExchangeRate,
         bcyBankCharges: newCustomerPayment.bankCharges * paymentExchangeRate,
         unusedAmount: unusedCreditOfPayment,
-        bcyUnusedAmount: unusedCreditOfPayment * paymentExchangeRate,
+        bcyUnusedAmount: bcyUnusedCreditOfPayment,
         contactId: newCustomerPayment.contactId,
         currencyId: newCustomerPayment.currencyId,
         exchangeRate: paymentExchangeRate,
@@ -228,7 +235,6 @@ class CustomerPaymentService {
       const invoiceService = new InvoiceService({
         client_info: this._clientInfo,
       });
-
       for await (const inv of invoiceIdAndBalanceRecord) {
         await invoiceService.updateInvoiceBalance(
           {
@@ -242,6 +248,26 @@ class CustomerPaymentService {
           },
         );
       }
+      // --- end of updating the balance of each invoice
+
+      // --- update the contact balance
+      const contactService = new ContactService({
+        client_info: this._clientInfo,
+      });
+      await contactService.updateBalanceOnPaymentCreate(
+        {
+          contact_id: contactId,
+          currency_id: paymentCurrencyId,
+          unused_payment_amount: unusedCreditOfPayment,
+          unused_payment_amount_bcy: bcyUnusedCreditOfPayment,
+          used_payment_amount: usedCreditOfPayment,
+          used_payment_amount_bcy: bcyUsedCreditOfPayment,
+        },
+        {
+          transaction: t1,
+        },
+      );
+      // --- end of updating the contact balance
 
       return true;
     });

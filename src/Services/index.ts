@@ -27,7 +27,10 @@ import { InvoiceEditPageService } from "./InvoiceServices/Invoice.editPage.servi
 import { ContactAutoCompleteService } from "./Contact/Contact.AutoComplete.service";
 import { ContactService } from "./Contact/Contact.service";
 import { ContactEditPageService } from "./Contact/Contact.editPage.service";
-import { AutoNumberSeriesService } from "./SettingServices/AutoNumberSeries.service";
+import {
+  AutoNumberGenerationService,
+  AutoNumberSeriesService,
+} from "./SettingServices/AutoNumberSeries.service";
 import { RegularItemAutoCompleteService } from "./RegularItemServices/RegularItem.AutoComplete.service";
 import { PageContextService } from "./FilterAndPaginationServices/PageContext.service";
 
@@ -68,4 +71,5 @@ export {
   InvoiceFilterService,
   InvoiceDashboardService,
   CustomerPaymentService,
+  AutoNumberGenerationService,
 };

@@ -261,7 +261,7 @@ class InvoiceUpdateService {
       client_info: this._clientInfo,
     });
     if (newTransactionStatus === "sent" && oldTransactionStatus === "draft") {
-      await contactService.updateBalanceOnInvoiceNotPaid(
+      await contactService.updateBalanceOnInvoiceCreateAsSent(
         {
           contact_id: newContactId,
           currency_id: newCurrencyId,
@@ -284,7 +284,7 @@ class InvoiceUpdateService {
 
       if (oldContactId !== newContactId) {
         // update the balance of the previous contact
-        await contactService.updateBalanceOnInvoiceNotPaid(
+        await contactService.updateBalanceOnInvoiceCreateAsSent(
           {
             contact_id: oldContactId,
             currency_id: oldCurrencyId,
@@ -298,7 +298,7 @@ class InvoiceUpdateService {
           },
         );
         // update the balance of the new contact
-        await contactService.updateBalanceOnInvoiceNotPaid(
+        await contactService.updateBalanceOnInvoiceCreateAsSent(
           {
             contact_id: newContactId,
             currency_id: newCurrencyId,
@@ -312,7 +312,7 @@ class InvoiceUpdateService {
           },
         );
       } else {
-        await contactService.updateBalanceOnInvoiceNotPaid(
+        await contactService.updateBalanceOnInvoiceCreateAsSent(
           {
             contact_id: newContactId,
             currency_id: newCurrencyId,

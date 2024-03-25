@@ -103,7 +103,12 @@ class ContactService {
     return contactDao.getContactDetails({ contact_id });
   }
 
-  updateBalanceOnInvoiceNotPaid = async (
+  /**
+   * on invoice creation, update contact balance
+   * 1. increase outstanding credits receivable amount (as invoice is created)
+   * note: this function is also used on invoice update.
+   */
+  updateBalanceOnInvoiceCreateAsSent = async (
     {
       contact_id,
       currency_id,
@@ -132,6 +137,42 @@ class ContactService {
       },
     );
     return true;
+  };
+
+  /**
+   * on payment creation, update contact balance
+   * 1. decrease outstanding credits receivable amount (as invoice is getting paid)
+   * 2. increase unused credits receivable amount (as payment is not fully used)
+   */
+  updateBalanceOnPaymentCreate = async (
+    {
+      contact_id,
+      currency_id,
+      used_payment_amount,
+      used_payment_amount_bcy,
+      unused_payment_amount,
+      unused_payment_amount_bcy,
+    },
+    { transaction },
+  ) => {
+    const contactDao = new ContactDao({
+      organization_id: this.clientInfo.organizationId,
+    });
+    await contactDao.updateBalances(
+      {
+        contact_id,
+        currency_id,
+        outstanding_credits_receivable_amount_change: -used_payment_amount,
+        outstanding_credits_receivable_amount_bcy_change:
+          -used_payment_amount_bcy,
+        unused_credits_receivable_amount_change: unused_payment_amount,
+        unused_credits_receivable_amount_bcy_change: unused_payment_amount_bcy,
+        user_id: this.clientInfo.userId,
+      },
+      {
+        transaction,
+      },
+    );
   };
 
   /**
