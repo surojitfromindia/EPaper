@@ -3,6 +3,7 @@ import GeneralPreferenceService from "./GeneralPreference.service";
 import { FeaturesPreferenceService } from "./FeaturesPreference.service";
 import { InvoicePreferenceService } from "./InvoicePreference.service";
 import { CustomViewPreferenceService } from "./CustomViewPreference.service";
+import { CustomerPaymentPreferenceService } from "./CustomerPaymentPreference.service";
 
 class PreferenceService {
   async initAllDefaultPreferences({ organization_id }, { transaction }) {
@@ -20,6 +21,10 @@ class PreferenceService {
         transaction,
       },
     );
+    await CustomerPaymentPreferenceService.create(
+      { organization_id },
+      { transaction },
+    );
     await CustomViewPreferenceService.createDefault({ organization_id });
     return true;
   }
@@ -32,4 +37,5 @@ export {
   FeaturesPreferenceService,
   InvoicePreferenceService,
   CustomViewPreferenceService,
+  CustomerPaymentPreferenceService,
 };

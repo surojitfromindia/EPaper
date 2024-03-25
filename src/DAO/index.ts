@@ -23,8 +23,10 @@ import CurrencyDAO from "./Settings/Currecy.dao";
 import ContactPersonDAO from "./ContactPersons/ContactPerson.dao";
 import { AutoNumberGroupDAO } from "./AutoNumberSeries/AutoNumberGroup.dao";
 import {
+  CustomerPaymentPreferenceDAO,
   FeaturesPreferenceDAO,
   GeneralPreferenceDAO,
+  InvoicePreferenceDAO,
   ItemPreferenceDAO,
 } from "./Preference/index.dao.preference";
 import { InvoiceJournalDAO } from "./Invoices/InvoiceJournal.dao";
@@ -63,8 +65,10 @@ export {
   InvoicePaymentTermDao,
   InvoiceDashboardDAO,
   InvoiceGetAllDAO,
+  InvoicePreferenceDAO,
 
   // customer payment
   CustomerPaymentDAO,
   InvoicePaymentDAO,
+  CustomerPaymentPreferenceDAO,
 };

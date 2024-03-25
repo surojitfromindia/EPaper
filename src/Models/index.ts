@@ -23,12 +23,13 @@ import { ContactPerson } from "./ContactPerson/ContactPerson.model";
 import { AutoNumbersModel } from "./AutoNumberSeries/AutoNumber.model";
 import { AutoNumberGroupsModel } from "./AutoNumberSeries/AutoNumberGroup.model";
 import { FeaturesPreferenceModel } from "./Preference/FeaturesPreference.model";
-import { InvoicePreferencesModel } from "./Preference/InvoicePreferencesModel";
+import { InvoicePreferencesModel } from "./Preference/InvoicePreferences.model";
 import { ContactBalancesModel } from "./Contact/ContactBalances.model";
 import { InvoiceJournalModel } from "./Invoice/InvoiceJournal.model";
 import { PaymentModeModel } from "./PaymentMode/PaymentMode.model";
 import { CustomerPaymentModel } from "./CustomerPayment/CustomerPayment.model";
 import { InvoicePaymentModel } from "./CustomerPayment/InvoicePayment.model";
+import { CustomerPaymentPreferencesModel } from "./Preference/CustomerPaymentPreferences.model";
 
 export {
   User,
@@ -62,4 +63,5 @@ export {
   InvoicePaymentModel,
   CustomerPaymentModel,
   PaymentModeModel,
+  CustomerPaymentPreferencesModel,
 };

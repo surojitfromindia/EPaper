@@ -14,6 +14,7 @@ import {
   CurrencyExchangeRate,
   CurrencyModel,
   CustomerPaymentModel,
+  CustomerPaymentPreferencesModel,
   FeaturesPreferenceModel,
   GeneralPreferenceModel,
   Invoice,
@@ -79,6 +80,7 @@ const sequelize = new Sequelize(dbName, userName, userPassword, {
     PaymentModeModel,
     CustomerPaymentModel,
     InvoicePaymentModel,
+    CustomerPaymentPreferencesModel,
   ],
 });
 
@@ -104,6 +106,7 @@ async function syncModel() {
   // await PaymentModeModel.sync({ alter, force });
   // await CustomerPaymentModel.sync({ alter, force });
   // await InvoicePaymentModel.sync({ alter, force });
+  // await CustomerPaymentPreferencesModel.sync({ alter, force });
 }
 
 syncModel().catch((err) => console.log(err));
