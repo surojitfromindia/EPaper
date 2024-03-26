@@ -5,6 +5,7 @@ import AccountsTemplateImportService from "./ImportServices/AccountsOfTemplate.i
 import SettingService, {
   CurrencyService,
   ItemUnitService,
+  PaymentModeService,
   PaymentTermService,
   TaxRateService,
 } from "./SettingServices/Setting.service";
@@ -72,4 +73,5 @@ export {
   InvoiceDashboardService,
   CustomerPaymentService,
   AutoNumberGenerationService,
+  PaymentModeService,
 };

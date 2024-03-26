@@ -326,6 +326,9 @@ class InvoiceGetAllDAO {
       case "Status.Overdue":
         {
           this.query.transactionStatus = "sent";
+          this.query.paymentStatus = {
+            [Op.in]: ["not_paid", "partial_paid"],
+          };
           // and due date is less than today
           this.query.dueDate = {
             [Op.lt]: new Date(),

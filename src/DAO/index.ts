@@ -32,6 +32,7 @@ import {
 import { InvoiceJournalDAO } from "./Invoices/InvoiceJournal.dao";
 import { CustomerPaymentDAO } from "./CustomerPayments/CustomerPayment.dao";
 import { InvoicePaymentDAO } from "./CustomerPayments/InvoicePayment.dao";
+import { PaymentModeDAO } from "./Settings/PaymentMode.dao";
 
 export {
   UserDao,
@@ -52,6 +53,7 @@ export {
   CurrencyDAO,
   ContactPersonDAO,
   AutoNumberGroupDAO,
+  PaymentModeDAO,
 
   //  preferences
   GeneralPreferenceDAO,

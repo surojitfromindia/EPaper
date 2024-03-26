@@ -2,6 +2,7 @@ import {
   Attribute,
   AutoIncrement,
   BelongsTo,
+  Default,
   NotNull,
   PrimaryKey,
   Table,
@@ -50,11 +51,22 @@ class PaymentModeModel extends Model<
 
   @BelongsTo(() => OrganizationBasic, "organizationId")
   declare Organization?: NonAttribute<OrganizationBasic>;
+
+  @Attribute(DataTypes.ENUM("active", "deleted"))
+  @Default("active")
+  @NotNull
+  declare status: "active" | "deleted";
+
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  @Default("others")
+  declare systemName: string;
 }
 
 type PaymentModeIdType = PaymentModeModel["id"];
 type PaymentModeCreatableRequired = {
   name: string;
+  systemName: string;
   isDefault: boolean;
   createdBy: number;
   organizationId: number;

@@ -6,6 +6,7 @@ import OrganizationService from "../Organization.service";
 import { OrganizationBasicIdType } from "../../Models/Organization/Organization.model";
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
 import { AutoNumberSeriesService } from "./AutoNumberSeries.service";
+import { PaymentModeService } from "./PaymentMode.service";
 
 class SettingService {
   private readonly organizationId: OrganizationBasicIdType;
@@ -80,6 +81,19 @@ class SettingService {
       { transaction },
     );
 
+    // payment modes
+    const paymentModeService = new PaymentModeService({
+      client_info,
+    });
+    await paymentModeService.initDefaultPaymentModes(
+      {
+        organization_id,
+      },
+      {
+        transaction,
+      },
+    );
+
     return {
       organizationCurrencyId,
     };
@@ -87,4 +101,10 @@ class SettingService {
 }
 
 export default SettingService;
-export { ItemUnitService, TaxRateService, PaymentTermService, CurrencyService };
+export {
+  ItemUnitService,
+  TaxRateService,
+  PaymentTermService,
+  CurrencyService,
+  PaymentModeService,
+};
