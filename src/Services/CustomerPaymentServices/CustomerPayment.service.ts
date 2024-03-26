@@ -119,7 +119,7 @@ class CustomerPaymentService {
           latestBalanceOfInvoice.total_applied_amount,
         );
         const preBcyAppliedAmount = MathLib.parseNumber(
-          latestBalanceOfInvoice.total_bcy_applied_amount,
+          latestBalanceOfInvoice.bcy_total_applied_amount,
         );
         // --- end of getting the latest balance of the invoice
 

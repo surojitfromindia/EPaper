@@ -1,20 +1,20 @@
-import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
-import { InvoiceIdType } from "../../Models/Invoice/Invoices.model";
-import sequelize from "../../Config/DataBase.Config";
-import { InvoiceDao, InvoiceLineItemDao } from "../../DAO";
-import { DataNotFoundError } from "../../Errors/APIErrors";
-import { InvoiceLineCalculation } from "./InvoiceLineCalculation";
-import { ToInvoiceCreateType } from "../../DTO/Invoice.DTO";
-import { InvoiceUtil } from "./InvoiceUtil";
-import { ValidityUtil } from "../../Utils/ValidityUtil";
-import { ContactService } from "../Contact/Contact.service";
-import { AutoNumberGenerationService } from "../SettingServices/AutoNumberSeries.service";
-import CodedError from "../../Errors/APIErrors/CodedError";
-import { InvoiceServiceErrorMessages } from "../../Errors/APIErrors/ErrorMessages";
-import { Transaction } from "@sequelize/core";
-import { InvoiceJournalService } from "./InvoiceJournal.service";
-import { InvoiceGetAllQueryParsedFields } from "../FilterAndPaginationServices/InvoiceFilter.service";
-import { PageContextService } from "../FilterAndPaginationServices/PageContext.service";
+import { ClientInfo } from '../../Middlewares/Authorization/Authorization.middleware';
+import { InvoiceIdType } from '../../Models/Invoice/Invoices.model';
+import sequelize from '../../Config/DataBase.Config';
+import { InvoiceDao, InvoiceLineItemDao } from '../../DAO';
+import { DataNotFoundError } from '../../Errors/APIErrors';
+import { InvoiceLineCalculation } from './InvoiceLineCalculation';
+import { ToInvoiceCreateType } from '../../DTO/Invoice.DTO';
+import { InvoiceUtil } from './InvoiceUtil';
+import { ValidityUtil } from '../../Utils/ValidityUtil';
+import { ContactService } from '../Contact/Contact.service';
+import { AutoNumberGenerationService } from '../SettingServices/AutoNumberSeries.service';
+import CodedError from '../../Errors/APIErrors/CodedError';
+import { InvoiceServiceErrorMessages } from '../../Errors/APIErrors/ErrorMessages';
+import { Transaction } from '@sequelize/core';
+import { InvoiceJournalService } from './InvoiceJournal.service';
+import { InvoiceGetAllQueryParsedFields } from '../FilterAndPaginationServices/InvoiceFilter.service';
+import { PageContextService } from '../FilterAndPaginationServices/PageContext.service';
 
 type InvoiceCreateProps = {
   invoice_details: ToInvoiceCreateType;
@@ -58,26 +58,21 @@ class InvoiceService {
 
     return await sequelize.transaction(async (t1) => {
       // generate invoice number
-      invoiceNumber = await this.#invoiceNumberValidityAndGeneration(
-        invoiceNumber,
-        invoice_details.autoNumberGroupId,
-        t1,
-      );
+      invoiceNumber = await this.#invoiceNumberValidityAndGeneration(invoiceNumber, invoice_details.autoNumberGroupId, t1);
 
       // calculate due date
       if (ValidityUtil.isNotEmpty(paymentTermId)) {
-        const { due_date, invoice_payment_term_id } =
-          await InvoiceUtil.generateInvoicePaymentTermId(
-            {
-              payment_term_id: paymentTermId,
-              issue_date: issueDate,
-              custom_due_date: dueDate,
-              organization_id: organizationId,
-            },
-            {
-              transaction: t1,
-            },
-          );
+        const { due_date, invoice_payment_term_id } = await InvoiceUtil.generateInvoicePaymentTermId(
+          {
+            payment_term_id: paymentTermId,
+            issue_date: issueDate,
+            custom_due_date: dueDate,
+            organization_id: organizationId,
+          },
+          {
+            transaction: t1,
+          }
+        );
 
         // update the due date and create a new invoicePaymentTerm
         dueDate = due_date;
@@ -121,7 +116,7 @@ class InvoiceService {
         // on create balances should be the same as total
         balance: invoiceCalculateReturn.total,
         bcyBalance: invoiceCalculateReturn.bcyTotal,
-        paymentStatus: "not_paid",
+        paymentStatus: 'not_paid',
       });
 
       // create the invoice
@@ -131,7 +126,7 @@ class InvoiceService {
         },
         {
           transaction: t1,
-        },
+        }
       );
       const invoiceId = createdInvoice.id;
 
@@ -140,7 +135,7 @@ class InvoiceService {
         Object.assign(lineItem, {
           invoiceId,
           organizationId,
-        }),
+        })
       );
 
       const created_line_items = await InvoiceLineItemDao.bulkCreate(
@@ -149,12 +144,12 @@ class InvoiceService {
         },
         {
           transaction: t1,
-        },
+        }
       );
 
-      // update the contact balance
-      //  if the mark as sent is true, update the contact balance
-      if (transactionStatus === "sent") {
+      //  if the mark as sent is true
+      if (transactionStatus === 'sent') {
+        // update the contact balance
         const contactService = new ContactService({
           client_info: this._clientInfo,
         });
@@ -169,25 +164,37 @@ class InvoiceService {
           },
           {
             transaction: t1,
+          }
+        );
+
+        // update invoice balance balance
+        await this.updateInvoiceBalance(
+          {
+            invoice_id: invoiceId,
+            total: createdInvoice.total,
+            new_balance: createdInvoice.total,
+            new_balance_bcy: createdInvoice.bcyTotal,
           },
+          {
+            transaction: t1,
+          }
         );
 
         // create journal entries
         const invoiceJournalService = new InvoiceJournalService({
           organization_id: organizationId,
         });
-        const journalFactory =
-          await invoiceJournalService.getCreatableCalculation({
-            invoice_id: invoiceId,
-            contact_id: contactId,
-          });
+        const journalFactory = await invoiceJournalService.getCreatableCalculation({
+          invoice_id: invoiceId,
+          contact_id: contactId,
+        });
         await journalFactory.create(
           {
             line_items: created_line_items,
           },
           {
             transaction: t1,
-          },
+          }
         );
       }
 
@@ -209,13 +216,7 @@ class InvoiceService {
     throw new DataNotFoundError();
   }
 
-  async getAllInvoice({
-    filter_by,
-    skip,
-    limit,
-    sort_columns,
-    sort_orders,
-  }: InvoiceGetAllProps) {
+  async getAllInvoice({ filter_by, skip, limit, sort_columns, sort_orders }: InvoiceGetAllProps) {
     const organizationId = this._organizationId;
     const getAllDAO = await InvoiceDao.getAllDAO({
       organization_id: organizationId,
@@ -224,7 +225,7 @@ class InvoiceService {
     const dao = getAllDAO
       .applyLimit(limit)
       .applyFilterBy(filter_by)
-      .applySortBy(sort_columns[0], sort_orders[0] === "D" ? "DESC" : "ASC");
+      .applySortBy(sort_columns[0], sort_orders[0] === 'D' ? 'DESC' : 'ASC');
 
     const invoices = await dao.getAll();
     const hasMorePage = await dao.hasMore();
@@ -234,7 +235,7 @@ class InvoiceService {
       skip: skip,
       current_count: invoices.length,
     }).setHasMorePage(hasMorePage);
-    const pageContext = pageContextService.get("invoice")({
+    const pageContext = pageContextService.get('invoice')({
       sort_column: sort_columns[0], // sort_columns[0] is the first column
       sort_order: sort_orders[0], // sort_orders[0] is the first order
       filter_by,
@@ -249,7 +250,7 @@ class InvoiceService {
   async #invoiceNumberValidityAndGeneration(
     given_number: string | null,
     auto_number_group_id: number,
-    transaction: Transaction,
+    transaction: Transaction
   ): Promise<string | never> {
     if (ValidityUtil.isEmpty(given_number)) {
       const autoNumberGenerationService = new AutoNumberGenerationService({
@@ -258,11 +259,11 @@ class InvoiceService {
       return await autoNumberGenerationService.generateNextNumber(
         {
           auto_number_group_id: auto_number_group_id,
-          entity_type: "invoice",
+          entity_type: 'invoice',
         },
         {
           transaction,
-        },
+        }
       );
     } else {
       // check if invoice number is already present
@@ -271,9 +272,7 @@ class InvoiceService {
         organization_id: this._organizationId,
       });
       if (result) {
-        throw new CodedError(
-          InvoiceServiceErrorMessages.INVOICE_NUMBER_ALREADY_EXISTS,
-        );
+        throw new CodedError(InvoiceServiceErrorMessages.INVOICE_NUMBER_ALREADY_EXISTS);
       }
       return given_number;
     }
@@ -285,8 +284,13 @@ class InvoiceService {
       transaction,
     }: {
       transaction: Transaction;
-    },
+    }
   ) {
+    // if balance is negative then throw error
+    if (new_balance < 0) {
+      throw new CodedError(InvoiceServiceErrorMessages.INVOICE_APPLIED_AMOUNT_GREATER);
+    }
+
     return await InvoiceDao.updateBalance(
       {
         organization_id: this._organizationId,
@@ -300,18 +304,18 @@ class InvoiceService {
       },
       {
         transaction,
-      },
+      }
     );
   }
 
   #generatePaymentStatus = ({ total, new_balance }) => {
     if (new_balance === 0) {
-      return "paid";
+      return 'paid';
     }
     if (new_balance < total) {
-      return "partial_paid";
+      return 'partial_paid';
     }
-    return "not_paid";
+    return 'not_paid';
   };
 }
 

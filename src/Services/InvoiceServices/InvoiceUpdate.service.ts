@@ -13,6 +13,8 @@ import { InvoiceUtil } from "./InvoiceUtil";
 import { ValidityUtil } from "../../Utils/ValidityUtil";
 import { ContactService } from "../Contact/Contact.service";
 import { InvoiceJournalService } from "./InvoiceJournal.service";
+import InvoiceService from "./Invoice.service";
+import { MathLib } from "../../Utils/MathLib/mathLib";
 
 type InvoiceUpdateProps = {
   invoice_details: ToInvoiceUpdateType;
@@ -232,9 +234,10 @@ class InvoiceUpdateService {
         }
       }
 
-      // update the balance
+      // update the balance of contact and invoice both
       await this.#balanceUpdate(
         {
+          invoice_id: invoiceId,
           update_invoice: updateInvoice,
           old_invoice: oldInvoice,
         },
@@ -247,7 +250,12 @@ class InvoiceUpdateService {
     });
   }
 
-  async #balanceUpdate({ update_invoice, old_invoice }, { transaction }) {
+  async #balanceUpdate(
+    { invoice_id, update_invoice, old_invoice },
+    { transaction },
+  ) {
+    const mathLib = new MathLib({});
+
     const oldInvoice = old_invoice;
     const updateInvoice = update_invoice;
     const newCurrencyId = updateInvoice.currencyId;
@@ -257,6 +265,7 @@ class InvoiceUpdateService {
     const newTransactionStatus = updateInvoice.transactionStatus;
     const oldTransactionStatus = oldInvoice.transactionStatus;
 
+    // ------------- update contact(s) balance
     const contactService = new ContactService({
       client_info: this._clientInfo,
     });
@@ -327,6 +336,42 @@ class InvoiceUpdateService {
         );
       }
     }
+    // ------------- end of update contact(s) balance
+
+    // ----------- update invoice balance
+    const invoiceService = new InvoiceService({
+      client_info: this._clientInfo,
+    });
+    const latestAppliedAmount =
+      await InvoiceDao.getLatestAppliedAmountForUpdate(
+        {
+          invoice_id,
+          organization_id: this._organizationId,
+        },
+        {
+          transaction,
+        },
+      );
+    const newBalance = mathLib.getWithPrecision(
+      updateInvoice.total -
+        mathLib.getWithPrecision(latestAppliedAmount.total_applied_amount),
+    );
+    const newBcyBalance = mathLib.getWithPrecision(
+      updateInvoice.bcyTotal -
+        mathLib.getWithPrecision(latestAppliedAmount.bcy_total_applied_amount),
+    );
+    await invoiceService.updateInvoiceBalance(
+      {
+        invoice_id,
+        total: update_invoice.total,
+        new_balance: newBalance,
+        new_balance_bcy: newBcyBalance,
+      },
+      {
+        transaction,
+      },
+    );
+    // ----------- end of update invoice balance
   }
 }
 

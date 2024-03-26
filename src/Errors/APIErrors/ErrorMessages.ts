@@ -46,9 +46,13 @@ const AutoNumberSeriesServiceErrorMessages = {
 
 const InvoiceServiceErrorMessages = {
   INVOICE_NUMBER_ALREADY_EXISTS: {
-    message: "InvoiceServices number already exists",
+    message: "Invoice number already exists",
     code: "INVOICE.1",
   },
+  INVOICE_APPLIED_AMOUNT_GREATER : {
+    message : "Invoice applied amount is greater",
+    code : "INVOICE.2"
+  }
 };
 
 const CustomerPaymentServiceErrorMessages = {

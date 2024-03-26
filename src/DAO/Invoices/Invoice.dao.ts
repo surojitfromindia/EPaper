@@ -147,7 +147,7 @@ class InvoiceDao {
 
   async getLatestAppliedAmountForUpdate(
     { invoice_id, organization_id },
-    { transaction },  
+    { transaction },
   ) {
     // todo: need a work around here.
     const lock_rows_query = await InvoicePaymentModel.findAll({
@@ -169,7 +169,7 @@ class InvoiceDao {
              )}) as total_applied_amount,
              sum(${idn(
                InvoicePaymentsColumnNamesRaw.bcyAppliedAmount,
-             )}) as total_bcy_applied_amount
+             )}) as bcy_total_applied_amount
       from ${idn(InvoicePaymentsTableName)}
       where ${idn(InvoicePaymentsColumnNamesRaw.invoiceId)} = ${invoice_id}
         and ${idn(
@@ -185,13 +185,15 @@ class InvoiceDao {
     })) as any[];
     if (ValidityUtil.isEmpty(raw_data)) {
       return {
-        total_applied_amount: "0",
-        total_bcy_applied_amount: "0",
+        total_applied_amount: 0,
+        bcy_total_applied_amount: 0,
       };
     }
     return {
-      total_applied_amount: raw_data[0].total_applied_amount as string,
-      total_bcy_applied_amount: raw_data[0].total_bcy_applied_amount as string,
+      total_applied_amount: Number(raw_data[0].total_applied_amount) as number,
+      bcy_total_applied_amount: Number(
+        raw_data[0].bcy_total_applied_amount,
+      ) as number,
     };
   }
 

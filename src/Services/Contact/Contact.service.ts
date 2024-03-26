@@ -3,6 +3,7 @@ import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middle
 import sequelize from "../../Config/DataBase.Config";
 import { ComparisonUtil } from "../../Utils/ComparisonUtil";
 import { ContactCreatePayload } from "../../DTO/Contact.DTO";
+import { MathLib } from "../../Utils/MathLib/mathLib";
 
 class ContactService {
   private clientInfo: ClientInfo;
@@ -119,6 +120,8 @@ class ContactService {
     },
     { transaction },
   ) => {
+    const mathLib = new MathLib({});
+
     const contactDao = new ContactDao({
       organization_id: this.clientInfo.organizationId,
     });
@@ -126,10 +129,13 @@ class ContactService {
       {
         contact_id,
         currency_id,
-        outstanding_credits_receivable_amount_change:
+        outstanding_credits_receivable_amount_change: mathLib.getWithPrecision(
           new_invoice_amount - old_invoice_amount,
+        ),
         outstanding_credits_receivable_amount_bcy_change:
-          new_invoice_amount_bcy - old_invoice_amount_bcy,
+          mathLib.getWithPrecision(
+            new_invoice_amount_bcy - old_invoice_amount_bcy,
+          ),
         user_id: this.clientInfo.userId,
       },
       {
@@ -155,6 +161,8 @@ class ContactService {
     },
     { transaction },
   ) => {
+    const mathLib = new MathLib({});
+
     const contactDao = new ContactDao({
       organization_id: this.clientInfo.organizationId,
     });
@@ -162,11 +170,17 @@ class ContactService {
       {
         contact_id,
         currency_id,
-        outstanding_credits_receivable_amount_change: -used_payment_amount,
+        outstanding_credits_receivable_amount_change: mathLib.getWithPrecision(
+          -used_payment_amount,
+        ),
         outstanding_credits_receivable_amount_bcy_change:
-          -used_payment_amount_bcy,
-        unused_credits_receivable_amount_change: unused_payment_amount,
-        unused_credits_receivable_amount_bcy_change: unused_payment_amount_bcy,
+          mathLib.getWithPrecision(-used_payment_amount_bcy),
+        unused_credits_receivable_amount_change: mathLib.getWithPrecision(
+          unused_payment_amount,
+        ),
+        unused_credits_receivable_amount_bcy_change: mathLib.getWithPrecision(
+          unused_payment_amount_bcy,
+        ),
         user_id: this.clientInfo.userId,
       },
       {
