@@ -1,3 +1,5 @@
+import { AutoNumberSeriesDTO, PaymentModeDTO } from ".";
+
 type CustomerPaymentCreateDTO = {
   contactId: number;
   paymentNumber: string | null;
@@ -52,6 +54,53 @@ class CustomerPaymentDTO {
       amountApplied: applied_invoice.amount_appiled,
     };
   };
+
+  static toCustomerPaymentEditPage({
+    deposit_to_accounts_list,
+    payment_settings,
+    payment_modes,
+  }) {
+    const basic_data = {
+      deposit_to_accounts_list,
+      payment_settings: CustomerPaymentSettingsDTO.toEditPageSettings({
+        payment_settings,
+      }),
+      payment_modes: payment_modes.map((pm: any) =>
+        PaymentModeDTO.toPaymentMode({ payment_mode: pm }),
+      ),
+    };
+
+    return basic_data;
+  }
 }
 
 export { CustomerPaymentDTO };
+
+class CustomerPaymentSettingsDTO {
+  static toFullSettings({ invoice_settings }) {}
+
+  static toEditPageSettings({ payment_settings }) {
+    const auto_number_groups = payment_settings.auto_number_groups.map((gp) =>
+      AutoNumberSeriesDTO.toAutoNumberSeriesForSingleEntity(gp),
+    );
+    const default_auto_number_group =
+      AutoNumberSeriesDTO.toAutoNumberSeriesForSingleEntity(
+        payment_settings.default_auto_number_group,
+      );
+    // we need only the first element of
+    return {
+      is_auto_number_enabled: payment_settings.is_auto_number_enabled,
+      auto_number_groups,
+      default_auto_number_group,
+    };
+  }
+
+  static toAutoNumberUpdatePayload({ update_payload }) {
+    return {
+      isAutoNumberEnabled: update_payload.is_auto_number_enabled,
+      autoNumberGroupId: update_payload.auto_number_group_id,
+      nextNumber: update_payload.next_number,
+      prefixString: update_payload.prefix_string,
+    };
+  }
+}

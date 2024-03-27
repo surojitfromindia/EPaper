@@ -387,6 +387,17 @@ class AccountsOfOrganizationService {
   }): AccountsOfInvoiceLineItem {
     return new AccountsOfInvoiceLineItem({ client_info });
   }
+
+  /**
+   * get an account related to customer payment
+   **/
+  ofCustomerPayment({
+    client_info,
+  }: {
+    client_info: ClientInfo;
+  }): AccountsOfCustomerPayment {
+    return new AccountsOfCustomerPayment({ client_info });
+  }
 }
 
 export default Object.freeze(new AccountsOfOrganizationService());
@@ -486,4 +497,29 @@ class AccountsOfInvoiceLineItem {
   }
 }
 
-export { AccountsOfItem, AccountsOfInvoiceLineItem };
+class AccountsOfCustomerPayment {
+  client_info: ClientInfo;
+
+  constructor({ client_info }) {
+    this.client_info = client_info;
+  }
+
+  async getAccounts() {
+    const organizationId = this.client_info.organizationId;
+    const fetchAccountTypes = ["cash", "bank", "other_current_liability"];
+    const deposit_to_accounts = [];
+    const accounts = await AccountsOfOrganizationDao.getAccountsByAccountTypes({
+      organization_id: organizationId,
+      account_types: fetchAccountTypes,
+    });
+    // todo: remove these other accounts by slug
+    const removeAccounts = ["unearned_revenue", "interbranch_account"];
+
+    deposit_to_accounts.push(...accounts);
+    return {
+      deposit_to_accounts,
+    };
+  }
+}
+
+export { AccountsOfItem, AccountsOfInvoiceLineItem, AccountsOfCustomerPayment };

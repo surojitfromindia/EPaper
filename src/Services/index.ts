@@ -16,6 +16,7 @@ import AccountsOfOrganizationService, {
 } from "./AccountsOfOrganization.service";
 import AppStateService from "./AppState.service";
 import PreferenceService, {
+  CustomerPaymentPreferenceService,
   CustomViewPreferenceService,
   FeaturesPreferenceService,
   InvoicePreferenceService,
@@ -38,6 +39,7 @@ import { PageContextService } from "./FilterAndPaginationServices/PageContext.se
 import { InvoiceFilterService } from "./FilterAndPaginationServices";
 import { InvoiceDashboardService } from "./InvoiceServices/InvoiceDashBoard.service";
 import { CustomerPaymentService } from "./CustomerPaymentServices/CustomerPayment.service";
+import { CustomerPaymentEditPageService } from "./CustomerPaymentServices/CustomerPayment.editPage.service";
 
 export {
   UserService,
@@ -74,4 +76,6 @@ export {
   CustomerPaymentService,
   AutoNumberGenerationService,
   PaymentModeService,
+  CustomerPaymentPreferenceService,
+  CustomerPaymentEditPageService,
 };

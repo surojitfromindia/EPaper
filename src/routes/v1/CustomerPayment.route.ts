@@ -3,9 +3,11 @@ import * as CustomerPaymentController from "../../Controllers/v1/CustomerPayment
 
 const customerPaymentRoute = Router();
 
-customerPaymentRoute.post(
-  "/",
-  CustomerPaymentController.createCustomerPaymentController,
-);
+customerPaymentRoute
+  .post("/", CustomerPaymentController.createCustomerPaymentController)
+  .get(
+    "/edit_page",
+    CustomerPaymentController.getCustomerPaymentEditPageController,
+  );
 
 export default customerPaymentRoute;
