@@ -230,6 +230,7 @@ class InvoiceService {
       invoice = await InvoiceDao.getInvoiceByIdRaw({
         invoice_id,
         organization_id: organizationId,
+        include_line_items: false,
       });
     }
     if (invoice) {

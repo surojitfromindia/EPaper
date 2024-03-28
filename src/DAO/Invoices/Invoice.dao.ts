@@ -2,6 +2,7 @@ import {
   Includeable,
   Lock,
   Op,
+  OrderItem,
   QueryTypes,
   sql,
   Transaction,
@@ -239,7 +240,16 @@ class InvoiceDao {
         attributes: INVOICE_CURRENCY_DEFAULT_ATTRIBUTES,
       },
     ];
+    let order: OrderItem[] = [];
     if (include_line_items) {
+      order.push([
+        {
+          model: InvoiceLineItem,
+          as: "LineItems",
+        },
+        "id",
+      ]);
+
       includeAssociations.push({
         model: InvoiceLineItem,
         as: "LineItems",
@@ -266,15 +276,7 @@ class InvoiceDao {
         status: "active",
       },
       include: includeAssociations,
-      order: [
-        [
-          {
-            model: InvoiceLineItem,
-            as: "LineItems",
-          },
-          "id",
-        ],
-      ],
+      order,
     });
   }
 }
