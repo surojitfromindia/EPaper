@@ -32,9 +32,14 @@ const getAnInvoice = async (req: Request) => {
   const invoiceService = new InvoiceService({
     client_info: clientInfo,
   });
-  const invoice = await invoiceService.getAnInvoice({
-    invoice_id: invoiceId,
-  });
+  const invoice = await invoiceService.getAnInvoice(
+    {
+      invoice_id: invoiceId,
+    },
+    {
+      include_line_items: true,
+    },
+  );
   return { invoice: InvoiceDTO.toInvoice({ invoice }) };
 };
 const getAnInvoiceController = SuccessErrorWrapper(getAnInvoice, "done", 200);

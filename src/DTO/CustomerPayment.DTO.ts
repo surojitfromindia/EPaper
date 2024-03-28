@@ -1,4 +1,4 @@
-import { AutoNumberSeriesDTO, PaymentModeDTO } from ".";
+import { AutoNumberSeriesDTO, ContactDTO, InvoiceDTO, PaymentModeDTO } from ".";
 
 type CustomerPaymentCreateDTO = {
   contactId: number;
@@ -60,7 +60,7 @@ class CustomerPaymentDTO {
     payment_settings,
     payment_modes,
   }) {
-    const basic_data = {
+    return {
       deposit_to_accounts_list,
       payment_settings: CustomerPaymentSettingsDTO.toEditPageSettings({
         payment_settings,
@@ -69,8 +69,26 @@ class CustomerPaymentDTO {
         PaymentModeDTO.toPaymentMode({ payment_mode: pm }),
       ),
     };
+  }
 
-    return basic_data;
+  static toCustomerPaymentEditPageFromInvoice({
+    deposit_to_accounts_list,
+    payment_settings,
+    payment_modes,
+    invoice,
+    contact,
+  }) {
+    return {
+      deposit_to_accounts_list,
+      payment_settings: CustomerPaymentSettingsDTO.toEditPageSettings({
+        payment_settings,
+      }),
+      payment_modes: payment_modes.map((pm: any) =>
+        PaymentModeDTO.toPaymentMode({ payment_mode: pm }),
+      ),
+      invoice: InvoiceDTO.toInvoice({ invoice }),
+      contact: ContactDTO.toContact(contact),
+    };
   }
 }
 

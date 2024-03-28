@@ -1,5 +1,4 @@
 import { ClientInfo } from "../../Middlewares/Authorization/Authorization.middleware";
-import { ContactIdType } from "../../Models/Contact/Contacts.model";
 import { AccountsTree } from "../../Utils/AccoutsTree";
 import {
   AccountsOfOrganizationService,
@@ -7,6 +6,7 @@ import {
   CustomerPaymentPreferenceService,
   PaymentModeService,
 } from "../index";
+import InvoiceService from "../InvoiceServices/Invoice.service";
 
 type CustomerPaymentGetEdiPageProps = {
   customer_payment_id?: number;
@@ -30,7 +30,7 @@ class CustomerPaymentEditPageService {
     });
     const paymentModes = await paymentModeService.getAll();
 
-    // payment acccounts
+    // payment accounts
     const { deposit_to_accounts } =
       await AccountsOfOrganizationService.ofCustomerPayment({
         client_info,
@@ -51,14 +51,24 @@ class CustomerPaymentEditPageService {
     };
   }
 
-  async getEditPageFromContact({ contact_id }: { contact_id: ContactIdType }) {
+  async getEditPageFromInvoice({ invoice_id }: { invoice_id: number }) {
     const client_info = this._clientInfo;
+    const invoiceService = new InvoiceService({ client_info });
+    const invoice = await invoiceService.getAnInvoice(
+      { invoice_id },
+      {
+        include_line_items: false,
+      },
+    );
     const contactService = new ContactService({ client_info });
-    const contact = await contactService.getContactById({ contact_id });
+    const contact = await contactService.getContactById({
+      contact_id: invoice.contactId,
+    });
 
     const other = await this.getEditPage({});
     return {
       ...other,
+      invoice,
       contact,
     };
   }

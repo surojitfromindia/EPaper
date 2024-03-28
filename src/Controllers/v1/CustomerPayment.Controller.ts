@@ -45,8 +45,28 @@ const getCustomerPaymentEditPageController = SuccessErrorWrapper(
   "done",
   200,
 );
+const getCustomerPaymentEditPageFromInvoice = async (req: Request) => {
+  const req_query = req?.query;
+  const clientInfo = req.clientInfo;
+  const invoiceId = req_query.invoice_id && Number(req_query.invoice_id);
+
+  const customerPaymentEditPageService = new CustomerPaymentEditPageService({
+    client_info: clientInfo,
+  });
+  const editPage = await customerPaymentEditPageService.getEditPageFromInvoice({
+    invoice_id: invoiceId,
+  });
+  return CustomerPaymentDTO.toCustomerPaymentEditPageFromInvoice(editPage);
+};
+
+const getCustomerPaymentEditPageFromInvoiceController = SuccessErrorWrapper(
+  getCustomerPaymentEditPageFromInvoice,
+  "done",
+  200,
+);
 
 export {
   createCustomerPaymentController,
   getCustomerPaymentEditPageController,
+  getCustomerPaymentEditPageFromInvoiceController,
 };

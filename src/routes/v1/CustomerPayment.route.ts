@@ -8,6 +8,10 @@ customerPaymentRoute
   .get(
     "/edit_page",
     CustomerPaymentController.getCustomerPaymentEditPageController,
+  )
+  .get(
+    "/edit_page/from_invoice",
+    CustomerPaymentController.getCustomerPaymentEditPageFromInvoiceController,
   );
 
 export default customerPaymentRoute;

@@ -59,9 +59,14 @@ class InvoiceEditPageService {
       const invoiceService = new InvoiceService({
         client_info,
       });
-      invoiceDetails = await invoiceService.getAnInvoice({
-        invoice_id,
-      });
+      invoiceDetails = await invoiceService.getAnInvoice(
+        {
+          invoice_id,
+        },
+        {
+          include_line_items: true,
+        },
+      );
       const contactService = new ContactService({
         client_info,
       });
